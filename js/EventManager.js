@@ -54,6 +54,57 @@ export class EventManager {
   }
 
   /**
+   * Check for pre-command events
+   * @param {Object} command - Parsed command
+   * @returns {Object|null} Event result if preventDefault
+   */
+  async checkPreCommandEvents(command) {
+    // Find events triggered before this command
+    const events = this.findEventsByTrigger('pre_command', command);
+    
+    for (const event of events) {
+      if (this.checkCondition(event.condition)) {
+        const result = await this.executeScriptedEvent(event);
+        if (result && result.preventDefault) {
+          return result;
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Check for post-command events
+   * @param {Object} command - Parsed command
+   * @param {Object} result - Command execution result
+   */
+  async checkPostCommandEvents(command, result) {
+    // Find events triggered after this command
+    const events = this.findEventsByTrigger('post_command', command);
+    
+    for (const event of events) {
+      if (this.checkCondition(event.condition)) {
+        await this.executeScriptedEvent(event);
+      }
+    }
+  }
+
+  /**
+   * Trigger room entry events
+   * @param {string} roomId - Room entered
+   */
+  async triggerRoomEntry(roomId) {
+    const events = this.findEventsByTrigger('room_entry', { roomId });
+    
+    for (const event of events) {
+      if (this.checkCondition(event.condition)) {
+        await this.executeScriptedEvent(event);
+      }
+    }
+  }
+
+  /**
    * Execute single game action
    * @param {Object} action - Action object
    */
@@ -494,5 +545,91 @@ export class EventManager {
         this.showMessage(`You are carrying: ${items.join(', ')}`);
       }
     });
+  }
+
+  /**
+   * Find events by trigger type
+   * @private
+   * @param {string} triggerType - Type of trigger
+   * @param {Object} context - Trigger context
+   * @returns {Array} Matching events
+   */
+  findEventsByTrigger(triggerType, context) {
+    // This would search through game events for matching triggers
+    const events = [];
+    
+    // Check current room events
+    const room = this.gameState.getCurrentRoom();
+    if (room && room.events) {
+      room.events.forEach(event => {
+        if (event.trigger === triggerType) {
+          // Check if context matches
+          if (this.matchesTriggerContext(event, context)) {
+            events.push(event);
+          }
+        }
+      });
+    }
+    
+    // Check global events
+    if (this.gameState.gameJSON && this.gameState.gameJSON.events) {
+      this.gameState.gameJSON.events.forEach(event => {
+        if (event.trigger === triggerType) {
+          if (this.matchesTriggerContext(event, context)) {
+            events.push(event);
+          }
+        }
+      });
+    }
+    
+    return events;
+  }
+
+  /**
+   * Check if event context matches trigger
+   * @private
+   * @param {Object} event - Event object
+   * @param {Object} context - Trigger context
+   * @returns {boolean} Whether it matches
+   */
+  matchesTriggerContext(event, context) {
+    if (!event.context) return true;
+    
+    // Check each context property
+    for (const [key, value] of Object.entries(event.context)) {
+      if (context[key] !== value) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  /**
+   * Execute scripted event and return result
+   * @private
+   * @param {Object} event - Event object
+   * @returns {Object|null} Event result
+   */
+  async executeScriptedEvent(event) {
+    if (!event || !event.actions) return null;
+    
+    let result = { preventDefault: false };
+    
+    for (const action of event.actions) {
+      this.executeAction(action);
+      
+      // Check for preventDefault flag
+      if (action.preventDefault) {
+        result.preventDefault = true;
+        result.response = {
+          success: false,
+          text: action.message || "You can't do that.",
+          audio: action.audio || 'error'
+        };
+      }
+    }
+    
+    return result;
   }
 }

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somnium - Parser Demo</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      background-color: #000000;
+      color: #AAAAAA;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+    }
+    
+    .demo-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .game-output {
+      background-color: #0000AA;
+      color: #FFFFFF;
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    
+    .input-container {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .command-input {
+      flex: 1;
+      padding: 10px;
+      background-color: #000000;
+      color: #55FF55;
+      border: 2px solid #AAAAAA;
+      font-family: inherit;
+      font-size: 16px;
+    }
+    
+    .command-input:focus {
+      outline: none;
+      border-color: #FFFFFF;
+    }
+    
+    .submit-button {
+      padding: 10px 20px;
+      background-color: #AA5500;
+      color: #FFFFFF;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    
+    .submit-button:hover {
+      background-color: #FFFF55;
+      color: #000000;
+    }
+    
+    .suggestions {
+      margin-top: 10px;
+      color: #555555;
+      font-size: 12px;
+    }
+    
+    .info-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .panel {
+      background-color: #0000AA;
+      padding: 10px;
+      font-size: 12px;
+    }
+    
+    .panel h3 {
+      color: #FFFF55;
+      margin: 0 0 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1 style="color: #FF55FF; text-align: center;">Parser & Command Demo</h1>
+    
+    <div class="game-output" id="gameOutput">
+Welcome to the Parser Demo!
+=====================================
+
+You are in a simple test environment to try out the natural language parser.
+
+Library
+A dusty old library with towering bookshelves.
+Exits: north, east
+
+You can see: wooden desk, red book, brass key.
+
+Try commands like:
+- look / l
+- examine desk / x desk
+- take key / get brass key
+- inventory / i
+- go north / n
+- put lamp on desk
+- ask about parser
+
+=====================================
+</div>
+    
+    <div class="input-container">
+      <input 
+        type="text" 
+        id="commandInput" 
+        class="command-input" 
+        placeholder="Enter command..."
+        autocomplete="off"
+      >
+      <button id="submitButton" class="submit-button">Enter</button>
+    </div>
+    
+    <div class="suggestions" id="suggestions"></div>
+    
+    <div class="info-panel">
+      <div class="panel">
+        <h3>Inventory</h3>
+        <div id="inventoryPanel">lamp</div>
+      </div>
+      <div class="panel">
+        <h3>Score</h3>
+        <div id="scorePanel">0 / 100</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Parser } from './js/Parser.js';
+    import { GameState } from './js/GameState.js';
+    import { CommandExecutor } from './js/CommandExecutor.js';
+    import { EventManager } from './js/EventManager.js';
+    import { ViewManager } from './js/ViewManager.js';
+    import { SceneRenderer } from './js/SceneRenderer.js';
+    import { SoundManager } from './js/SoundManager.js';
+    import { AIManager } from './js/AIManager.js';
+    
+    // Initialize components
+    const gameState = new GameState();
+    const parser = new Parser();
+    const eventManager = new EventManager(gameState, new AIManager());
+    const viewManager = new ViewManager();
+    const sceneRenderer = new SceneRenderer(document.createElement('canvas'));
+    const soundManager = new SoundManager();
+    
+    const commandExecutor = new CommandExecutor(
+      gameState,
+      eventManager,
+      viewManager,
+      sceneRenderer,
+      soundManager
+    );
+    
+    // Set up demo game data
+    const demoGameData = {
+      startRoom: 'library',
+      rooms: {
+        library: {
+          id: 'library',
+          name: 'Library',
+          description: 'A dusty old library with towering bookshelves.',
+          exits: { north: 'hallway', east: 'study' },
+          items: ['brass_key', 'red_book'],
+          objects: {
+            desk: {
+              id: 'desk',
+              name: 'wooden desk',
+              description: 'An old oak desk with many drawers.',
+              fixed: true,
+              examined: false
+            }
+          }
+        },
+        hallway: {
+          id: 'hallway',
+          name: 'Hallway',
+          description: 'A long corridor with portraits on the walls.',
+          exits: { south: 'library', north: 'entrance', east: 'kitchen' },
+          items: []
+        },
+        study: {
+          id: 'study',
+          name: 'Study',
+          description: 'A cozy study with a fireplace.',
+          exits: { west: 'library' },
+          items: ['silver_coin']
+        },
+        kitchen: {
+          id: 'kitchen',
+          name: 'Kitchen',
+          description: 'A well-equipped kitchen.',
+          exits: { west: 'hallway' },
+          items: ['bread']
+        },
+        entrance: {
+          id: 'entrance',
+          name: 'Entrance Hall',
+          description: 'The grand entrance to the manor.',
+          exits: { south: 'hallway' },
+          exitStates: {
+            north: { locked: true, lockedMessage: 'The front door is locked.' }
+          }
+        }
+      },
+      items: {
+        brass_key: {
+          id: 'brass_key',
+          name: 'brass key',
+          description: 'A small brass key with intricate engravings.',
+          weight: 1,
+          points: 5
+        },
+        red_book: {
+          id: 'red_book',
+          name: 'red book',
+          description: 'A leather-bound book with mysterious symbols.',
+          weight: 3,
+          readable: true,
+          text: 'The book contains ancient spells and incantations.'
+        },
+        lamp: {
+          id: 'lamp',
+          name: 'lamp',
+          description: 'An oil lamp providing warm light.',
+          weight: 2
+        },
+        silver_coin: {
+          id: 'silver_coin',
+          name: 'silver coin',
+          description: 'An old silver coin with a dragon emblem.',
+          weight: 0.5,
+          points: 10
+        },
+        bread: {
+          id: 'bread',
+          name: 'loaf of bread',
+          description: 'Fresh-baked bread that smells delicious.',
+          weight: 1,
+          edible: true
+        }
+      }
+    };
+    
+    // Load game data
+    gameState.loadResources(demoGameData);
+    gameState.addToInventory('lamp');
+    parser.setContext(gameState);
+    
+    // UI elements
+    const gameOutput = document.getElementById('gameOutput');
+    const commandInput = document.getElementById('commandInput');
+    const submitButton = document.getElementById('submitButton');
+    const suggestions = document.getElementById('suggestions');
+    const inventoryPanel = document.getElementById('inventoryPanel');
+    const scorePanel = document.getElementById('scorePanel');
+    
+    // Output function
+    function addOutput(text, className = '') {
+      const line = document.createElement('div');
+      line.textContent = text;
+      if (className) line.className = className;
+      gameOutput.appendChild(line);
+      gameOutput.scrollTop = gameOutput.scrollHeight;
+    }
+    
+    // Update UI panels
+    function updatePanels() {
+      // Update inventory
+      const inventory = gameState.getInventory();
+      inventoryPanel.textContent = inventory.length > 0 
+        ? inventory.map(id => gameState.getItem(id)?.name || id).join(', ')
+        : '(empty)';
+      
+      // Update score
+      scorePanel.textContent = `${gameState.score} / ${gameState.maxScore}`;
+    }
+    
+    // Process command
+    async function processCommand() {
+      const input = commandInput.value.trim();
+      if (!input) return;
+      
+      // Show command
+      addOutput('> ' + input, 'command');
+      
+      // Parse command
+      const parseResult = parser.parse(input);
+      
+      if (!parseResult.success) {
+        addOutput(parseResult.error, 'error');
+      } else {
+        // Execute command
+        const result = await commandExecutor.execute(parseResult);
+        
+        // Show result
+        if (result.text) {
+          addOutput(result.text);
+        }
+        
+        // Play sound if specified
+        if (result.audio && soundManager.initialized) {
+          // soundManager.playSound(result.audio);
+        }
+        
+        // Handle meta actions
+        if (result.meta) {
+          switch (result.meta.action) {
+            case 'quit':
+              addOutput('(Use the browser to close the demo)');
+              break;
+            case 'restart':
+              location.reload();
+              break;
+          }
+        }
+      }
+      
+      // Update UI
+      updatePanels();
+      
+      // Clear input
+      commandInput.value = '';
+      suggestions.textContent = '';
+    }
+    
+    // Handle input
+    commandInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        processCommand();
+      }
+    });
+    
+    submitButton.addEventListener('click', processCommand);
+    
+    // Auto-complete suggestions
+    commandInput.addEventListener('input', (e) => {
+      const partial = e.target.value;
+      if (partial.length >= 1) {
+        const suggs = parser.getSuggestions(partial);
+        if (suggs.length > 0) {
+          suggestions.textContent = 'Suggestions: ' + suggs.join(', ');
+        } else {
+          suggestions.textContent = '';
+        }
+      } else {
+        suggestions.textContent = '';
+      }
+    });
+    
+    // Focus input
+    commandInput.focus();
+  </script>
+</body>
+</html>

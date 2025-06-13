@@ -23,9 +23,15 @@ export class GameState extends EventTarget {
     // Dynamic game state
     this.currentRoomId = null;
     this.inventory = [];
+    this.maxInventorySize = 10;
+    this.maxCarryWeight = 100;
     this.flags = {};
+    this.objectStates = {};
+    this.exitStates = {};
     this.score = 0;
+    this.maxScore = 100;
     this.moves = 0;
+    this.turns = 0;
 
     // State history for undo (optional feature)
     this.stateHistory = [];
@@ -516,5 +522,165 @@ export class GameState extends EventTarget {
     });
 
     return results;
+  }
+
+  /**
+   * Get room by ID
+   * @param {string} roomId - Room ID
+   * @returns {Object|null} Room object or null
+   */
+  getRoom(roomId) {
+    return this.rooms[roomId] || null;
+  }
+
+  /**
+   * Set current room
+   * @param {string} roomId - Room ID to set as current
+   */
+  setCurrentRoom(roomId) {
+    if (this.rooms[roomId]) {
+      this.changeRoom(roomId);
+    }
+  }
+
+  /**
+   * Get total weight of inventory items
+   * @returns {number} Total weight
+   */
+  getInventoryWeight() {
+    return this.inventory.reduce((total, itemId) => {
+      const item = this.getItem(itemId);
+      return total + (item?.weight || 0);
+    }, 0);
+  }
+
+  /**
+   * Get maximum carry weight
+   * @returns {number} Max weight
+   */
+  getMaxCarryWeight() {
+    return this.maxCarryWeight;
+  }
+
+  /**
+   * Add item to inventory (alias for addItem)
+   * @param {string} itemId - Item ID
+   */
+  addToInventory(itemId) {
+    this.addItem(itemId);
+  }
+
+  /**
+   * Remove item from inventory (alias for removeItem)
+   * @param {string} itemId - Item ID
+   */
+  removeFromInventory(itemId) {
+    this.removeItem(itemId);
+  }
+
+  /**
+   * Remove item from current room
+   * @param {string} itemId - Item ID
+   */
+  removeFromRoom(itemId) {
+    const room = this.getCurrentRoom();
+    if (room && room.items) {
+      const index = room.items.indexOf(itemId);
+      if (index > -1) {
+        room.items.splice(index, 1);
+      }
+    }
+  }
+
+  /**
+   * Add item to current room
+   * @param {string} itemId - Item ID
+   */
+  addToRoom(itemId) {
+    const room = this.getCurrentRoom();
+    if (room) {
+      if (!room.items) room.items = [];
+      if (!room.items.includes(itemId)) {
+        room.items.push(itemId);
+      }
+    }
+  }
+
+  /**
+   * Get NPC by ID
+   * @param {string} npcId - NPC ID
+   * @returns {Object|null} NPC object or null
+   */
+  getNPC(npcId) {
+    // Check current room NPCs
+    const room = this.getCurrentRoom();
+    if (room && room.npcs && room.npcs[npcId]) {
+      return room.npcs[npcId];
+    }
+    // Check global NPCs
+    return this.objects[npcId] || null;
+  }
+
+  /**
+   * Set object state
+   * @param {string} objectId - Object ID
+   * @param {string} stateKey - State key (e.g., 'examined', 'open')
+   * @param {*} value - State value
+   */
+  setObjectState(objectId, stateKey, value) {
+    if (!this.objectStates[objectId]) {
+      this.objectStates[objectId] = {};
+    }
+    this.objectStates[objectId][stateKey] = value;
+  }
+
+  /**
+   * Get object state
+   * @param {string} objectId - Object ID
+   * @param {string} stateKey - State key
+   * @returns {*} State value
+   */
+  getObjectState(objectId, stateKey) {
+    return this.objectStates[objectId]?.[stateKey];
+  }
+
+  /**
+   * Get exit state
+   * @param {string} roomId - Room ID
+   * @param {string} direction - Exit direction
+   * @returns {Object|null} Exit state
+   */
+  getExitState(roomId, direction) {
+    const key = `${roomId}:${direction}`;
+    return this.exitStates[key] || null;
+  }
+
+  /**
+   * Set exit state
+   * @param {string} roomId - Room ID
+   * @param {string} direction - Exit direction
+   * @param {Object} state - Exit state
+   */
+  setExitState(roomId, direction, state) {
+    const key = `${roomId}:${direction}`;
+    this.exitStates[key] = state;
+  }
+
+  /**
+   * Create a complete snapshot of current state
+   * @returns {Object} Complete state snapshot
+   */
+  createSnapshot() {
+    return {
+      currentRoomId: this.currentRoomId,
+      inventory: [...this.inventory],
+      flags: { ...this.flags },
+      objectStates: JSON.parse(JSON.stringify(this.objectStates)),
+      exitStates: JSON.parse(JSON.stringify(this.exitStates)),
+      score: this.score,
+      moves: this.moves,
+      turns: this.turns,
+      timestamp: Date.now()
+    };
   }
 }
