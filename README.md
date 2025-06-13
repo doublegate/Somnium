@@ -139,7 +139,13 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 🚧 **Under Active Development** 🚧
 
-Somnium is currently in early development. Core engine architecture is designed and documented, but implementation is just beginning. See [CHANGELOG.md](CHANGELOG.md) for version history and [to-dos/](to-dos/) for current progress.
+Somnium is currently in active development with significant progress:
+
+- **Phase 1 (Core Architecture)** - ✅ Complete
+- **Phase 2 (Graphics and Sound Systems)** - ✅ Complete
+- **Phase 3 (Parser and Game Logic)** - Ready to start
+
+The core engine, graphics rendering, sprite animation, and sound systems are fully implemented. See [CHANGELOG.md](CHANGELOG.md) for version history and [to-dos/](to-dos/) for current progress.
 
 ---
 

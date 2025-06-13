@@ -23,9 +23,9 @@ Somnium follows the Sierra Creative Interpreter (SCI) philosophy: complete separ
 │                    Game Engine Core                         │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │                   GameManager                       │    │
-│  │  - Main loop (requestAnimationFrame)                │    │
+│  │  - Fixed timestep game loop (60 FPS)                │    │
 │  │  - Module orchestration                             │    │
-│  │  - Event queue management                           │    │
+│  │  - FPS monitoring and debug overlay                 │    │
 │  └─────────────────────────────────────────────────────┘    │
 ├─────────────────────────────────────────────────────────────┤
 │                    Engine Modules                           │

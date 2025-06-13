@@ -44,12 +44,12 @@ By participating in this project, you agree to abide by our Code of Conduct:
 
 ### Areas We Need Help
 
-- **Core Engine Development**: Implementing game modules (Parser, Renderer, etc.)
-- **AI Prompt Engineering**: Improving world generation quality
-- **Graphics Programming**: Adding new primitive shapes and effects
-- **Testing**: Writing unit tests and finding bugs
-- **Documentation**: Improving guides and API documentation
-- **Browser Compatibility**: Testing on different platforms
+- **Parser Development**: Implementing natural language processing for Phase 3
+- **Game Logic**: Building event systems and scripting engine
+- **AI Integration**: Connecting LLM services for dynamic content generation
+- **Testing**: Expanding test coverage for all Phase 2 systems
+- **Cross-browser Compatibility**: Testing on different browsers and devices
+- **Documentation**: Improving user guides and API documentation
 - **Accessibility**: Making the game more accessible
 
 ### Types of Contributions

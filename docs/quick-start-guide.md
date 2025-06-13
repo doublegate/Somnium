@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - Modern web browser (Chrome 80+, Firefox 75+, Safari 13+, or Edge 80+)
-- Node.js and npm (optional, for development server)
-- OpenAI API key or similar LLM service access
+- Node.js and npm (for development)
+- OpenAI API key or similar LLM service access (when AI integration is complete)
 
 ## Initial Setup
 
@@ -15,9 +15,15 @@ git clone https://github.com/doublegate/Somnium.git
 cd somnium
 ```
 
-### 2. Configure API Access
+### 2. Install Dependencies
 
-Create a `config.js` file (this will be gitignored):
+```bash
+npm install
+```
+
+### 3. Configure API Access (Future)
+
+When AI integration is complete, create a `config.js` file (this will be gitignored):
 
 ```javascript
 // js/config.js
@@ -28,23 +34,40 @@ export const API_CONFIG = {
 };
 ```
 
-### 3. Start Development Server
-
-Using Python:
+### 4. Start Development Server
 
 ```bash
-python -m http.server 8000
+npm start  # starts http-server on port 8080
+# or
+npm run dev  # starts http-server on port 8000
 ```
 
-Using Node.js:
+### 5. Explore the Demo Pages
 
-```bash
-npx http-server -c-1 .
-```
+Navigate to:
+- `http://localhost:8080` - Main game interface
+- `http://localhost:8080/graphics-demo.html` - Vector graphics showcase
+- `http://localhost:8080/sprite-demo.html` - Interactive sprite animation
+- `http://localhost:8080/sound-demo.html` - Sound synthesis library
+- `http://localhost:8080/music-demo.html` - Music generation system
 
-### 4. Open the Game
+## Current Development Status
 
-Navigate to `http://localhost:8000` in your browser.
+**Phase 1 (Core Architecture)** - ✅ Complete
+- All 8 core modules implemented
+- Fixed timestep game loop with interpolation
+- Event-driven state management
+
+**Phase 2 (Graphics and Sound)** - ✅ Complete
+- Vector graphics with EGA palette
+- Sprite animation with smooth movement
+- Tone.js sound synthesis
+- Music generation system
+
+**Phase 3 (Parser and Game Logic)** - 🚧 Ready to start
+- Text parser implementation
+- Game event system
+- Save/load functionality
 
 ## Creating Your First Adventure
 

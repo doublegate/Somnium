@@ -7,8 +7,8 @@ This master TODO tracks all development phases for the Somnium AI-driven adventu
 ## Phase Status Overview
 
 - [x] **Phase 1**: Core Architecture Implementation ✅ COMPLETE!
-- [ ] **Phase 2**: Graphics and Sound Systems (In Progress - 75% Complete)
-- [ ] **Phase 3**: Parser and Game Logic
+- [x] **Phase 2**: Graphics and Sound Systems ✅ COMPLETE!
+- [ ] **Phase 3**: Parser and Game Logic (Ready to start)
 - [ ] **Phase 4**: AI Integration
 - [ ] **Phase 5**: Polish and Testing
 
@@ -91,7 +91,7 @@ This master TODO tracks all development phases for the Somnium AI-driven adventu
 
 ## Phase 3: Parser and Game Logic
 
-**Status**: Not Started
+**Status**: Ready to Start
 
 ### Phase 3.1: Text Parser
 
@@ -175,10 +175,10 @@ This master TODO tracks all development phases for the Somnium AI-driven adventu
 
 ## Next Steps
 
-1. Complete Phase 2.4 - Music Generation
-2. Begin Phase 3 - Parser and Game Logic
-3. Create integration tests for graphics/sound
-4. Build interactive demo showcasing all Phase 2 features
+1. Begin Phase 3.1 - Text Parser Implementation
+2. Create comprehensive integration tests for all Phase 2 systems
+3. Start designing SCRIPT resource format for game logic
+4. Plan AI integration strategy for Phase 4
 
 ## Notes
 
