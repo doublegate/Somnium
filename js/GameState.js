@@ -32,6 +32,9 @@ export class GameState extends EventTarget {
     this.maxScore = 100;
     this.moves = 0;
     this.turns = 0;
+    this.health = 100;
+    this.maxHealth = 100;
+    this.worn = {};
 
     // State history for undo (optional feature)
     this.stateHistory = [];
@@ -674,13 +677,70 @@ export class GameState extends EventTarget {
     return {
       currentRoomId: this.currentRoomId,
       inventory: [...this.inventory],
+      worn: { ...this.worn },
       flags: { ...this.flags },
       objectStates: JSON.parse(JSON.stringify(this.objectStates)),
       exitStates: JSON.parse(JSON.stringify(this.exitStates)),
       score: this.score,
       moves: this.moves,
       turns: this.turns,
+      health: this.health,
       timestamp: Date.now(),
     };
   }
+
+  /**
+   * Wear an item
+   * @param {string} itemId - Item ID
+   */
+  wearItem(itemId) {
+    const item = this.getItem(itemId);
+    if (!item || !item.wearable) return;
+
+    const slot = item.slot || 'default';
+    if (!this.worn) this.worn = {};
+    this.worn[slot] = itemId;
+
+    // Move from inventory to worn
+    this.removeFromInventory(itemId);
+  }
+
+  /**
+   * Remove worn item
+   * @param {string} itemId - Item ID
+   */
+  removeWornItem(itemId) {
+    if (!this.worn) this.worn = {};
+
+    // Find which slot it's in
+    for (const [slot, wornId] of Object.entries(this.worn)) {
+      if (wornId === itemId) {
+        delete this.worn[slot];
+        this.addToInventory(itemId);
+        break;
+      }
+    }
+  }
+
+  /**
+   * Check if wearing an item
+   * @param {string} itemId - Item ID
+   * @returns {boolean} True if wearing
+   */
+  isWearing(itemId) {
+    if (!this.worn) return false;
+    return Object.values(this.worn).includes(itemId);
+  }
+
+  /**
+   * Get worn item in slot
+   * @param {string} slot - Equipment slot
+   * @returns {Object|null} Worn item
+   */
+  getWornItem(slot) {
+    if (!this.worn) return null;
+    const itemId = this.worn[slot];
+    return itemId ? this.getItem(itemId) : null;
+  }
+
 }

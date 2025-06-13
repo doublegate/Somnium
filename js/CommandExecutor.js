@@ -545,164 +545,891 @@ export class CommandExecutor {
     }
   }
 
+  findUseEvent(itemId, targetId) {
+    // Find scripted event for using item on target
+    const item = this.gameState.getItem(itemId);
+    if (item && item.useEvents) {
+      return item.useEvents.find(
+        (event) => event.target === targetId || event.target === 'any'
+      );
+    }
+    return null;
+  }
+
   // Stub handlers for remaining commands
-  async handleUse(_command) {
+  async handleUse(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
+    const object = this.gameState.getItem(objectRef.value);
+
+    // Check if object has specific use
+    if (!object.usable) {
+      return {
+        success: false,
+        text: `You can't use the ${object.name} here.`,
+        audio: 'error',
+      };
+    }
+
+    // Handle use with indirect object
+    if (command.indirectObject) {
+      const targetRef = command.resolvedIndirectObject;
+      if (!targetRef) {
+        return {
+          success: false,
+          text: `You don't see any ${command.indirectObject} here.`,
+          audio: 'error',
+        };
+      }
+
+      // Check for specific use combinations
+      const useEvent = this.findUseEvent(object.id, targetRef.value);
+      if (useEvent) {
+        return await this.eventManager.executeScriptedEvent(useEvent);
+      }
+
+      return {
+        success: false,
+        text: `You can't use the ${object.name} on that.`,
+        audio: 'error',
+      };
+    }
+
+    // Generic use
+    if (object.useMessage) {
+      return {
+        success: true,
+        text: object.useMessage,
+        audio: 'use',
+      };
+    }
+
     return {
       success: false,
-      text: 'Using objects is not yet implemented.',
+      text: `You need to specify what to use the ${object.name} on.`,
       audio: 'error',
     };
   }
 
-  async handleGive(_command) {
+  async handleGive(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
+    if (!command.indirectObject) {
+      return {
+        success: false,
+        text: 'Who do you want to give it to?',
+        audio: 'error',
+      };
+    }
+
+    const targetRef = command.resolvedIndirectObject;
+    if (!targetRef || targetRef.type !== 'npc') {
+      return {
+        success: false,
+        text: "They're not here.",
+        audio: 'error',
+      };
+    }
+
+    const npc = this.gameState.getNPC(targetRef.value);
+    const item = this.gameState.getItem(objectRef.value);
+
+    // Check if NPC accepts this item
+    if (npc.acceptsItems && npc.acceptsItems.includes(item.id)) {
+      this.gameState.removeFromInventory(item.id);
+      this.gameState.setFlag(`gave_${item.id}_to_${npc.id}`, true);
+
+      return {
+        success: true,
+        text: npc.acceptMessage || `${npc.name} takes the ${item.name}.`,
+        audio: 'give',
+        stateChanges: {
+          score: this.gameState.score + (item.givePoints || 0),
+        },
+      };
+    }
+
     return {
       success: false,
-      text: 'Giving is not yet implemented.',
+      text: npc.refuseMessage || `${npc.name} doesn't want that.`,
       audio: 'error',
     };
   }
 
-  async handlePut(_command) {
+  async handlePut(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
+    if (!command.indirectObject) {
+      return {
+        success: false,
+        text: 'Where do you want to put it?',
+        audio: 'error',
+      };
+    }
+
+    const targetRef = command.resolvedIndirectObject;
+    if (!targetRef) {
+      return {
+        success: false,
+        text: `I don't see any ${command.indirectObject} here.`,
+        audio: 'error',
+      };
+    }
+
+    const target = targetRef.object;
+    if (!target || target.type !== 'container') {
+      return {
+        success: false,
+        text: "You can't put anything in that.",
+        audio: 'error',
+      };
+    }
+
+    if (!target.open) {
+      return {
+        success: false,
+        text: `The ${target.name} is closed.`,
+        audio: 'error',
+      };
+    }
+
+    const item = this.gameState.getItem(objectRef.value);
+
+    // Move item to container
+    this.gameState.removeFromInventory(item.id);
+    if (!target.contents) target.contents = [];
+    target.contents.push(item.id);
+
     return {
-      success: false,
-      text: 'Putting objects is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You put the ${item.name} in the ${target.name}.`,
+      audio: 'put',
     };
   }
 
-  async handleSearch(_command) {
+  async handleSearch(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      // Search the room
+      const room = this.gameState.getCurrentRoom();
+      if (room.searchable) {
+        const searched = this.gameState.getFlag(`searched_${room.id}`);
+        if (!searched && room.hiddenItems) {
+          // Reveal hidden items
+          room.hiddenItems.forEach((itemId) => {
+            this.gameState.addToRoom(itemId);
+          });
+          this.gameState.setFlag(`searched_${room.id}`, true);
+
+          return {
+            success: true,
+            text: room.searchMessage || 'You find something!',
+            audio: 'discover',
+          };
+        }
+      }
+      return {
+        success: true,
+        text: "You don't find anything special.",
+        audio: null,
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't search that.",
+        audio: 'error',
+      };
+    }
+
+    // Search specific object
+    if (object.searchable) {
+      const searched = this.gameState.getObjectState(object.id, 'searched');
+      if (!searched && object.hiddenItems) {
+        // Reveal hidden items
+        object.hiddenItems.forEach((itemId) => {
+          if (object.type === 'container') {
+            if (!object.contents) object.contents = [];
+            object.contents.push(itemId);
+          } else {
+            this.gameState.addToRoom(itemId);
+          }
+        });
+        this.gameState.setObjectState(object.id, 'searched', true);
+
+        return {
+          success: true,
+          text:
+            object.searchMessage ||
+            `You search the ${object.name} and find something!`,
+          audio: 'discover',
+        };
+      }
+    }
+
     return {
-      success: false,
-      text: 'Searching is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You search the ${object.name} but find nothing special.`,
+      audio: null,
     };
   }
 
-  async handleRead(_command) {
+  async handleRead(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object || this.gameState.getItem(objectRef.value);
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't read that.",
+        audio: 'error',
+      };
+    }
+
+    // Check if readable
+    if (!object.readable) {
+      return {
+        success: false,
+        text: "There's nothing to read on that.",
+        audio: 'error',
+      };
+    }
+
+    // Return the text
     return {
-      success: false,
-      text: 'Reading is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: object.text || 'The text is too faded to read.',
+      audio: null,
+      stateChanges: object.readPoints
+        ? {
+            score: this.gameState.score + object.readPoints,
+          }
+        : null,
     };
   }
 
-  async handleOpen(_command) {
+  async handleOpen(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't open that.",
+        audio: 'error',
+      };
+    }
+
+    // Check if openable
+    if (object.type !== 'container' && object.type !== 'door') {
+      return {
+        success: false,
+        text: "That's not something you can open.",
+        audio: 'error',
+      };
+    }
+
+    // Check if already open
+    if (object.open) {
+      return {
+        success: false,
+        text: "It's already open.",
+        audio: 'error',
+      };
+    }
+
+    // Check if locked
+    if (object.locked) {
+      return {
+        success: false,
+        text: object.lockedMessage || "It's locked.",
+        audio: 'locked',
+      };
+    }
+
+    // Open it
+    this.gameState.setObjectState(object.id, 'open', true);
+
+    let text = `You open the ${object.name}.`;
+
+    // Reveal contents if container
+    if (
+      object.type === 'container' &&
+      object.contents &&
+      object.contents.length > 0
+    ) {
+      const items = object.contents.map((id) => {
+        const item = this.gameState.getItem(id);
+        return item?.name || id;
+      });
+      text += `\nInside you find: ${items.join(', ')}.`;
+    }
+
     return {
-      success: false,
-      text: 'Opening is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text,
+      audio: 'open',
     };
   }
 
-  async handleClose(_command) {
+  async handleClose(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't close that.",
+        audio: 'error',
+      };
+    }
+
+    // Check if closeable
+    if (object.type !== 'container' && object.type !== 'door') {
+      return {
+        success: false,
+        text: "That's not something you can close.",
+        audio: 'error',
+      };
+    }
+
+    // Check if already closed
+    if (!object.open) {
+      return {
+        success: false,
+        text: "It's already closed.",
+        audio: 'error',
+      };
+    }
+
+    // Close it
+    this.gameState.setObjectState(object.id, 'open', false);
+
     return {
-      success: false,
-      text: 'Closing is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You close the ${object.name}.`,
+      audio: 'close',
     };
   }
 
-  async handleUnlock(_command) {
+  async handleUnlock(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object || !object.locked) {
+      return {
+        success: false,
+        text: "That's not locked.",
+        audio: 'error',
+      };
+    }
+
+    // Need a key
+    if (!object.keyId) {
+      return {
+        success: false,
+        text: "You can't unlock that.",
+        audio: 'error',
+      };
+    }
+
+    // Check if player has the key
+    if (!this.gameState.hasItem(object.keyId)) {
+      return {
+        success: false,
+        text: "You don't have the right key.",
+        audio: 'error',
+      };
+    }
+
+    // Unlock it
+    this.gameState.setObjectState(object.id, 'locked', false);
+
     return {
-      success: false,
-      text: 'Unlocking is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You unlock the ${object.name}.`,
+      audio: 'unlock',
+      stateChanges: {
+        score: this.gameState.score + (object.unlockPoints || 0),
+      },
     };
   }
 
-  async handleTalk(_command) {
+  async handleTalk(command) {
+    if (!command.indirectObject) {
+      return {
+        success: false,
+        text: 'Who do you want to talk to?',
+        audio: 'error',
+      };
+    }
+
+    const npcRef = command.resolvedIndirectObject;
+    if (!npcRef || npcRef.type !== 'npc') {
+      return {
+        success: false,
+        text: "They're not here.",
+        audio: 'error',
+      };
+    }
+
+    const npc = this.gameState.getNPC(npcRef.value);
+    if (!npc) {
+      return {
+        success: false,
+        text: "You can't talk to that.",
+        audio: 'error',
+      };
+    }
+
+    // Get appropriate dialogue
+    let dialogue = npc.defaultDialogue || `${npc.name} has nothing to say.`;
+
+    // Check for conditional dialogue
+    if (npc.dialogues) {
+      for (const d of npc.dialogues) {
+        if (!d.condition || this.eventManager.checkCondition(d.condition)) {
+          dialogue = d.text;
+
+          // Execute any associated actions
+          if (d.actions) {
+            for (const action of d.actions) {
+              this.eventManager.executeAction(action);
+            }
+          }
+          break;
+        }
+      }
+    }
+
     return {
-      success: false,
-      text: 'Talking is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `${npc.name}: "${dialogue}"`,
+      audio: 'talk',
     };
   }
 
-  async handleAsk(_command) {
+  async handleAsk(command) {
+    if (!command.indirectObject) {
+      return {
+        success: false,
+        text: 'Who do you want to ask?',
+        audio: 'error',
+      };
+    }
+
+    const npcRef = command.resolvedIndirectObject;
+    if (!npcRef || npcRef.type !== 'npc') {
+      return {
+        success: false,
+        text: "They're not here.",
+        audio: 'error',
+      };
+    }
+
+    const npc = this.gameState.getNPC(npcRef.value);
+    const topic = command.directObject || 'general';
+
+    // Look for topic-specific response
+    if (npc.topics && npc.topics[topic]) {
+      return {
+        success: true,
+        text: `${npc.name}: "${npc.topics[topic]}"`,
+        audio: 'talk',
+      };
+    }
+
+    // Default response
     return {
-      success: false,
-      text: 'Asking is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `${npc.name}: "I don't know about that."`,
+      audio: 'talk',
     };
   }
 
-  async handleTell(_command) {
+  async handleTell(command) {
+    if (!command.indirectObject) {
+      return {
+        success: false,
+        text: 'Who do you want to tell?',
+        audio: 'error',
+      };
+    }
+
+    const npcRef = command.resolvedIndirectObject;
+    if (!npcRef || npcRef.type !== 'npc') {
+      return {
+        success: false,
+        text: "They're not here.",
+        audio: 'error',
+      };
+    }
+
+    const topic = command.directObject;
+    if (!topic) {
+      return {
+        success: false,
+        text: 'What do you want to tell them about?',
+        audio: 'error',
+      };
+    }
+
+    const npc = this.gameState.getNPC(npcRef.value);
+
     return {
-      success: false,
-      text: 'Telling is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You tell ${npc.name} about ${topic}. They nod thoughtfully.`,
+      audio: 'talk',
     };
   }
 
   async handleYell(_command) {
     return {
+      success: true,
+      text: 'You yell loudly. Your voice echoes in the distance.',
+      audio: 'yell',
+    };
+  }
+
+  async handlePush(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't push that.",
+        audio: 'error',
+      };
+    }
+
+    if (object.pushable) {
+      return {
+        success: true,
+        text: object.pushMessage || `You push the ${object.name}.`,
+        audio: 'push',
+      };
+    }
+
+    return {
       success: false,
-      text: 'Yelling is not yet implemented.',
+      text: "It won't budge.",
       audio: 'error',
     };
   }
 
-  async handlePush(_command) {
+  async handlePull(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't pull that.",
+        audio: 'error',
+      };
+    }
+
+    if (object.pullable) {
+      return {
+        success: true,
+        text: object.pullMessage || `You pull the ${object.name}.`,
+        audio: 'pull',
+      };
+    }
+
     return {
       success: false,
-      text: 'Pushing is not yet implemented.',
+      text: "It won't move.",
       audio: 'error',
     };
   }
 
-  async handlePull(_command) {
+  async handleTurn(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't turn that.",
+        audio: 'error',
+      };
+    }
+
+    if (object.turnable) {
+      // Toggle state
+      const currentState =
+        this.gameState.getObjectState(object.id, 'turned') || false;
+      this.gameState.setObjectState(object.id, 'turned', !currentState);
+
+      return {
+        success: true,
+        text: object.turnMessage || `You turn the ${object.name}.`,
+        audio: 'turn',
+      };
+    }
+
     return {
       success: false,
-      text: 'Pulling is not yet implemented.',
+      text: "It doesn't turn.",
       audio: 'error',
     };
   }
 
-  async handleTurn(_command) {
+  async handleTouch(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: "I don't see that here.",
+        audio: 'error',
+      };
+    }
+
+    const object = objectRef.object;
+    if (!object) {
+      return {
+        success: false,
+        text: "You can't touch that.",
+        audio: 'error',
+      };
+    }
+
     return {
-      success: false,
-      text: 'Turning is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text:
+        object.touchMessage ||
+        object.description ||
+        `You touch the ${object.name}.`,
+      audio: null,
     };
   }
 
-  async handleTouch(_command) {
+  async handleEat(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
+    const item = this.gameState.getItem(objectRef.value);
+    if (!item.edible) {
+      return {
+        success: false,
+        text: "That's not edible.",
+        audio: 'error',
+      };
+    }
+
+    // Consume the item
+    this.gameState.removeFromInventory(item.id);
+
+    // Apply effects
+    const changes = {};
+    if (item.healthRestore) {
+      const newHealth = Math.min(
+        this.gameState.health + item.healthRestore,
+        this.gameState.maxHealth
+      );
+      changes.health = newHealth;
+    }
+
     return {
-      success: false,
-      text: 'Touching is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: item.eatMessage || `You eat the ${item.name}.`,
+      audio: 'eat',
+      stateChanges: changes,
     };
   }
 
-  async handleEat(_command) {
+  async handleDrink(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
+    const item = this.gameState.getItem(objectRef.value);
+    if (!item.drinkable) {
+      return {
+        success: false,
+        text: "You can't drink that.",
+        audio: 'error',
+      };
+    }
+
+    // Consume the item
+    this.gameState.removeFromInventory(item.id);
+
+    // Apply effects
+    const changes = {};
+    if (item.healthRestore) {
+      const newHealth = Math.min(
+        this.gameState.health + item.healthRestore,
+        this.gameState.maxHealth
+      );
+      changes.health = newHealth;
+    }
+
     return {
-      success: false,
-      text: 'Eating is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: item.drinkMessage || `You drink the ${item.name}.`,
+      audio: 'drink',
+      stateChanges: changes,
     };
   }
 
-  async handleDrink(_command) {
+  async handleWear(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
+    const item = this.gameState.getItem(objectRef.value);
+    if (!item.wearable) {
+      return {
+        success: false,
+        text: "You can't wear that.",
+        audio: 'error',
+      };
+    }
+
+    // Check if already wearing something in that slot
+    if (item.slot) {
+      const currentWorn = this.gameState.getWornItem(item.slot);
+      if (currentWorn) {
+        return {
+          success: false,
+          text: `You're already wearing ${currentWorn.name}.`,
+          audio: 'error',
+        };
+      }
+    }
+
+    // Wear the item
+    this.gameState.wearItem(item.id);
+
     return {
-      success: false,
-      text: 'Drinking is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You put on the ${item.name}.`,
+      audio: 'wear',
+      stateChanges: item.wearPoints
+        ? {
+            score: this.gameState.score + item.wearPoints,
+          }
+        : null,
     };
   }
 
-  async handleWear(_command) {
-    return {
-      success: false,
-      text: 'Wearing is not yet implemented.',
-      audio: 'error',
-    };
-  }
+  async handleRemove(command) {
+    const objectRef = command.resolvedDirectObject;
+    if (!objectRef) {
+      return {
+        success: false,
+        text: 'What do you want to remove?',
+        audio: 'error',
+      };
+    }
 
-  async handleRemove(_command) {
+    const itemId = objectRef.value;
+    if (!this.gameState.isWearing(itemId)) {
+      return {
+        success: false,
+        text: "You're not wearing that.",
+        audio: 'error',
+      };
+    }
+
+    const item = this.gameState.getItem(itemId);
+    this.gameState.removeWornItem(itemId);
+
     return {
-      success: false,
-      text: 'Removing worn items is not yet implemented.',
-      audio: 'error',
+      success: true,
+      text: `You remove the ${item.name}.`,
+      audio: 'remove',
     };
   }
 
