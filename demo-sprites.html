@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium Sprite Animation Demo - Phase 2.2</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background: #222;
+        color: #fff;
+        font-family: monospace;
+      }
+      .demo-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+      .demo-scene {
+        border: 2px solid #555;
+        position: relative;
+      }
+      canvas {
+        display: block;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+      }
+      .controls {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .control-group {
+        margin: 15px 0;
+        padding: 10px;
+        border: 1px solid #444;
+        background: #333;
+      }
+      button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-family: monospace;
+        background: #444;
+        color: #fff;
+        border: 1px solid #666;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        background: #555;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      button.active {
+        background: #55AA55;
+        border-color: #77CC77;
+      }
+      h2 {
+        text-align: center;
+        color: #55FF55;
+        margin: 10px 0;
+      }
+      .info {
+        text-align: center;
+        margin: 10px 0;
+        color: #AAAAAA;
+      }
+      .status {
+        font-size: 12px;
+        color: #55FFFF;
+        margin-top: 10px;
+      }
+      input[type="range"] {
+        width: 200px;
+        vertical-align: middle;
+      }
+      label {
+        display: inline-block;
+        width: 150px;
+        text-align: right;
+        margin-right: 10px;
+      }
+      .keyboard-info {
+        background: #444;
+        padding: 10px;
+        margin: 10px auto;
+        width: fit-content;
+        border: 1px solid #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 style="text-align: center; color: #FFFF55">
+      Somnium Sprite Animation & Movement Demo
+    </h1>
+    <p class="info">Phase 2.2 - VIEW Resources, Animation, and Movement</p>
+
+    <div class="demo-container">
+      <div class="demo-scene">
+        <canvas id="gameCanvas" width="640" height="400"></canvas>
+      </div>
+    </div>
+
+    <div class="keyboard-info">
+      <strong>Keyboard Controls:</strong> Arrow Keys = Move Character | 
+      Space = Change Animation | R = Reset Position | 
+      C = Toggle Collision | M = Mirror Sprite
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <h2>Character Selection</h2>
+        <button onclick="selectCharacter('hero')">Hero</button>
+        <button onclick="selectCharacter('guard')">Guard</button>
+        <button onclick="selectCharacter('creature')">Creature</button>
+        <button onclick="selectCharacter('bird')">Bird</button>
+      </div>
+
+      <div class="control-group">
+        <h2>Animation Controls</h2>
+        <button onclick="setAnimation('idle')">Idle</button>
+        <button onclick="setAnimation('walk')">Walk</button>
+        <button onclick="setAnimation('talk')">Talk</button>
+        <button onclick="setAnimation('special')">Special</button>
+        <br />
+        <label>Animation Speed:</label>
+        <input
+          type="range"
+          id="animSpeed"
+          min="0.1"
+          max="3.0"
+          step="0.1"
+          value="1.0"
+          oninput="updateAnimationSpeed(this.value)"
+        />
+        <span id="animSpeedValue">1.0x</span>
+      </div>
+
+      <div class="control-group">
+        <h2>Movement & Effects</h2>
+        <button onclick="moveToRandom()">Random Movement</button>
+        <button onclick="moveInCircle()">Circle Pattern</button>
+        <button onclick="moveInSquare()">Square Pattern</button>
+        <button onclick="stopMovement()">Stop</button>
+        <br />
+        <button onclick="toggleEffect('ghost')" id="ghostBtn">Ghost</button>
+        <button onclick="toggleEffect('inverted')" id="invertedBtn">
+          Inverted
+        </button>
+        <button onclick="toggleMirror()" id="mirrorBtn">Mirror</button>
+        <button onclick="changeScale(0.8)">Smaller</button>
+        <button onclick="changeScale(1.0)">Normal</button>
+        <button onclick="changeScale(1.5)">Larger</button>
+      </div>
+
+      <div class="control-group">
+        <h2>Scene & Debug</h2>
+        <button onclick="addObstacles()">Add Obstacles</button>
+        <button onclick="addNPCs()">Add NPCs</button>
+        <button onclick="clearSprites()">Clear All Sprites</button>
+        <button onclick="toggleDebug()" id="debugBtn">Debug Mode</button>
+        <button onclick="toggleCollisions()" id="collisionBtn" class="active">
+          Collisions ON
+        </button>
+      </div>
+
+      <div class="status" id="status">
+        Status: Ready | Sprites: 0 | FPS: 60
+      </div>
+    </div>
+
+    <script type="module">
+      import { SceneRenderer } from './js/SceneRenderer.js';
+      import { ViewManager, ViewEffects } from './js/ViewManager.js';
+
+      const canvas = document.getElementById('gameCanvas');
+      const renderer = new SceneRenderer(canvas);
+      const viewManager = new ViewManager(renderer);
+
+      // Game state
+      let selectedView = null;
+      let animationFrame = null;
+      let lastTime = 0;
+      let fps = 60;
+      let fpsFrames = 0;
+      let fpsTime = 0;
+      let currentEffects = 0;
+      let keyboardMovement = { x: 0, y: 0 };
+      let moveSpeed = 100; // pixels per second
+
+      // Make functions available globally
+      window.renderer = renderer;
+      window.viewManager = viewManager;
+
+      // Create sample VIEW data for different character types
+      const createHeroView = () => ({
+        description: 'Player character',
+        x: 160,
+        y: 100,
+        loops: [
+          {
+            name: 'idle',
+            cells: [
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 500,
+                pixels: generateHeroPixels(0),
+              },
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 500,
+                pixels: generateHeroPixels(1),
+              },
+            ],
+          },
+          {
+            name: 'walk',
+            cells: [
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 150,
+                pixels: generateHeroWalkPixels(0),
+              },
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 150,
+                pixels: generateHeroWalkPixels(1),
+              },
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 150,
+                pixels: generateHeroWalkPixels(2),
+              },
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 150,
+                pixels: generateHeroWalkPixels(3),
+              },
+            ],
+          },
+          {
+            name: 'talk',
+            cells: [
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 200,
+                pixels: generateHeroTalkPixels(0),
+              },
+              {
+                width: 16,
+                height: 24,
+                anchorX: 8,
+                anchorY: 24,
+                duration: 200,
+                pixels: generateHeroTalkPixels(1),
+              },
+            ],
+          },
+          {
+            name: 'special',
+            cells: [
+              {
+                width: 24,
+                height: 24,
+                anchorX: 12,
+                anchorY: 24,
+                duration: 100,
+                pixels: generateHeroSpecialPixels(0),
+              },
+              {
+                width: 24,
+                height: 24,
+                anchorX: 12,
+                anchorY: 24,
+                duration: 100,
+                pixels: generateHeroSpecialPixels(1),
+              },
+              {
+                width: 24,
+                height: 24,
+                anchorX: 12,
+                anchorY: 24,
+                duration: 100,
+                pixels: generateHeroSpecialPixels(2),
+              },
+            ],
+            repeat: false,
+          },
+        ],
+      });
+
+      // Pixel data generators for different sprites
+      function generateHeroPixels(frame) {
+        const pixels = [];
+        const skinColor = 14; // Yellow (skin tone)
+        const hairColor = 6; // Brown
+        const shirtColor = 12; // Red
+        const pantsColor = 1; // Blue
+
+        // Head
+        for (let y = 0; y < 6; y++) {
+          for (let x = 5; x < 11; x++) {
+            if (
+              (y === 0 && x >= 6 && x <= 9) || // Top of head
+              (y === 1 && x >= 5 && x <= 10) ||
+              (y >= 2 && y <= 4 && x >= 5 && x <= 10)
+            ) {
+              pixels.push([x, y, y < 2 ? hairColor : skinColor]);
+            }
+          }
+        }
+
+        // Eyes (blink on frame 1)
+        if (frame === 0) {
+          pixels.push([6, 3, 0]); // Left eye
+          pixels.push([9, 3, 0]); // Right eye
+        }
+
+        // Body
+        for (let y = 6; y < 16; y++) {
+          for (let x = 4; x < 12; x++) {
+            if (x >= 5 && x <= 10) {
+              pixels.push([x, y, shirtColor]);
+            }
+          }
+        }
+
+        // Arms
+        pixels.push([4, 8, skinColor]);
+        pixels.push([11, 8, skinColor]);
+        pixels.push([4, 9, skinColor]);
+        pixels.push([11, 9, skinColor]);
+
+        // Legs
+        for (let y = 16; y < 24; y++) {
+          pixels.push([6, y, pantsColor]);
+          pixels.push([7, y, pantsColor]);
+          pixels.push([8, y, pantsColor]);
+          pixels.push([9, y, pantsColor]);
+        }
+
+        return pixels;
+      }
+
+      function generateHeroWalkPixels(frame) {
+        const pixels = generateHeroPixels(0);
+
+        // Animate legs for walking
+        const legOffset = frame % 2 === 0 ? -1 : 1;
+        const newLegPixels = [];
+
+        // Filter out old leg pixels and add new ones
+        const filteredPixels = pixels.filter((p) => p[1] < 16);
+
+        // Add animated legs
+        for (let y = 16; y < 24; y++) {
+          const offset = y > 20 ? legOffset : 0;
+          newLegPixels.push([6 + offset, y, 1]);
+          newLegPixels.push([7, y, 1]);
+          newLegPixels.push([8, y, 1]);
+          newLegPixels.push([9 - offset, y, 1]);
+        }
+
+        // Animate arms
+        const armFrame = Math.floor(frame / 2);
+        if (armFrame === 0) {
+          filteredPixels.push([4, 7, 14]); // Arm forward
+          filteredPixels.push([11, 9, 14]); // Arm back
+        } else {
+          filteredPixels.push([4, 9, 14]); // Arm back
+          filteredPixels.push([11, 7, 14]); // Arm forward
+        }
+
+        return filteredPixels.concat(newLegPixels);
+      }
+
+      function generateHeroTalkPixels(frame) {
+        const pixels = generateHeroPixels(0);
+
+        // Animate mouth
+        if (frame === 1) {
+          pixels.push([7, 5, 0]); // Open mouth
+          pixels.push([8, 5, 0]);
+        }
+
+        return pixels;
+      }
+
+      function generateHeroSpecialPixels(frame) {
+        const pixels = [];
+        const colors = [14, 12, 10]; // Yellow, Red, Green
+
+        // Create a spinning effect
+        const centerX = 12;
+        const centerY = 12;
+        const radius = 10;
+
+        for (let angle = 0; angle < 360; angle += 30) {
+          const rotatedAngle = angle + frame * 120;
+          const x = Math.round(
+            centerX + Math.cos((rotatedAngle * Math.PI) / 180) * radius
+          );
+          const y = Math.round(
+            centerY + Math.sin((rotatedAngle * Math.PI) / 180) * radius
+          );
+
+          // Draw a small burst at each point
+          for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+              if (x + dx >= 0 && x + dx < 24 && y + dy >= 0 && y + dy < 24) {
+                pixels.push([
+                  x + dx,
+                  y + dy,
+                  colors[Math.floor(angle / 120) % 3],
+                ]);
+              }
+            }
+          }
+        }
+
+        return pixels;
+      }
+
+      // Initialize scene
+      function initScene() {
+        // Draw a simple background
+        const roomGraphics = {
+          backgroundColor: '#00AA00',
+          primitives: [
+            // Sky
+            {
+              type: 'rect',
+              dims: [0, 0, 320, 100],
+              color: '#55FFFF',
+            },
+            // Ground
+            {
+              type: 'rect',
+              dims: [0, 100, 320, 100],
+              color: '#00AA00',
+            },
+            // Path
+            {
+              type: 'polygon',
+              points: [
+                [140, 200],
+                [180, 200],
+                [200, 100],
+                [120, 100],
+              ],
+              color: '#AA5500',
+            },
+            // Some grass texture
+            {
+              type: 'dithered_gradient',
+              dims: [0, 100, 320, 100],
+              color1: '#00AA00',
+              color2: '#55FF55',
+              pattern: 2,
+            },
+          ],
+        };
+
+        renderer.renderRoom(roomGraphics, 'demo_scene');
+
+        // Create initial hero sprite
+        selectCharacter('hero');
+
+        // Start game loop
+        requestAnimationFrame(gameLoop);
+      }
+
+      // Game loop
+      function gameLoop(currentTime) {
+        const deltaTime = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
+
+        // Update FPS counter
+        fpsFrames++;
+        fpsTime += deltaTime;
+        if (fpsTime >= 1.0) {
+          fps = Math.round(fpsFrames / fpsTime);
+          fpsFrames = 0;
+          fpsTime = 0;
+          updateStatus();
+        }
+
+        // Handle keyboard movement
+        if (selectedView && (keyboardMovement.x || keyboardMovement.y)) {
+          const view = viewManager.getView(selectedView);
+          if (view) {
+            const newX = view.x + keyboardMovement.x * moveSpeed * deltaTime;
+            const newY = view.y + keyboardMovement.y * moveSpeed * deltaTime;
+
+            // Clamp to screen bounds
+            const clampedX = Math.max(8, Math.min(312, newX));
+            const clampedY = Math.max(24, Math.min(190, newY));
+
+            viewManager.setPosition(selectedView, clampedX, clampedY);
+            viewManager.updateViewPriority(selectedView);
+
+            // Check for collisions
+            const collisions = viewManager.getCollisions(selectedView);
+            if (collisions.length > 0) {
+              console.log('Collisions detected:', collisions);
+            }
+          }
+        }
+
+        // Update animations
+        viewManager.updateAnimations(deltaTime);
+
+        // Update positions (fixed timestep)
+        viewManager.updatePositions(deltaTime);
+
+        // Clear and redraw
+        renderer.renderRoom(
+          {
+            backgroundColor: '#00AA00',
+            primitives: [
+              { type: 'rect', dims: [0, 0, 320, 100], color: '#55FFFF' },
+              { type: 'rect', dims: [0, 100, 320, 100], color: '#00AA00' },
+              {
+                type: 'polygon',
+                points: [
+                  [140, 200],
+                  [180, 200],
+                  [200, 100],
+                  [120, 100],
+                ],
+                color: '#AA5500',
+              },
+              {
+                type: 'dithered_gradient',
+                dims: [0, 100, 320, 100],
+                color1: '#00AA00',
+                color2: '#55FF55',
+                pattern: 2,
+              },
+            ],
+          },
+          'demo_scene'
+        );
+
+        // Render all sprites with interpolation
+        const interpolation = deltaTime / 0.016; // 60 FPS target
+        viewManager.renderAll(Math.min(interpolation, 1));
+
+        animationFrame = requestAnimationFrame(gameLoop);
+      }
+
+      // Character selection
+      window.selectCharacter = function (type) {
+        // Remove existing character if any
+        if (selectedView) {
+          viewManager.removeView(selectedView);
+        }
+
+        let viewData;
+        switch (type) {
+          case 'hero':
+            viewData = createHeroView();
+            break;
+          case 'guard':
+            viewData = createGuardView();
+            break;
+          case 'creature':
+            viewData = createCreatureView();
+            break;
+          case 'bird':
+            viewData = createBirdView();
+            break;
+        }
+
+        selectedView = type + '_main';
+        viewManager.createView(selectedView, viewData);
+        updateStatus();
+      };
+
+      // Animation controls
+      window.setAnimation = function (animName) {
+        if (selectedView) {
+          viewManager.setLoop(selectedView, animName, (id, loop) => {
+            console.log(`Animation ${loop} completed for ${id}`);
+          });
+        }
+      };
+
+      window.updateAnimationSpeed = function (value) {
+        viewManager.setAnimationSpeed(parseFloat(value));
+        document.getElementById('animSpeedValue').textContent = value + 'x';
+      };
+
+      // Movement patterns
+      window.moveToRandom = function () {
+        if (selectedView) {
+          const x = Math.random() * 280 + 20;
+          const y = Math.random() * 150 + 50;
+          viewManager.moveView(selectedView, x, y, 2.0);
+          viewManager.setLoop(selectedView, 'walk');
+          setTimeout(() => {
+            viewManager.setLoop(selectedView, 'idle');
+          }, 2000);
+        }
+      };
+
+      window.moveInCircle = function () {
+        if (!selectedView) return;
+
+        let angle = 0;
+        const centerX = 160;
+        const centerY = 120;
+        const radius = 60;
+
+        const circleInterval = setInterval(() => {
+          angle += 0.1;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius * 0.5;
+
+          viewManager.setPosition(selectedView, x, y);
+          viewManager.updateViewPriority(selectedView);
+          viewManager.setMirrored(selectedView, x < centerX);
+
+          if (angle > Math.PI * 2) {
+            clearInterval(circleInterval);
+            viewManager.setLoop(selectedView, 'idle');
+          }
+        }, 50);
+
+        viewManager.setLoop(selectedView, 'walk');
+      };
+
+      window.moveInSquare = function () {
+        if (!selectedView) return;
+
+        const points = [
+          { x: 60, y: 60 },
+          { x: 260, y: 60 },
+          { x: 260, y: 140 },
+          { x: 60, y: 140 },
+        ];
+        let currentPoint = 0;
+
+        function moveToNext() {
+          if (currentPoint >= points.length) {
+            viewManager.setLoop(selectedView, 'idle');
+            return;
+          }
+
+          const point = points[currentPoint];
+          viewManager.moveView(selectedView, point.x, point.y, 1.5);
+
+          // Face the right direction
+          if (currentPoint < points.length - 1) {
+            const nextPoint = points[currentPoint + 1];
+            viewManager.setMirrored(selectedView, nextPoint.x < point.x);
+          }
+
+          currentPoint++;
+          setTimeout(moveToNext, 1600);
+        }
+
+        viewManager.setLoop(selectedView, 'walk');
+        moveToNext();
+      };
+
+      window.stopMovement = function () {
+        if (selectedView) {
+          const view = viewManager.getView(selectedView);
+          if (view) {
+            viewManager.setPosition(selectedView, view.x, view.y);
+            viewManager.setLoop(selectedView, 'idle');
+          }
+        }
+      };
+
+      // Effects
+      window.toggleEffect = function (effect) {
+        if (!selectedView) return;
+
+        const btn =
+          effect === 'ghost'
+            ? document.getElementById('ghostBtn')
+            : document.getElementById('invertedBtn');
+
+        if (effect === 'ghost') {
+          currentEffects ^= ViewEffects.GHOST;
+          btn.classList.toggle('active');
+        } else if (effect === 'inverted') {
+          currentEffects ^= ViewEffects.INVERTED;
+          btn.classList.toggle('active');
+        }
+
+        viewManager.setEffectMask(selectedView, currentEffects);
+      };
+
+      window.toggleMirror = function () {
+        if (!selectedView) return;
+
+        const view = viewManager.getView(selectedView);
+        if (view) {
+          viewManager.setMirrored(selectedView, !view.mirrored);
+          document
+            .getElementById('mirrorBtn')
+            .classList.toggle('active', view.mirrored);
+        }
+      };
+
+      window.changeScale = function (scale) {
+        if (selectedView) {
+          viewManager.setScale(selectedView, scale);
+        }
+      };
+
+      // Scene management
+      window.addObstacles = function () {
+        // Add some static obstacles
+        const obstacles = [
+          { x: 80, y: 120, type: 'rock' },
+          { x: 240, y: 100, type: 'tree' },
+          { x: 160, y: 160, type: 'bush' },
+        ];
+
+        obstacles.forEach((obs, i) => {
+          const viewData = createObstacleView(obs.type);
+          viewData.x = obs.x;
+          viewData.y = obs.y;
+          viewManager.createView(`obstacle_${i}`, viewData);
+        });
+      };
+
+      window.addNPCs = function () {
+        // Add some NPCs
+        const npcs = [
+          { x: 200, y: 80, type: 'guard' },
+          { x: 120, y: 140, type: 'creature' },
+          { x: 280, y: 60, type: 'bird' },
+        ];
+
+        npcs.forEach((npc, i) => {
+          let viewData;
+          switch (npc.type) {
+            case 'guard':
+              viewData = createGuardView();
+              break;
+            case 'creature':
+              viewData = createCreatureView();
+              break;
+            case 'bird':
+              viewData = createBirdView();
+              break;
+          }
+          viewData.x = npc.x;
+          viewData.y = npc.y;
+          const id = `npc_${npc.type}_${i}`;
+          viewManager.createView(id, viewData);
+
+          // Make them idle or patrol
+          if (npc.type === 'bird') {
+            // Birds fly in small circles
+            let angle = 0;
+            setInterval(() => {
+              angle += 0.05;
+              const x = npc.x + Math.cos(angle) * 20;
+              const y = npc.y + Math.sin(angle) * 10;
+              viewManager.setPosition(id, x, y);
+            }, 50);
+          } else {
+            // Others just animate
+            viewManager.setLoop(id, 'idle');
+          }
+        });
+      };
+
+      window.clearSprites = function () {
+        const allViews = viewManager.getAllViewIds();
+        allViews.forEach((id) => {
+          if (id !== selectedView) {
+            viewManager.removeView(id);
+          }
+        });
+        updateStatus();
+      };
+
+      window.toggleDebug = function () {
+        renderer.debugMode = !renderer.debugMode;
+        document
+          .getElementById('debugBtn')
+          .classList.toggle('active', renderer.debugMode);
+      };
+
+      window.toggleCollisions = function () {
+        viewManager.collisionEnabled = !viewManager.collisionEnabled;
+        document
+          .getElementById('collisionBtn')
+          .classList.toggle('active', viewManager.collisionEnabled);
+        document.getElementById('collisionBtn').textContent =
+          'Collisions ' + (viewManager.collisionEnabled ? 'ON' : 'OFF');
+      };
+
+      // Status update
+      function updateStatus() {
+        const viewCount = viewManager.getAllViewIds().length;
+        document.getElementById(
+          'status'
+        ).textContent = `Status: Running | Sprites: ${viewCount} | FPS: ${fps}`;
+      }
+
+      // Keyboard controls
+      document.addEventListener('keydown', (e) => {
+        switch (e.key) {
+          case 'ArrowLeft':
+            keyboardMovement.x = -1;
+            if (selectedView) {
+              viewManager.setLoop(selectedView, 'walk');
+              viewManager.setMirrored(selectedView, true);
+            }
+            e.preventDefault();
+            break;
+          case 'ArrowRight':
+            keyboardMovement.x = 1;
+            if (selectedView) {
+              viewManager.setLoop(selectedView, 'walk');
+              viewManager.setMirrored(selectedView, false);
+            }
+            e.preventDefault();
+            break;
+          case 'ArrowUp':
+            keyboardMovement.y = -1;
+            if (selectedView) viewManager.setLoop(selectedView, 'walk');
+            e.preventDefault();
+            break;
+          case 'ArrowDown':
+            keyboardMovement.y = 1;
+            if (selectedView) viewManager.setLoop(selectedView, 'walk');
+            e.preventDefault();
+            break;
+          case ' ':
+            // Cycle through animations
+            if (selectedView) {
+              const view = viewManager.getView(selectedView);
+              if (view) {
+                const loops = view.data.loops;
+                const currentLoop = view.currentLoop;
+                const nextLoop = (currentLoop + 1) % loops.length;
+                viewManager.setLoop(selectedView, nextLoop);
+              }
+            }
+            e.preventDefault();
+            break;
+          case 'r':
+          case 'R':
+            // Reset position
+            if (selectedView) {
+              viewManager.setPosition(selectedView, 160, 100);
+              viewManager.setLoop(selectedView, 'idle');
+            }
+            break;
+          case 'c':
+          case 'C':
+            toggleCollisions();
+            break;
+          case 'm':
+          case 'M':
+            toggleMirror();
+            break;
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        switch (e.key) {
+          case 'ArrowLeft':
+          case 'ArrowRight':
+            keyboardMovement.x = 0;
+            if (selectedView && keyboardMovement.y === 0) {
+              viewManager.setLoop(selectedView, 'idle');
+            }
+            break;
+          case 'ArrowUp':
+          case 'ArrowDown':
+            keyboardMovement.y = 0;
+            if (selectedView && keyboardMovement.x === 0) {
+              viewManager.setLoop(selectedView, 'idle');
+            }
+            break;
+        }
+      });
+
+      // Additional view creators
+      function createGuardView() {
+        return {
+          description: 'Castle guard',
+          x: 160,
+          y: 100,
+          loops: [
+            {
+              name: 'idle',
+              cells: [
+                {
+                  width: 16,
+                  height: 28,
+                  anchorX: 8,
+                  anchorY: 28,
+                  duration: 800,
+                  pixels: generateGuardPixels(0),
+                },
+                {
+                  width: 16,
+                  height: 28,
+                  anchorX: 8,
+                  anchorY: 28,
+                  duration: 800,
+                  pixels: generateGuardPixels(1),
+                },
+              ],
+            },
+            {
+              name: 'walk',
+              cells: [
+                {
+                  width: 16,
+                  height: 28,
+                  anchorX: 8,
+                  anchorY: 28,
+                  duration: 200,
+                  pixels: generateGuardWalkPixels(0),
+                },
+                {
+                  width: 16,
+                  height: 28,
+                  anchorX: 8,
+                  anchorY: 28,
+                  duration: 200,
+                  pixels: generateGuardWalkPixels(1),
+                },
+              ],
+            },
+            {
+              name: 'talk',
+              cells: [
+                {
+                  width: 16,
+                  height: 28,
+                  anchorX: 8,
+                  anchorY: 28,
+                  duration: 300,
+                  pixels: generateGuardPixels(0),
+                },
+              ],
+            },
+            {
+              name: 'special',
+              cells: [
+                {
+                  width: 20,
+                  height: 28,
+                  anchorX: 10,
+                  anchorY: 28,
+                  duration: 400,
+                  pixels: generateGuardAttackPixels(),
+                },
+              ],
+              repeat: false,
+            },
+          ],
+        };
+      }
+
+      function generateGuardPixels(frame) {
+        const pixels = [];
+        const skinColor = 14;
+        const armorColor = 7; // Light gray
+        const helmetColor = 8; // Dark gray
+
+        // Helmet
+        for (let y = 0; y < 8; y++) {
+          for (let x = 4; x < 12; x++) {
+            if (y < 6 && x >= 5 && x <= 10) {
+              pixels.push([x, y, helmetColor]);
+            }
+          }
+        }
+
+        // Face
+        for (let y = 6; y < 10; y++) {
+          for (let x = 6; x < 10; x++) {
+            pixels.push([x, y, skinColor]);
+          }
+        }
+
+        // Eyes
+        if (frame === 0) {
+          pixels.push([6, 7, 0]);
+          pixels.push([9, 7, 0]);
+        }
+
+        // Armor body
+        for (let y = 10; y < 20; y++) {
+          for (let x = 4; x < 12; x++) {
+            pixels.push([x, y, armorColor]);
+          }
+        }
+
+        // Arms
+        pixels.push([3, 12, armorColor]);
+        pixels.push([12, 12, armorColor]);
+
+        // Legs
+        for (let y = 20; y < 28; y++) {
+          pixels.push([6, y, armorColor]);
+          pixels.push([7, y, armorColor]);
+          pixels.push([8, y, armorColor]);
+          pixels.push([9, y, armorColor]);
+        }
+
+        return pixels;
+      }
+
+      function generateGuardWalkPixels(frame) {
+        const pixels = generateGuardPixels(0);
+        // Simple leg animation
+        return pixels;
+      }
+
+      function generateGuardAttackPixels() {
+        const pixels = generateGuardPixels(0);
+        // Add spear
+        for (let x = 13; x < 20; x++) {
+          pixels.push([x, 12, 6]); // Brown spear
+        }
+        pixels.push([19, 11, 7]); // Spear tip
+        pixels.push([19, 12, 7]);
+        pixels.push([19, 13, 7]);
+        return pixels;
+      }
+
+      function createCreatureView() {
+        return {
+          description: 'Mysterious creature',
+          x: 160,
+          y: 100,
+          loops: [
+            {
+              name: 'idle',
+              cells: [
+                {
+                  width: 20,
+                  height: 16,
+                  anchorX: 10,
+                  anchorY: 16,
+                  duration: 600,
+                  pixels: generateCreaturePixels(0),
+                },
+                {
+                  width: 20,
+                  height: 16,
+                  anchorX: 10,
+                  anchorY: 16,
+                  duration: 600,
+                  pixels: generateCreaturePixels(1),
+                },
+              ],
+            },
+            {
+              name: 'walk',
+              cells: [
+                {
+                  width: 20,
+                  height: 16,
+                  anchorX: 10,
+                  anchorY: 16,
+                  duration: 250,
+                  pixels: generateCreatureWalkPixels(0),
+                },
+                {
+                  width: 20,
+                  height: 16,
+                  anchorX: 10,
+                  anchorY: 16,
+                  duration: 250,
+                  pixels: generateCreatureWalkPixels(1),
+                },
+              ],
+            },
+            {
+              name: 'talk',
+              cells: [
+                {
+                  width: 20,
+                  height: 16,
+                  anchorX: 10,
+                  anchorY: 16,
+                  duration: 400,
+                  pixels: generateCreaturePixels(2),
+                },
+              ],
+            },
+            {
+              name: 'special',
+              cells: [
+                {
+                  width: 24,
+                  height: 20,
+                  anchorX: 12,
+                  anchorY: 20,
+                  duration: 300,
+                  pixels: generateCreatureMagicPixels(),
+                },
+              ],
+            },
+          ],
+        };
+      }
+
+      function generateCreaturePixels(frame) {
+        const pixels = [];
+        const bodyColor = 10; // Green
+        const eyeColor = 13; // Magenta
+
+        // Body (blob-like)
+        for (let y = 4; y < 16; y++) {
+          for (let x = 6; x < 14; x++) {
+            const dist = Math.abs(x - 10) + Math.abs(y - 10);
+            if (dist < 8) {
+              pixels.push([x, y, bodyColor]);
+            }
+          }
+        }
+
+        // Eyes
+        const eyeOffset = frame === 1 ? 1 : 0;
+        pixels.push([7, 7 + eyeOffset, eyeColor]);
+        pixels.push([12, 7 + eyeOffset, eyeColor]);
+
+        // Tentacles
+        if (frame === 2) {
+          pixels.push([5, 14, bodyColor]);
+          pixels.push([14, 14, bodyColor]);
+        }
+
+        return pixels;
+      }
+
+      function generateCreatureWalkPixels(frame) {
+        const pixels = generateCreaturePixels(0);
+        // Add wobble effect
+        return pixels;
+      }
+
+      function generateCreatureMagicPixels() {
+        const pixels = generateCreaturePixels(0);
+        // Add magic sparkles
+        const sparkleColors = [14, 15, 11];
+        for (let i = 0; i < 8; i++) {
+          const x = Math.floor(Math.random() * 24);
+          const y = Math.floor(Math.random() * 20);
+          pixels.push([x, y, sparkleColors[i % 3]]);
+        }
+        return pixels;
+      }
+
+      function createBirdView() {
+        return {
+          description: 'Flying bird',
+          x: 160,
+          y: 50,
+          loops: [
+            {
+              name: 'idle',
+              cells: [
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 200,
+                  pixels: generateBirdPixels(0),
+                },
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 200,
+                  pixels: generateBirdPixels(1),
+                },
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 200,
+                  pixels: generateBirdPixels(2),
+                },
+              ],
+            },
+            {
+              name: 'walk',
+              cells: [
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 100,
+                  pixels: generateBirdPixels(0),
+                },
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 100,
+                  pixels: generateBirdPixels(1),
+                },
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 100,
+                  pixels: generateBirdPixels(2),
+                },
+              ],
+            },
+            {
+              name: 'talk',
+              cells: [
+                {
+                  width: 16,
+                  height: 12,
+                  anchorX: 8,
+                  anchorY: 6,
+                  duration: 500,
+                  pixels: generateBirdPixels(0),
+                },
+              ],
+            },
+            {
+              name: 'special',
+              cells: [
+                {
+                  width: 20,
+                  height: 12,
+                  anchorX: 10,
+                  anchorY: 6,
+                  duration: 150,
+                  pixels: generateBirdDivePixels(),
+                },
+              ],
+            },
+          ],
+        };
+      }
+
+      function generateBirdPixels(frame) {
+        const pixels = [];
+        const bodyColor = 6; // Brown
+        const wingColor = 15; // White
+
+        // Body
+        for (let x = 6; x < 10; x++) {
+          pixels.push([x, 6, bodyColor]);
+          pixels.push([x, 7, bodyColor]);
+        }
+
+        // Head
+        pixels.push([10, 6, bodyColor]);
+
+        // Beak
+        pixels.push([11, 6, 14]);
+
+        // Wings (animated)
+        const wingY = frame === 0 ? 5 : frame === 1 ? 6 : 7;
+        for (let x = 2; x < 6; x++) {
+          pixels.push([x, wingY, wingColor]);
+        }
+        for (let x = 10; x < 14; x++) {
+          pixels.push([x, wingY, wingColor]);
+        }
+
+        // Tail
+        pixels.push([5, 7, bodyColor]);
+        pixels.push([4, 8, bodyColor]);
+
+        return pixels;
+      }
+
+      function generateBirdDivePixels() {
+        const pixels = generateBirdPixels(1);
+        // Stretch wings wider
+        for (let x = 0; x < 20; x += 2) {
+          if (x < 8 || x > 12) {
+            pixels.push([x, 6, 15]);
+          }
+        }
+        return pixels;
+      }
+
+      function createObstacleView(type) {
+        const views = {
+          rock: {
+            description: 'Rock obstacle',
+            loops: [
+              {
+                name: 'idle',
+                cells: [
+                  {
+                    width: 16,
+                    height: 12,
+                    anchorX: 8,
+                    anchorY: 12,
+                    duration: 1000,
+                    pixels: generateRockPixels(),
+                  },
+                ],
+              },
+            ],
+          },
+          tree: {
+            description: 'Tree obstacle',
+            loops: [
+              {
+                name: 'idle',
+                cells: [
+                  {
+                    width: 20,
+                    height: 32,
+                    anchorX: 10,
+                    anchorY: 32,
+                    duration: 1000,
+                    pixels: generateTreePixels(),
+                  },
+                ],
+              },
+            ],
+          },
+          bush: {
+            description: 'Bush obstacle',
+            loops: [
+              {
+                name: 'idle',
+                cells: [
+                  {
+                    width: 24,
+                    height: 16,
+                    anchorX: 12,
+                    anchorY: 16,
+                    duration: 1000,
+                    pixels: generateBushPixels(),
+                  },
+                ],
+              },
+            ],
+          },
+        };
+
+        return views[type] || views.rock;
+      }
+
+      function generateRockPixels() {
+        const pixels = [];
+        const rockColor = 8; // Dark gray
+
+        // Simple rock shape
+        for (let y = 4; y < 12; y++) {
+          for (let x = 4; x < 12; x++) {
+            if (Math.abs(x - 8) + Math.abs(y - 8) < 6) {
+              pixels.push([x, y, rockColor]);
+            }
+          }
+        }
+        return pixels;
+      }
+
+      function generateTreePixels() {
+        const pixels = [];
+        const trunkColor = 6; // Brown
+        const leafColor = 2; // Green
+
+        // Trunk
+        for (let y = 20; y < 32; y++) {
+          for (let x = 8; x < 12; x++) {
+            pixels.push([x, y, trunkColor]);
+          }
+        }
+
+        // Leaves
+        for (let y = 0; y < 20; y++) {
+          for (let x = 0; x < 20; x++) {
+            const dist = Math.abs(x - 10) + Math.abs(y - 10);
+            if (dist < 10 && y < 20) {
+              pixels.push([x, y, leafColor]);
+            }
+          }
+        }
+        return pixels;
+      }
+
+      function generateBushPixels() {
+        const pixels = [];
+        const bushColor = 10; // Light green
+
+        // Bush shape
+        for (let y = 6; y < 16; y++) {
+          for (let x = 0; x < 24; x++) {
+            if (
+              Math.sin((x / 24) * Math.PI * 2) * 4 + 12 > y &&
+              Math.random() > 0.2
+            ) {
+              pixels.push([x, y, bushColor]);
+            }
+          }
+        }
+        return pixels;
+      }
+
+      // Initialize on load
+      initScene();
+    </script>
+  </body>
+</html>

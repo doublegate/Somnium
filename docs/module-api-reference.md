@@ -165,11 +165,12 @@ new SceneRenderer(canvas);
 
 ### Methods
 
-#### `renderRoom(roomGraphics)`
+#### `renderRoom(roomGraphics, roomId)`
 
-Draw complete room background.
+Draw complete room background with caching support.
 
-- `roomGraphics`: Room graphics object with primitives
+- `roomGraphics`: Room graphics object with primitives and backgroundColor
+- `roomId`: Optional string for scene caching
 
 #### `clear()`
 
@@ -179,17 +180,64 @@ Clear canvas to black.
 
 Draw a single primitive shape.
 
-- `primitive`: Primitive object
+- `primitive`: Primitive object with type and properties
 
-#### `drawDitheredGradient(x, y, width, height, color1, color2)`
+Supported primitive types:
+- `rect`: Rectangle with optional fill/stroke
+- `polygon`: Polygon with vertex array
+- `circle`: Circle with center and radius
+- `ellipse`: Ellipse with radiusX, radiusY, rotation
+- `line`: Line between two points
+- `star`: Star pixels or star shape
+- `triangle`: Optimized 3-point polygon
+- `path`: Complex path with commands
+- `dithered_gradient`: 2x2 pattern gradient
+
+#### `drawDitheredGradient(x, y, width, height, color1, color2, pattern)`
 
 Draw 2x2 dithered pattern gradient.
+
+- `pattern`: Number 0-8 for different dither patterns:
+  - 0: Solid color1
+  - 1: 25% mix
+  - 2: 50% checkerboard
+  - 3: 75% mix
+  - 4: Solid color2
+  - 5: Horizontal lines
+  - 6: Vertical lines
+  - 7: Diagonal pattern
+  - 8: Vertical lines (alternate)
 
 #### `getPixelPriority(x, y)`
 
 Get priority value at pixel position.
 
 - Returns: Number (0-15)
+
+#### `validateColor(color)`
+
+Validate and convert color to EGA palette.
+
+- `color`: String (hex/name) or number (index)
+- Returns: Valid EGA hex color string
+
+#### `getEGAColor(index)`
+
+Get EGA color from palette index.
+
+- `index`: Number 0-15
+- Returns: Hex color string
+
+#### `setDebugMode(enabled, options)`
+
+Enable debug visualization.
+
+- `enabled`: Boolean
+- `options`: Object with `showPriorityMap`, `showGrid`
+
+#### `clearCache()`
+
+Clear the scene cache for re-rendering.
 
 ---
 
@@ -369,14 +417,54 @@ Evaluate conditional expression.
 
 ```javascript
 {
-  type: 'rect' | 'polygon' | 'dithered_gradient' | 'circle' | 'star',
-  color?: String,      // EGA hex color
-  color1?: String,     // For gradients
-  color2?: String,     // For gradients
-  dims?: [x, y, w, h], // For rect/gradient
-  points?: [[x,y]...], // For polygon
-  center?: [x, y],     // For circle/star
-  radius?: Number
+  type: 'rect' | 'polygon' | 'dithered_gradient' | 'circle' | 'ellipse' | 
+        'line' | 'star' | 'triangle' | 'path',
+  color?: String,      // EGA hex color or name or index
+  filled?: Boolean,    // Whether to fill or stroke (default: true)
+  priority?: Number,   // Priority value 0-15
+  
+  // Type-specific properties:
+  
+  // For rect/dithered_gradient:
+  dims?: [x, y, w, h],
+  
+  // For polygon/triangle/line:
+  points?: [[x,y]...],
+  
+  // For circle:
+  center?: [x, y],
+  radius?: Number,
+  
+  // For ellipse:
+  center?: [x, y],
+  radiusX?: Number,
+  radiusY?: Number,
+  rotation?: Number,
+  
+  // For star (pixels):
+  points?: [[x,y]...], // Star pixel locations
+  
+  // For star (shape):
+  center?: [x, y],
+  radius?: Number,
+  numPoints?: Number,  // Number of star points (default: 5)
+  
+  // For line:
+  width?: Number,      // Line width (default: 1)
+  
+  // For dithered_gradient:
+  color1?: String,     // First color
+  color2?: String,     // Second color
+  pattern?: Number,    // Pattern 0-8 (default: 2)
+  
+  // For path:
+  commands?: [         // Path drawing commands
+    { type: 'moveTo', x: Number, y: Number },
+    { type: 'lineTo', x: Number, y: Number },
+    { type: 'quadraticCurveTo', cpx: Number, cpy: Number, x: Number, y: Number },
+    { type: 'bezierCurveTo', cp1x: Number, cp1y: Number, cp2x: Number, cp2y: Number, x: Number, y: Number },
+    { type: 'closePath' }
+  ]
 }
 ```
 

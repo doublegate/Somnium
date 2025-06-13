@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somnium Sound System Demo</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #000000;
+      color: #AAAAAA;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.4;
+    }
+
+    h1, h2 {
+      color: #FFFF55;
+      text-shadow: 2px 2px 0 #AA5500;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .section {
+      background-color: #000055;
+      border: 2px solid #5555FF;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 4px 4px 0 #000000;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      background-color: #0000AA;
+      color: #FFFFFF;
+      border: 2px solid #5555FF;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.1s;
+    }
+
+    button:hover {
+      background-color: #5555FF;
+      transform: translate(-1px, -1px);
+      box-shadow: 2px 2px 0 #000000;
+    }
+
+    button:active {
+      transform: translate(0, 0);
+      box-shadow: none;
+    }
+
+    button.active {
+      background-color: #00AA00;
+      border-color: #00FF00;
+    }
+
+    .slider-group {
+      margin: 10px 0;
+    }
+
+    label {
+      color: #55FFFF;
+      display: inline-block;
+      width: 120px;
+    }
+
+    input[type="range"] {
+      width: 200px;
+      vertical-align: middle;
+    }
+
+    .value {
+      color: #FFFF55;
+      display: inline-block;
+      width: 50px;
+      text-align: right;
+    }
+
+    select {
+      background-color: #000055;
+      color: #FFFFFF;
+      border: 1px solid #5555FF;
+      padding: 4px 8px;
+      font-family: inherit;
+    }
+
+    .position-demo {
+      width: 320px;
+      height: 200px;
+      background-color: #000000;
+      border: 2px solid #AAAAAA;
+      position: relative;
+      margin: 20px auto;
+      cursor: crosshair;
+    }
+
+    .position-marker {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #FFFF55;
+      border: 1px solid #FF5555;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .status {
+      color: #55FF55;
+      margin: 10px 0;
+      font-size: 12px;
+    }
+
+    .preset-info {
+      color: #FF55FF;
+      font-size: 12px;
+      margin: 5px 0;
+    }
+
+    .log {
+      background-color: #000000;
+      border: 1px solid #555555;
+      padding: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .log-entry {
+      color: #00FF00;
+      margin: 2px 0;
+    }
+
+    .warning {
+      color: #FFAA00;
+      font-size: 14px;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #FFAA00;
+      background-color: #332200;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔊 Somnium Sound System Demo</h1>
+    <p class="warning">
+      ⚠️ Click the "Initialize Audio" button to start. Browser security requires user interaction to enable audio.
+    </p>
+
+    <div class="section">
+      <h2>System Control</h2>
+      <button id="initBtn">Initialize Audio</button>
+      <button id="stopAllBtn" disabled>Stop All Sounds</button>
+      <div class="status" id="status">Status: Not initialized</div>
+    </div>
+
+    <div class="section">
+      <h2>Volume Controls</h2>
+      <div class="slider-group">
+        <label>Master:</label>
+        <input type="range" id="masterVol" min="0" max="100" value="70" disabled>
+        <span class="value" id="masterVolVal">70%</span>
+      </div>
+      <div class="slider-group">
+        <label>Music:</label>
+        <input type="range" id="musicVol" min="0" max="100" value="80" disabled>
+        <span class="value" id="musicVolVal">80%</span>
+      </div>
+      <div class="slider-group">
+        <label>Sound FX:</label>
+        <input type="range" id="sfxVol" min="0" max="100" value="90" disabled>
+        <span class="value" id="sfxVolVal">90%</span>
+      </div>
+      <div class="slider-group">
+        <label>Ambient:</label>
+        <input type="range" id="ambientVol" min="0" max="100" value="70" disabled>
+        <span class="value" id="ambientVolVal">70%</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Background Music</h2>
+      <div class="controls">
+        <div>
+          <label>Theme:</label>
+          <select id="musicTheme">
+            <option value="mysterious">Mysterious</option>
+            <option value="heroic">Heroic</option>
+            <option value="peaceful">Peaceful</option>
+            <option value="danger">Danger</option>
+          </select>
+        </div>
+        <div>
+          <label>Preset:</label>
+          <select id="musicPreset">
+            <option value="adlib">AdLib FM</option>
+            <option value="pcSpeaker">PC Speaker</option>
+            <option value="mt32">Roland MT-32</option>
+          </select>
+        </div>
+      </div>
+      <button id="playMusicBtn" disabled>Play Music</button>
+      <button id="stopMusicBtn" disabled>Stop Music</button>
+      <div class="preset-info" id="presetInfo">AdLib FM: 9-channel FM synthesis, rich tones</div>
+    </div>
+
+    <div class="section">
+      <h2>Ambient Sounds</h2>
+      <div class="controls">
+        <button class="ambientBtn" data-ambience="wind" disabled>Wind</button>
+        <button class="ambientBtn" data-ambience="cave drips" disabled>Cave Drips</button>
+        <button class="ambientBtn" data-ambience="forest" disabled>Forest</button>
+        <button class="ambientBtn" data-ambience="water stream" disabled>Water Stream</button>
+        <button class="ambientBtn" data-ambience="fire crackling" disabled>Fire</button>
+      </div>
+      <button id="stopAmbientBtn" disabled>Stop Ambient</button>
+    </div>
+
+    <div class="section">
+      <h2>Sound Effects</h2>
+      
+      <h3>Door Sounds</h3>
+      <div class="controls">
+        <button class="sfxBtn" data-sound="door_open" disabled>Open</button>
+        <button class="sfxBtn" data-sound="door_close" disabled>Close</button>
+        <button class="sfxBtn" data-sound="door_locked" disabled>Locked</button>
+      </div>
+
+      <h3>Item/Inventory</h3>
+      <div class="controls">
+        <button class="sfxBtn" data-sound="pickup" disabled>Pickup</button>
+        <button class="sfxBtn" data-sound="drop" disabled>Drop</button>
+        <button class="sfxBtn" data-sound="use_item" disabled>Use Item</button>
+      </div>
+
+      <h3>Footsteps</h3>
+      <div class="controls">
+        <button class="sfxBtn" data-sound="footstep" disabled>Stone</button>
+        <button class="sfxBtn" data-sound="footstep_wood" disabled>Wood</button>
+        <button class="sfxBtn" data-sound="footstep_grass" disabled>Grass</button>
+        <button class="sfxBtn" data-sound="footstep_metal" disabled>Metal</button>
+        <button class="sfxBtn" data-sound="footstep_water" disabled>Water</button>
+      </div>
+
+      <h3>UI Sounds</h3>
+      <div class="controls">
+        <button class="sfxBtn" data-sound="menu_open" disabled>Menu Open</button>
+        <button class="sfxBtn" data-sound="menu_close" disabled>Menu Close</button>
+        <button class="sfxBtn" data-sound="menu_select" disabled>Select</button>
+        <button class="sfxBtn" data-sound="menu_move" disabled>Move</button>
+        <button class="sfxBtn" data-sound="error" disabled>Error</button>
+        <button class="sfxBtn" data-sound="success" disabled>Success</button>
+      </div>
+
+      <h3>Retro Beeps</h3>
+      <div class="controls">
+        <button class="sfxBtn" data-sound="beep" disabled>Beep</button>
+        <button class="sfxBtn" data-sound="beep_low" disabled>Low Beep</button>
+        <button class="sfxBtn" data-sound="beep_high" disabled>High Beep</button>
+      </div>
+
+      <h3>Environmental</h3>
+      <div class="controls">
+        <button class="sfxBtn" data-sound="water_drip" disabled>Water Drip</button>
+        <button class="sfxBtn" data-sound="thunder" disabled>Thunder</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Spatial Audio Demo</h2>
+      <p>Click anywhere in the game screen to play a positioned sound:</p>
+      <div class="position-demo" id="positionDemo">
+        <div class="position-marker" id="positionMarker"></div>
+      </div>
+      <div>
+        <label>Spatial Audio:</label>
+        <input type="checkbox" id="spatialToggle" checked> Enabled
+      </div>
+      <div>
+        <label>Test Sound:</label>
+        <select id="spatialSound">
+          <option value="pickup">Pickup</option>
+          <option value="footstep">Footstep</option>
+          <option value="water_drip">Water Drip</option>
+          <option value="menu_select">Menu Beep</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Pitch Variation Demo</h2>
+      <div class="slider-group">
+        <label>Pitch:</label>
+        <input type="range" id="pitchSlider" min="50" max="200" value="100" disabled>
+        <span class="value" id="pitchVal">1.00x</span>
+      </div>
+      <button id="pitchTestBtn" disabled>Test Pickup Sound</button>
+    </div>
+
+    <div class="section">
+      <h2>Sound Log</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { SoundManager } from './js/SoundManager.js';
+
+    const soundManager = new SoundManager();
+    let isInitialized = false;
+
+    // UI Elements
+    const initBtn = document.getElementById('initBtn');
+    const stopAllBtn = document.getElementById('stopAllBtn');
+    const status = document.getElementById('status');
+    const log = document.getElementById('log');
+    const positionDemo = document.getElementById('positionDemo');
+    const positionMarker = document.getElementById('positionMarker');
+    const musicPreset = document.getElementById('musicPreset');
+    const presetInfo = document.getElementById('presetInfo');
+
+    // Preset descriptions
+    const presetDescriptions = {
+      pcSpeaker: 'PC Speaker: Square waves only, monophonic beeps',
+      adlib: 'AdLib FM: 9-channel FM synthesis, rich tones',
+      mt32: 'Roland MT-32: 32-voice LA synthesis, high quality'
+    };
+
+    // Add log entry
+    function addLog(message, color = '#00FF00') {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.style.color = color;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.appendChild(entry);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // Enable/disable all controls
+    function setControlsEnabled(enabled) {
+      document.querySelectorAll('button:not(#initBtn)').forEach(btn => {
+        btn.disabled = !enabled;
+      });
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.disabled = !enabled;
+      });
+    }
+
+    // Initialize audio
+    initBtn.addEventListener('click', async () => {
+      try {
+        status.textContent = 'Status: Initializing...';
+        await soundManager.initialize();
+        isInitialized = true;
+        status.textContent = 'Status: Audio initialized ✓';
+        status.style.color = '#00FF00';
+        initBtn.textContent = 'Audio Initialized';
+        initBtn.disabled = true;
+        setControlsEnabled(true);
+        addLog('Audio system initialized successfully');
+      } catch (error) {
+        status.textContent = 'Status: Initialization failed ✗';
+        status.style.color = '#FF5555';
+        addLog('Failed to initialize audio: ' + error.message, '#FF5555');
+      }
+    });
+
+    // Stop all sounds
+    stopAllBtn.addEventListener('click', () => {
+      soundManager.stopAll();
+      document.querySelectorAll('button.active').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      addLog('All sounds stopped');
+    });
+
+    // Volume controls
+    const volumeControls = {
+      masterVol: 'master',
+      musicVol: 'music',
+      sfxVol: 'sfx',
+      ambientVol: 'ambient'
+    };
+
+    Object.entries(volumeControls).forEach(([sliderId, category]) => {
+      const slider = document.getElementById(sliderId);
+      const valueSpan = document.getElementById(sliderId + 'Val');
+      
+      slider.addEventListener('input', () => {
+        const value = slider.value / 100;
+        soundManager.setVolume(category, value);
+        valueSpan.textContent = slider.value + '%';
+        addLog(`${category} volume set to ${slider.value}%`);
+      });
+    });
+
+    // Music controls
+    const playMusicBtn = document.getElementById('playMusicBtn');
+    const stopMusicBtn = document.getElementById('stopMusicBtn');
+    const musicTheme = document.getElementById('musicTheme');
+
+    musicPreset.addEventListener('change', () => {
+      presetInfo.textContent = presetDescriptions[musicPreset.value];
+    });
+
+    playMusicBtn.addEventListener('click', () => {
+      const theme = musicTheme.value;
+      const preset = musicPreset.value;
+      soundManager.playMusic(theme, preset);
+      playMusicBtn.classList.add('active');
+      addLog(`Playing ${theme} music with ${preset} preset`);
+    });
+
+    stopMusicBtn.addEventListener('click', () => {
+      soundManager.stopMusic();
+      playMusicBtn.classList.remove('active');
+      addLog('Music stopped');
+    });
+
+    // Ambient sound buttons
+    document.querySelectorAll('.ambientBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ambience = btn.dataset.ambience;
+        soundManager.playAmbience(ambience);
+        
+        // Update button states
+        document.querySelectorAll('.ambientBtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        addLog(`Playing ambient: ${ambience}`);
+      });
+    });
+
+    document.getElementById('stopAmbientBtn').addEventListener('click', () => {
+      soundManager.stopAmbience();
+      document.querySelectorAll('.ambientBtn').forEach(b => b.classList.remove('active'));
+      addLog('Ambient sound stopped');
+    });
+
+    // Sound effect buttons
+    document.querySelectorAll('.sfxBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const soundId = btn.dataset.sound;
+        soundManager.playSound(soundId);
+        addLog(`Playing SFX: ${soundId}`);
+        
+        // Visual feedback
+        btn.style.backgroundColor = '#00FF00';
+        setTimeout(() => {
+          btn.style.backgroundColor = '';
+        }, 200);
+      });
+    });
+
+    // Spatial audio demo
+    const spatialToggle = document.getElementById('spatialToggle');
+    const spatialSound = document.getElementById('spatialSound');
+
+    spatialToggle.addEventListener('change', () => {
+      soundManager.spatialEnabled = spatialToggle.checked;
+      addLog(`Spatial audio ${spatialToggle.checked ? 'enabled' : 'disabled'}`);
+    });
+
+    positionDemo.addEventListener('click', (e) => {
+      if (!isInitialized) return;
+      
+      const rect = positionDemo.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Update marker position
+      positionMarker.style.left = x + 'px';
+      positionMarker.style.top = y + 'px';
+      
+      // Play sound at position
+      const sound = spatialSound.value;
+      soundManager.playSound(sound, { x, y });
+      
+      const pan = x < 160 ? 'left' : 'right';
+      const distance = Math.abs(y - 100) / 100;
+      addLog(`Playing ${sound} at (${Math.round(x)}, ${Math.round(y)}) - ${pan} side, distance: ${distance.toFixed(2)}`);
+    });
+
+    // Pitch variation demo
+    const pitchSlider = document.getElementById('pitchSlider');
+    const pitchVal = document.getElementById('pitchVal');
+    const pitchTestBtn = document.getElementById('pitchTestBtn');
+
+    pitchSlider.addEventListener('input', () => {
+      const pitch = pitchSlider.value / 100;
+      pitchVal.textContent = pitch.toFixed(2) + 'x';
+    });
+
+    pitchTestBtn.addEventListener('click', () => {
+      const pitch = pitchSlider.value / 100;
+      soundManager.playSound('pickup', { pitch });
+      addLog(`Playing pickup sound with ${pitch.toFixed(2)}x pitch`);
+    });
+
+    // Initial log entry
+    addLog('Sound demo loaded. Click "Initialize Audio" to begin.', '#FFFF55');
+  </script>
+</body>
+</html>

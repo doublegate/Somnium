@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium Graphics Demo - Phase 2.1</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background: #222;
+        color: #fff;
+        font-family: monospace;
+      }
+      .demo-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+      .demo-scene {
+        border: 2px solid #555;
+        position: relative;
+      }
+      canvas {
+        display: block;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+      }
+      .controls {
+        margin-top: 20px;
+        text-align: center;
+      }
+      button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-family: monospace;
+        background: #444;
+        color: #fff;
+        border: 1px solid #666;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #555;
+      }
+      h2 {
+        text-align: center;
+        color: #55FF55;
+      }
+      .info {
+        text-align: center;
+        margin: 10px 0;
+        color: #AAAAAA;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 style="text-align: center; color: #FFFF55">
+      Somnium Vector Graphics Engine Demo
+    </h1>
+    <p class="info">Phase 2.1 - EGA Palette, Primitives, and Dithering</p>
+
+    <div class="demo-container">
+      <div class="demo-scene">
+        <canvas id="gameCanvas" width="640" height="400"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <h2>Demo Scenes</h2>
+      <button onclick="drawBeachScene()">Beach Scene</button>
+      <button onclick="drawForestScene()">Forest Scene</button>
+      <button onclick="drawCastleScene()">Castle Scene</button>
+      <button onclick="drawNightSky()">Night Sky</button>
+      <button onclick="drawColorTest()">EGA Palette Test</button>
+      <button onclick="drawDitherTest()">Dithering Patterns</button>
+
+      <h2>Debug Options</h2>
+      <button onclick="togglePriorityMap()">Toggle Priority Map</button>
+      <button onclick="toggleGrid()">Toggle Grid</button>
+      <button onclick="clearScene()">Clear Scene</button>
+    </div>
+
+    <script type="module">
+      import { SceneRenderer } from './js/SceneRenderer.js';
+
+      const canvas = document.getElementById('gameCanvas');
+      const renderer = new SceneRenderer(canvas);
+
+      // Make functions available globally
+      window.renderer = renderer;
+
+      window.drawBeachScene = function () {
+        const roomGraphics = {
+          backgroundColor: '#55FFFF', // Light cyan sky
+          primitives: [
+            // Sky gradient
+            {
+              type: 'dithered_gradient',
+              dims: [0, 0, 320, 100],
+              color1: '#55FFFF',
+              color2: '#0000AA',
+              pattern: 2,
+            },
+            // Ocean
+            {
+              type: 'rect',
+              dims: [0, 100, 320, 60],
+              color: '#0000AA',
+            },
+            // Ocean waves
+            {
+              type: 'dithered_gradient',
+              dims: [0, 100, 320, 20],
+              color1: '#0000AA',
+              color2: '#00AAAA',
+              pattern: 5, // Horizontal lines
+            },
+            // Beach sand
+            {
+              type: 'rect',
+              dims: [0, 160, 320, 40],
+              color: '#FFFF55',
+            },
+            // Sand texture
+            {
+              type: 'dithered_gradient',
+              dims: [0, 160, 320, 40],
+              color1: '#FFFF55',
+              color2: '#AA5500',
+              pattern: 2,
+            },
+            // Sun
+            {
+              type: 'circle',
+              center: [280, 40],
+              radius: 20,
+              color: '#FFFF55',
+            },
+            // Sun rays
+            {
+              type: 'star',
+              center: [280, 40],
+              radius: 30,
+              numPoints: 8,
+              color: '#FFFFFF',
+              filled: false,
+            },
+            // Palm tree trunk
+            {
+              type: 'polygon',
+              points: [
+                [50, 180],
+                [60, 180],
+                [58, 100],
+                [52, 100],
+              ],
+              color: '#AA5500',
+            },
+            // Palm leaves
+            {
+              type: 'star',
+              center: [55, 95],
+              radius: 25,
+              numPoints: 6,
+              color: '#00AA00',
+              filled: true,
+            },
+            // Seashell
+            {
+              type: 'circle',
+              center: [150, 175],
+              radius: 5,
+              color: '#FFFFFF',
+            },
+            // Rock
+            {
+              type: 'polygon',
+              points: [
+                [200, 170],
+                [220, 170],
+                [215, 160],
+                [205, 160],
+              ],
+              color: '#555555',
+              priority: 10,
+            },
+          ],
+        };
+
+        renderer.clearCache();
+        renderer.renderRoom(roomGraphics, 'beach');
+      };
+
+      window.drawForestScene = function () {
+        const roomGraphics = {
+          backgroundColor: '#000000',
+          primitives: [
+            // Sky gradient (dawn)
+            {
+              type: 'dithered_gradient',
+              dims: [0, 0, 320, 80],
+              color1: '#AA5500',
+              color2: '#000000',
+              pattern: 2,
+            },
+            // Ground
+            {
+              type: 'rect',
+              dims: [0, 120, 320, 80],
+              color: '#00AA00',
+            },
+            // Ground texture
+            {
+              type: 'dithered_gradient',
+              dims: [0, 120, 320, 80],
+              color1: '#00AA00',
+              color2: '#555555',
+              pattern: 7, // Diagonal
+            },
+            // Trees
+            ...Array.from({ length: 5 }, (_, i) => ({
+              type: 'polygon',
+              points: [
+                [40 + i * 60, 140],
+                [60 + i * 60, 140],
+                [50 + i * 60, 60],
+              ],
+              color: '#00AA00',
+              priority: 8 + Math.floor(i / 2),
+            })),
+            // Tree trunks
+            ...Array.from({ length: 5 }, (_, i) => ({
+              type: 'rect',
+              dims: [47 + i * 60, 130, 6, 20],
+              color: '#AA5500',
+              priority: 8 + Math.floor(i / 2),
+            })),
+            // Path
+            {
+              type: 'polygon',
+              points: [
+                [160, 200],
+                [180, 200],
+                [200, 120],
+                [140, 120],
+              ],
+              color: '#AA5500',
+            },
+            // Bushes
+            {
+              type: 'ellipse',
+              center: [80, 160],
+              radiusX: 20,
+              radiusY: 10,
+              color: '#55FF55',
+            },
+            {
+              type: 'ellipse',
+              center: [240, 150],
+              radiusX: 15,
+              radiusY: 8,
+              color: '#55FF55',
+            },
+          ],
+        };
+
+        renderer.clearCache();
+        renderer.renderRoom(roomGraphics, 'forest');
+      };
+
+      window.drawCastleScene = function () {
+        const roomGraphics = {
+          backgroundColor: '#0000AA',
+          primitives: [
+            // Sky
+            {
+              type: 'dithered_gradient',
+              dims: [0, 0, 320, 100],
+              color1: '#0000AA',
+              color2: '#000000',
+              pattern: 2,
+            },
+            // Ground
+            {
+              type: 'rect',
+              dims: [0, 140, 320, 60],
+              color: '#00AA00',
+            },
+            // Castle base
+            {
+              type: 'rect',
+              dims: [80, 60, 160, 80],
+              color: '#AAAAAA',
+            },
+            // Castle texture
+            {
+              type: 'dithered_gradient',
+              dims: [80, 60, 160, 80],
+              color1: '#AAAAAA',
+              color2: '#555555',
+              pattern: 6, // Vertical lines for stone texture
+            },
+            // Towers
+            {
+              type: 'rect',
+              dims: [60, 40, 40, 100],
+              color: '#AAAAAA',
+            },
+            {
+              type: 'rect',
+              dims: [220, 40, 40, 100],
+              color: '#AAAAAA',
+            },
+            // Tower tops
+            {
+              type: 'triangle',
+              points: [
+                [60, 40],
+                [100, 40],
+                [80, 20],
+              ],
+              color: '#AA0000',
+            },
+            {
+              type: 'triangle',
+              points: [
+                [220, 40],
+                [260, 40],
+                [240, 20],
+              ],
+              color: '#AA0000',
+            },
+            // Gate
+            {
+              type: 'rect',
+              dims: [145, 100, 30, 40],
+              color: '#AA5500',
+            },
+            // Windows
+            ...Array.from({ length: 4 }, (_, i) => ({
+              type: 'rect',
+              dims: [100 + i * 30, 80, 10, 15],
+              color: '#000000',
+            })),
+            // Flag
+            {
+              type: 'line',
+              points: [
+                [80, 20],
+                [80, 5],
+              ],
+              color: '#555555',
+            },
+            {
+              type: 'polygon',
+              points: [
+                [80, 5],
+                [100, 10],
+                [80, 15],
+              ],
+              color: '#FF5555',
+            },
+          ],
+        };
+
+        renderer.clearCache();
+        renderer.renderRoom(roomGraphics, 'castle');
+      };
+
+      window.drawNightSky = function () {
+        const roomGraphics = {
+          backgroundColor: '#000000',
+          primitives: [
+            // Sky gradient
+            {
+              type: 'dithered_gradient',
+              dims: [0, 0, 320, 120],
+              color1: '#000000',
+              color2: '#0000AA',
+              pattern: 2,
+            },
+            // Stars
+            {
+              type: 'star',
+              points: [
+                [50, 20],
+                [100, 30],
+                [150, 15],
+                [200, 25],
+                [250, 35],
+                [80, 50],
+                [120, 60],
+                [180, 45],
+                [220, 55],
+                [280, 40],
+                [30, 70],
+                [90, 80],
+                [160, 75],
+                [240, 85],
+                [300, 65],
+              ],
+              color: '#FFFFFF',
+            },
+            // Moon
+            {
+              type: 'circle',
+              center: [260, 40],
+              radius: 15,
+              color: '#FFFF55',
+            },
+            // Moon craters
+            {
+              type: 'circle',
+              center: [255, 38],
+              radius: 3,
+              color: '#AAAAAA',
+            },
+            {
+              type: 'circle',
+              center: [262, 45],
+              radius: 2,
+              color: '#AAAAAA',
+            },
+            // Mountains
+            {
+              type: 'polygon',
+              points: [
+                [0, 120],
+                [80, 60],
+                [160, 120],
+              ],
+              color: '#555555',
+            },
+            {
+              type: 'polygon',
+              points: [
+                [120, 120],
+                [200, 80],
+                [280, 120],
+              ],
+              color: '#555555',
+            },
+            {
+              type: 'polygon',
+              points: [
+                [240, 120],
+                [320, 90],
+                [320, 120],
+              ],
+              color: '#555555',
+            },
+            // Ground
+            {
+              type: 'rect',
+              dims: [0, 120, 320, 80],
+              color: '#00AA00',
+            },
+            // Ground at night (darker)
+            {
+              type: 'dithered_gradient',
+              dims: [0, 120, 320, 80],
+              color1: '#00AA00',
+              color2: '#000000',
+              pattern: 2,
+            },
+          ],
+        };
+
+        renderer.clearCache();
+        renderer.renderRoom(roomGraphics, 'night');
+      };
+
+      window.drawColorTest = function () {
+        const primitives = [];
+
+        // Draw all 16 EGA colors
+        for (let i = 0; i < 16; i++) {
+          const x = (i % 4) * 80;
+          const y = Math.floor(i / 4) * 50;
+
+          primitives.push({
+            type: 'rect',
+            dims: [x, y, 80, 50],
+            color: renderer.getEGAColor(i),
+          });
+
+          // Add color name/index
+          primitives.push({
+            type: 'rect',
+            dims: [x + 5, y + 5, 70, 10],
+            color: i < 8 ? '#FFFFFF' : '#000000',
+            filled: false,
+          });
+        }
+
+        const roomGraphics = {
+          backgroundColor: '#555555',
+          primitives: primitives,
+        };
+
+        renderer.clearCache();
+        renderer.renderRoom(roomGraphics, 'colortest');
+      };
+
+      window.drawDitherTest = function () {
+        const primitives = [];
+
+        // Show all dithering patterns
+        for (let i = 0; i < 9; i++) {
+          const x = (i % 3) * 106;
+          const y = Math.floor(i / 3) * 66;
+
+          primitives.push({
+            type: 'dithered_gradient',
+            dims: [x + 10, y + 10, 86, 46],
+            color1: '#0000AA',
+            color2: '#FFFF55',
+            pattern: i,
+          });
+        }
+
+        const roomGraphics = {
+          backgroundColor: '#000000',
+          primitives: primitives,
+        };
+
+        renderer.clearCache();
+        renderer.renderRoom(roomGraphics, 'dithertest');
+      };
+
+      window.togglePriorityMap = function () {
+        renderer.showPriorityMap = !renderer.showPriorityMap;
+        renderer.debugMode = renderer.showPriorityMap || renderer.showGrid;
+        
+        // Redraw current scene
+        if (renderer.currentRoomId && renderer.sceneCache) {
+          renderer.ctx.drawImage(renderer.sceneCache, 0, 0);
+          if (renderer.debugMode) {
+            renderer.drawDebugOverlay();
+          }
+        }
+      };
+
+      window.toggleGrid = function () {
+        renderer.showGrid = !renderer.showGrid;
+        renderer.debugMode = renderer.showPriorityMap || renderer.showGrid;
+        
+        // Redraw current scene
+        if (renderer.currentRoomId && renderer.sceneCache) {
+          renderer.ctx.drawImage(renderer.sceneCache, 0, 0);
+          if (renderer.debugMode) {
+            renderer.drawDebugOverlay();
+          }
+        }
+      };
+
+      window.clearScene = function () {
+        renderer.clearCache();
+        renderer.clear();
+      };
+
+      // Draw initial scene
+      window.drawBeachScene();
+    </script>
+  </body>
+</html>
