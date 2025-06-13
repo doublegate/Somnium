@@ -19,7 +19,7 @@ describe('Parser', () => {
           description: 'A dusty old library.',
           graphics: {
             background: '#0000aa',
-            objects: []
+            objects: [],
           },
           objects: {
             desk: {
@@ -36,7 +36,7 @@ describe('Parser', () => {
           items: ['brass_key'],
           exits: {
             north: { roomId: 'hallway', enabled: true },
-            east: { roomId: 'study', enabled: true }
+            east: { roomId: 'study', enabled: true },
           },
         },
         hallway: {
@@ -45,8 +45,8 @@ describe('Parser', () => {
           description: 'A long corridor.',
           graphics: { background: '#0000aa', objects: [] },
           exits: {
-            south: { roomId: 'library', enabled: true }
-          }
+            south: { roomId: 'library', enabled: true },
+          },
         },
         study: {
           id: 'study',
@@ -54,9 +54,9 @@ describe('Parser', () => {
           description: 'A cozy study.',
           graphics: { background: '#0000aa', objects: [] },
           exits: {
-            west: { roomId: 'library', enabled: true }
-          }
-        }
+            west: { roomId: 'library', enabled: true },
+          },
+        },
       },
       items: {
         brass_key: {

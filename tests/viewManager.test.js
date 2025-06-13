@@ -100,6 +100,7 @@ describe('ViewManager', () => {
               { duration: 100, pixels: [] },
               { duration: 100, pixels: [] },
             ],
+            repeat: false,
           },
         ],
       };
@@ -131,12 +132,11 @@ describe('ViewManager', () => {
 
       viewManager.createView('looping', viewData);
 
-      // Go through full loop
-      viewManager.updateView('looping', 0.1);
+      // Go through full loop (200ms = 2 updates of 100ms each)
       viewManager.updateView('looping', 0.1);
       viewManager.updateView('looping', 0.1);
 
-      // Should be back at first cell
+      // Should be back at first cell after completing one full cycle
       expect(viewManager.getView('looping').currentCell).toBe(0);
     });
 
@@ -621,25 +621,32 @@ describe('ViewManager', () => {
       const ctx = viewManager.batchCtx;
       jest.spyOn(ctx, 'save');
       jest.spyOn(ctx, 'restore');
+      
+      // Create a spy to track globalAlpha assignments
+      let alphaValue = 1;
+      Object.defineProperty(ctx, 'globalAlpha', {
+        get: () => alphaValue,
+        set: (value) => { alphaValue = value; }
+      });
 
       viewManager.renderAll();
 
       expect(ctx.save).toHaveBeenCalled();
-      expect(ctx.globalAlpha).toBe(0.5);
+      expect(alphaValue).toBe(0.5);
       expect(ctx.restore).toHaveBeenCalled();
     });
 
     test('should draw debug bounding box when enabled', () => {
       mockRenderer.debugMode = true;
       viewManager.createView('debug_box', {
-        loops: [{ cells: [{ width: 10, height: 10 }] }],
+        loops: [{ cells: [{ width: 10, height: 10, pixels: [[0, 0, 1]] }] }],
       });
 
       const strokeRectSpy = jest.spyOn(viewManager.batchCtx, 'strokeRect');
       viewManager.renderAll();
 
       expect(strokeRectSpy).toHaveBeenCalled();
-      expect(viewManager.batchCtx.strokeStyle).toBe('#FF55FF');
+      expect(viewManager.batchCtx.strokeStyle).toBe('#ff55ff');
     });
   });
 

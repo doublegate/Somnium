@@ -16,6 +16,14 @@
  * - Each cell contains pixel data and metadata (dimensions, anchor point)
  */
 
+// View effect constants
+export const ViewEffects = {
+  GHOST: 1,       // 50% transparency
+  INVERTED: 2,    // Color inversion
+  FLASHING: 4,    // Flashing effect
+  OUTLINED: 8,    // Black outline
+};
+
 export class ViewManager {
   /**
    * @param {SceneRenderer} sceneRenderer - Reference to scene renderer for priority checking
@@ -120,6 +128,11 @@ export class ViewManager {
    * @param {string} id - View ID to remove
    */
   removeView(id) {
+    const view = this.views.get(id);
+    if (view) {
+      // Return view to pool for reuse
+      this.returnToPool(view);
+    }
     this.views.delete(id);
     this.movements.delete(id);
   }
@@ -199,32 +212,39 @@ export class ViewManager {
     if (!loop || !loop.cells || loop.cells.length === 0) return;
 
     // Update cell timing
-    const currentCell = loop.cells[view.currentCell];
-    view.cellTime += deltaTime * this.animationSpeed * loop.speed * 1000; // Convert to ms
+    let currentCell = loop.cells[view.currentCell];
+    view.cellTime += deltaTime * this.animationSpeed * (loop.speed || 1.0) * 1000; // Convert to ms
 
     // Check if it's time to advance cell
-    if (view.cellTime >= currentCell.duration) {
-      view.cellTime = 0;
-      const previousCell = view.currentCell;
+    while (view.cellTime >= currentCell.duration) {
+      view.cellTime -= currentCell.duration; // Preserve overflow time
       view.currentCell++;
 
       // Handle loop completion
       if (view.currentCell >= loop.cells.length) {
         if (loop.repeat) {
           view.currentCell = 0;
+          // Trigger loop callback when looping back to start
+          if (view.loopCallback) {
+            view.loopCallback(view.id, view.currentLoop);
+          }
         } else {
           view.currentCell = loop.cells.length - 1;
-        }
-
-        // Trigger loop callback if set
-        if (view.loopCallback && previousCell < view.currentCell) {
-          view.loopCallback(view.id, view.currentLoop);
+          view.cellTime = 0; // Reset timing for non-repeating animations
+          // Trigger loop callback when animation ends
+          if (view.loopCallback) {
+            view.loopCallback(view.id, view.currentLoop);
+          }
+          break; // Stop advancing for non-repeating animations
         }
       }
-
-      // Update bounding box for new cell
-      this.updateBoundingBox(view);
+      
+      // Update currentCell reference for next iteration
+      currentCell = loop.cells[view.currentCell];
     }
+
+    // Update bounding box for new cell
+    this.updateBoundingBox(view);
   }
 
   /**
@@ -739,13 +759,3 @@ export class ViewManager {
   }
 }
 
-/**
- * View effect flags for sprite rendering
- */
-export const ViewEffects = {
-  NONE: 0,
-  GHOST: 1 << 0, // 50% transparency
-  INVERTED: 1 << 1, // Inverted colors
-  FLASHING: 1 << 2, // Flashing effect (not implemented yet)
-  SHADOW: 1 << 3, // Drop shadow (not implemented yet)
-};

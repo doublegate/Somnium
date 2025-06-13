@@ -296,7 +296,12 @@ export class Parser {
     }
 
     // Special case: "look at X" should treat X as direct object
-    if (command.verb === 'look' && command.preposition === 'at' && command.indirectObject && !command.directObject) {
+    if (
+      command.verb === 'look' &&
+      command.preposition === 'at' &&
+      command.indirectObject &&
+      !command.directObject
+    ) {
       command.directObject = command.indirectObject;
       command.resolvedDirectObject = command.resolvedIndirectObject;
       command.indirectObject = null;

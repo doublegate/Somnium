@@ -745,5 +745,4 @@ export class GameState extends EventTarget {
     const itemId = this.worn[slot];
     return itemId ? this.getItem(itemId) : null;
   }
-
 }
