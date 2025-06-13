@@ -8,7 +8,7 @@ describe('Parser', () => {
   beforeEach(() => {
     parser = new Parser();
     gameState = new GameState();
-    
+
     // Set up mock game state
     gameState.currentRoom = 'library';
     gameState.rooms = {
@@ -17,21 +17,33 @@ describe('Parser', () => {
         name: 'Library',
         description: 'A dusty old library.',
         objects: {
-          desk: { id: 'desk', name: 'wooden desk', description: 'An old oak desk.' },
-          book: { id: 'book', name: 'red book', description: 'A leather-bound book.' }
+          desk: {
+            id: 'desk',
+            name: 'wooden desk',
+            description: 'An old oak desk.',
+          },
+          book: {
+            id: 'book',
+            name: 'red book',
+            description: 'A leather-bound book.',
+          },
         },
         items: ['brass_key'],
-        exits: { north: 'hallway', east: 'study' }
-      }
+        exits: { north: 'hallway', east: 'study' },
+      },
     };
-    
+
     gameState.objects = {
-      brass_key: { id: 'brass_key', name: 'brass key', description: 'A small brass key.' },
-      lamp: { id: 'lamp', name: 'lamp', description: 'An oil lamp.' }
+      brass_key: {
+        id: 'brass_key',
+        name: 'brass key',
+        description: 'A small brass key.',
+      },
+      lamp: { id: 'lamp', name: 'lamp', description: 'An oil lamp.' },
     };
-    
+
     gameState.inventory = ['lamp'];
-    
+
     parser.setContext(gameState);
   });
 
@@ -133,7 +145,9 @@ describe('Parser', () => {
       const result = parser.parse('examine lamp');
       expect(result.success).toBe(true);
       expect(result.command.resolvedDirectObject.value).toBe('lamp');
-      expect(result.command.resolvedDirectObject.object.location).toBe('inventory');
+      expect(result.command.resolvedDirectObject.object.location).toBe(
+        'inventory'
+      );
     });
   });
 
@@ -152,12 +166,12 @@ describe('Parser', () => {
 
     test('should handle ambiguous objects', () => {
       // Add another book to create ambiguity
-      gameState.rooms.library.objects.journal = { 
-        id: 'journal', 
-        name: 'red journal', 
-        description: 'A red journal.' 
+      gameState.rooms.library.objects.journal = {
+        id: 'journal',
+        name: 'red journal',
+        description: 'A red journal.',
       };
-      
+
       const result = parser.parse('take red');
       expect(result.success).toBe(false);
       expect(result.error).toContain('Which one?');
@@ -198,7 +212,7 @@ describe('Parser', () => {
 
     test('should allow commands without objects when appropriate', () => {
       const commands = ['look', 'inventory', 'wait', 'help', 'quit'];
-      commands.forEach(cmd => {
+      commands.forEach((cmd) => {
         const result = parser.parse(cmd);
         expect(result.success).toBe(true);
       });

@@ -680,7 +680,7 @@ export class GameState extends EventTarget {
       score: this.score,
       moves: this.moves,
       turns: this.turns,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 }

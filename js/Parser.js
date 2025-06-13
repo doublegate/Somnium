@@ -8,11 +8,11 @@
  * - Structure commands for execution
  */
 
-import { 
-  VOCABULARY, 
-  getCanonicalVerb, 
-  isVerb, 
-  expandDirection 
+import {
+  VOCABULARY,
+  getCanonicalVerb,
+  isVerb,
+  expandDirection,
 } from './vocabulary.js';
 
 export class Parser {
@@ -22,18 +22,18 @@ export class Parser {
   constructor(vocabulary = {}) {
     // Merge custom vocabulary with defaults
     this.vocabulary = { ...VOCABULARY, ...vocabulary };
-    
+
     // Pronoun context tracking
     this.lastNoun = null;
     this.lastObject = null;
     this.lastRoom = null;
-    
+
     // Recent command history for "again" command
     this.lastCommand = null;
-    
+
     // Game state reference (set by GameManager)
     this.gameState = null;
-    
+
     // Ambiguous object resolution
     this.ambiguousObjects = [];
   }
@@ -47,39 +47,42 @@ export class Parser {
     if (!input || typeof input !== 'string') {
       return {
         success: false,
-        error: this.vocabulary.errors.noVerb
+        error: this.vocabulary.errors.noVerb,
       };
     }
 
     // Handle special case: "again" or "g"
-    if (input.trim().toLowerCase() === 'again' || input.trim().toLowerCase() === 'g') {
+    if (
+      input.trim().toLowerCase() === 'again' ||
+      input.trim().toLowerCase() === 'g'
+    ) {
       if (this.lastCommand) {
         return this.lastCommand;
       }
       return {
         success: false,
-        error: "No previous command to repeat."
+        error: 'No previous command to repeat.',
       };
     }
 
     // Clean and normalize input
     let cleanInput = input.trim().toLowerCase();
-    
+
     // Remove filler words
-    this.vocabulary.fillers.forEach(filler => {
+    this.vocabulary.fillers.forEach((filler) => {
       cleanInput = cleanInput.replace(new RegExp(`\\b${filler}\\b`, 'g'), '');
     });
-    
+
     // Expand abbreviations
     cleanInput = this.expandAbbreviations(cleanInput);
 
     // Tokenize
-    const tokens = cleanInput.split(/\s+/).filter(token => token.length > 0);
+    const tokens = cleanInput.split(/\s+/).filter((token) => token.length > 0);
 
     if (tokens.length === 0) {
       return {
         success: false,
-        error: this.vocabulary.errors.noVerb
+        error: this.vocabulary.errors.noVerb,
       };
     }
 
@@ -88,12 +91,15 @@ export class Parser {
     if (!verbResult.verb) {
       return {
         success: false,
-        error: this.vocabulary.errors.unknownVerb
+        error: this.vocabulary.errors.unknownVerb,
       };
     }
 
     // Parse the rest of the command
-    const parsedCommand = this.parseTokens(verbResult.verb, verbResult.remainingTokens);
+    const parsedCommand = this.parseTokens(
+      verbResult.verb,
+      verbResult.remainingTokens
+    );
 
     // Validate the command
     const validation = this.validateCommand(parsedCommand);
@@ -101,7 +107,7 @@ export class Parser {
       return {
         success: false,
         error: validation.error,
-        command: parsedCommand
+        command: parsedCommand,
       };
     }
 
@@ -110,14 +116,14 @@ export class Parser {
       this.lastNoun = parsedCommand.directObject;
       this.lastObject = parsedCommand.resolvedDirectObject;
     }
-    
+
     // Store for "again" command
     const result = {
       success: true,
-      command: parsedCommand
+      command: parsedCommand,
     };
     this.lastCommand = result;
-    
+
     return result;
   }
 
@@ -129,7 +135,7 @@ export class Parser {
   addSynonym(word, canonical) {
     const canonicalLower = canonical.toLowerCase();
     const wordLower = word.toLowerCase();
-    
+
     // Find which verb list to add to
     if (this.vocabulary.verbs[canonicalLower]) {
       this.vocabulary.verbs[canonicalLower].push(wordLower);
@@ -161,8 +167,8 @@ export class Parser {
 
     // Then check for word-by-word abbreviations
     const words = input.split(/\s+/);
-    const expandedWords = words.map(word => 
-      this.vocabulary.abbreviations[word] || word
+    const expandedWords = words.map(
+      (word) => this.vocabulary.abbreviations[word] || word
     );
 
     return expandedWords.join(' ');
@@ -182,22 +188,22 @@ export class Parser {
     // Try multi-word verbs first (longest match)
     for (let length = Math.min(3, tokens.length); length > 0; length--) {
       const possibleVerb = tokens.slice(0, length).join(' ');
-      
+
       // Check if it's a multi-word verb
       if (this.vocabulary.multiWordVerbs.includes(possibleVerb)) {
         const canonical = getCanonicalVerb(possibleVerb);
         return {
           verb: canonical || possibleVerb,
-          remainingTokens: tokens.slice(length)
+          remainingTokens: tokens.slice(length),
         };
       }
-      
+
       // Check if it's a known verb or synonym
       if (length === 1 && isVerb(possibleVerb)) {
         const canonical = getCanonicalVerb(possibleVerb);
         return {
           verb: canonical || possibleVerb,
-          remainingTokens: tokens.slice(1)
+          remainingTokens: tokens.slice(1),
         };
       }
     }
@@ -220,7 +226,7 @@ export class Parser {
       preposition: null,
       modifiers: [],
       resolvedDirectObject: null,
-      resolvedIndirectObject: null
+      resolvedIndirectObject: null,
     };
 
     // Handle special cases
@@ -236,16 +242,16 @@ export class Parser {
     const processedTokens = [];
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
-      
+
       if (this.vocabulary.articles.includes(token)) {
         continue; // Skip articles
       }
-      
+
       if (this.vocabulary.special.all.includes(token)) {
         command.modifiers.push('all');
         continue;
       }
-      
+
       processedTokens.push(token);
     }
 
@@ -312,21 +318,21 @@ export class Parser {
     // Try to match against known objects
     if (this.gameState) {
       const matches = this.findMatchingObjects(objectString);
-      
+
       if (matches.length === 0) {
         return { type: 'unknown', value: objectString };
       }
-      
+
       if (matches.length === 1) {
         return { type: 'object', value: matches[0].id, object: matches[0] };
       }
-      
+
       // Multiple matches - store for disambiguation
       this.ambiguousObjects = matches;
-      return { 
-        type: 'ambiguous', 
-        value: objectString, 
-        matches: matches.map(m => ({ id: m.id, name: m.name }))
+      return {
+        type: 'ambiguous',
+        value: objectString,
+        matches: matches.map((m) => ({ id: m.id, name: m.name })),
       };
     }
 
@@ -344,7 +350,7 @@ export class Parser {
     const matches = [];
     const currentRoom = this.gameState.getCurrentRoom();
     const inventory = this.gameState.getInventory();
-    
+
     // Helper to add unique matches
     const addMatch = (obj, location) => {
       if (this.matchesObject(objectString, obj.name, obj.id)) {
@@ -354,28 +360,28 @@ export class Parser {
 
     // Check room objects
     if (currentRoom && currentRoom.objects) {
-      Object.values(currentRoom.objects).forEach(obj => {
+      Object.values(currentRoom.objects).forEach((obj) => {
         addMatch(obj, 'room');
       });
     }
 
     // Check room items
     if (currentRoom && currentRoom.items) {
-      currentRoom.items.forEach(itemId => {
+      currentRoom.items.forEach((itemId) => {
         const item = this.gameState.getItem(itemId);
         if (item) addMatch(item, 'room');
       });
     }
 
     // Check inventory
-    inventory.forEach(itemId => {
+    inventory.forEach((itemId) => {
       const item = this.gameState.getItem(itemId);
       if (item) addMatch(item, 'inventory');
     });
 
     // Check NPCs in room
     if (currentRoom && currentRoom.npcs) {
-      Object.values(currentRoom.npcs).forEach(npc => {
+      Object.values(currentRoom.npcs).forEach((npc) => {
         addMatch(npc, 'room');
       });
     }
@@ -426,60 +432,85 @@ export class Parser {
    */
   validateCommand(command) {
     // Commands that don't need objects
-    const noObjectVerbs = ['look', 'inventory', 'wait', 'save', 'load', 
-                          'quit', 'help', 'score', 'restart'];
-    
+    const noObjectVerbs = [
+      'look',
+      'inventory',
+      'wait',
+      'save',
+      'load',
+      'quit',
+      'help',
+      'score',
+      'restart',
+    ];
+
     if (noObjectVerbs.includes(command.verb)) {
       return { valid: true };
     }
-    
+
     // Movement commands just need a direction
     if (command.verb === 'go') {
       if (!command.directObject) {
-        return { 
-          valid: false, 
-          error: "Go where? Please specify a direction."
+        return {
+          valid: false,
+          error: 'Go where? Please specify a direction.',
         };
       }
       return { valid: true };
     }
-    
+
     // Commands that need a direct object
-    const needsObjectVerbs = ['take', 'drop', 'examine', 'use', 'open', 
-                             'close', 'read', 'eat', 'drink'];
-    
+    const needsObjectVerbs = [
+      'take',
+      'drop',
+      'examine',
+      'use',
+      'open',
+      'close',
+      'read',
+      'eat',
+      'drink',
+    ];
+
     if (needsObjectVerbs.includes(command.verb) && !command.directObject) {
-      return { 
-        valid: false, 
-        error: this.vocabulary.errors.needMoreInfo.replace('{verb}', command.verb)
+      return {
+        valid: false,
+        error: this.vocabulary.errors.needMoreInfo.replace(
+          '{verb}',
+          command.verb
+        ),
       };
     }
-    
+
     // Commands that need both objects
     const needsBothVerbs = ['give', 'put', 'use'];
-    
-    if (needsBothVerbs.includes(command.verb) && 
-        command.directObject && !command.indirectObject && command.preposition) {
-      return { 
-        valid: false, 
+
+    if (
+      needsBothVerbs.includes(command.verb) &&
+      command.directObject &&
+      !command.indirectObject &&
+      command.preposition
+    ) {
+      return {
+        valid: false,
         error: this.vocabulary.errors.needIndirectObject
           .replace('{verb}', command.verb)
           .replace('{object}', command.directObject)
-          .replace('{preposition}', command.preposition)
+          .replace('{preposition}', command.preposition),
       };
     }
-    
+
     // Check for ambiguous objects
     if (command.resolvedDirectObject?.type === 'ambiguous') {
       const names = command.resolvedDirectObject.matches
-        .map(m => m.name)
+        .map((m) => m.name)
         .join(', ');
       return {
         valid: false,
-        error: `Which one? I see: ${names}`
+        error: `Which one? I see: ${names}`,
       };
     }
-    
+
     return { valid: true };
   }
 
@@ -495,15 +526,15 @@ export class Parser {
     const suggestions = [];
 
     // Suggest verbs
-    Object.keys(this.vocabulary.verbs).forEach(verb => {
+    Object.keys(this.vocabulary.verbs).forEach((verb) => {
       if (verb.startsWith(partialLower)) {
         suggestions.push(verb);
       }
     });
-    
+
     // Suggest verb synonyms
-    Object.values(this.vocabulary.verbs).forEach(synonyms => {
-      synonyms.forEach(syn => {
+    Object.values(this.vocabulary.verbs).forEach((synonyms) => {
+      synonyms.forEach((syn) => {
         if (syn.startsWith(partialLower)) {
           suggestions.push(syn);
         }
@@ -511,7 +542,7 @@ export class Parser {
     });
 
     // Suggest from abbreviations
-    Object.keys(this.vocabulary.abbreviations).forEach(abbr => {
+    Object.keys(this.vocabulary.abbreviations).forEach((abbr) => {
       if (abbr.startsWith(partialLower)) {
         suggestions.push(abbr);
       }
@@ -530,7 +561,7 @@ export class Parser {
     if (!this.ambiguousObjects || this.ambiguousObjects.length === 0) {
       return null;
     }
-    
+
     // Try to match clarification against ambiguous objects
     for (const obj of this.ambiguousObjects) {
       if (this.matchesObject(clarification, obj.name, obj.id)) {
@@ -539,7 +570,7 @@ export class Parser {
         return obj;
       }
     }
-    
+
     return null;
   }
 }

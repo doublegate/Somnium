@@ -61,7 +61,7 @@ export class EventManager {
   async checkPreCommandEvents(command) {
     // Find events triggered before this command
     const events = this.findEventsByTrigger('pre_command', command);
-    
+
     for (const event of events) {
       if (this.checkCondition(event.condition)) {
         const result = await this.executeScriptedEvent(event);
@@ -70,7 +70,7 @@ export class EventManager {
         }
       }
     }
-    
+
     return null;
   }
 
@@ -79,10 +79,10 @@ export class EventManager {
    * @param {Object} command - Parsed command
    * @param {Object} result - Command execution result
    */
-  async checkPostCommandEvents(command, result) {
+  async checkPostCommandEvents(command, _result) {
     // Find events triggered after this command
     const events = this.findEventsByTrigger('post_command', command);
-    
+
     for (const event of events) {
       if (this.checkCondition(event.condition)) {
         await this.executeScriptedEvent(event);
@@ -96,7 +96,7 @@ export class EventManager {
    */
   async triggerRoomEntry(roomId) {
     const events = this.findEventsByTrigger('room_entry', { roomId });
-    
+
     for (const event of events) {
       if (this.checkCondition(event.condition)) {
         await this.executeScriptedEvent(event);
@@ -358,27 +358,6 @@ export class EventManager {
   }
 
   /**
-   * Execute scripted event
-   * @private
-   * @param {Object} event - Event definition
-   */
-  async executeScriptedEvent(event) {
-    console.log('Executing scripted event');
-
-    // Execute all actions
-    if (event.actions) {
-      for (const action of event.actions) {
-        this.executeAction(action);
-      }
-    }
-
-    // Show response message
-    if (event.response) {
-      this.showMessage(event.response);
-    }
-  }
-
-  /**
    * Handle dynamic command via AI
    * @private
    * @param {Object} command - Parsed command
@@ -557,11 +536,11 @@ export class EventManager {
   findEventsByTrigger(triggerType, context) {
     // This would search through game events for matching triggers
     const events = [];
-    
+
     // Check current room events
     const room = this.gameState.getCurrentRoom();
     if (room && room.events) {
-      room.events.forEach(event => {
+      room.events.forEach((event) => {
         if (event.trigger === triggerType) {
           // Check if context matches
           if (this.matchesTriggerContext(event, context)) {
@@ -570,10 +549,10 @@ export class EventManager {
         }
       });
     }
-    
+
     // Check global events
     if (this.gameState.gameJSON && this.gameState.gameJSON.events) {
-      this.gameState.gameJSON.events.forEach(event => {
+      this.gameState.gameJSON.events.forEach((event) => {
         if (event.trigger === triggerType) {
           if (this.matchesTriggerContext(event, context)) {
             events.push(event);
@@ -581,7 +560,7 @@ export class EventManager {
         }
       });
     }
-    
+
     return events;
   }
 
@@ -594,14 +573,14 @@ export class EventManager {
    */
   matchesTriggerContext(event, context) {
     if (!event.context) return true;
-    
+
     // Check each context property
     for (const [key, value] of Object.entries(event.context)) {
       if (context[key] !== value) {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -613,23 +592,23 @@ export class EventManager {
    */
   async executeScriptedEvent(event) {
     if (!event || !event.actions) return null;
-    
+
     let result = { preventDefault: false };
-    
+
     for (const action of event.actions) {
       this.executeAction(action);
-      
+
       // Check for preventDefault flag
       if (action.preventDefault) {
         result.preventDefault = true;
         result.response = {
           success: false,
           text: action.message || "You can't do that.",
-          audio: action.audio || 'error'
+          audio: action.audio || 'error',
         };
       }
     }
-    
+
     return result;
   }
 }
