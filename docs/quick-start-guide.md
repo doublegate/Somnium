@@ -45,6 +45,7 @@ npm run dev  # starts http-server on port 8000
 ### 5. Explore the Demo Pages
 
 Navigate to:
+
 - `http://localhost:8080` - Main game interface
 - `http://localhost:8080/graphics-demo.html` - Vector graphics showcase
 - `http://localhost:8080/sprite-demo.html` - Interactive sprite animation
@@ -54,17 +55,20 @@ Navigate to:
 ## Current Development Status
 
 **Phase 1 (Core Architecture)** - ✅ Complete
+
 - All 8 core modules implemented
 - Fixed timestep game loop with interpolation
 - Event-driven state management
 
 **Phase 2 (Graphics and Sound)** - ✅ Complete
+
 - Vector graphics with EGA palette
 - Sprite animation with smooth movement
 - Tone.js sound synthesis
 - Music generation system
 
 **Phase 3 (Parser and Game Logic)** - 🚧 Ready to start
+
 - Text parser implementation
 - Game event system
 - Save/load functionality

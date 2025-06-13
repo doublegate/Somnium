@@ -14,7 +14,9 @@
     "lint:fix": "eslint js/**/*.js --fix",
     "format": "prettier --write \"**/*.{js,json,md,html,css}\"",
     "format:check": "prettier --check \"**/*.{js,json,md,html,css}\"",
-    "validate": "npm run lint && npm run test && npm run format:check",
+    "fix": "npm run format && npm run lint:fix",
+    "check": "npm run format:check && npm run lint",
+    "validate": "npm run check && npm run test",
     "prepare": "husky install"
   },
   "repository": {
@@ -46,6 +48,7 @@
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-jest": "^28.13.5",
+    "eslint-plugin-prettier": "^5.4.1",
     "globals": "^16.2.0",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",

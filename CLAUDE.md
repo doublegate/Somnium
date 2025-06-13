@@ -16,6 +16,7 @@ The engine follows Sierra's SCI philosophy of complete separation between engine
 ### Core Modules (Phase 1 & 2 Complete ✅)
 
 **Phase 1 - Core Architecture:**
+
 - **GameManager.js**: Main game loop with fixed timestep, FPS monitoring, pause/resume
 - **AIManager.js**: LLM communication with mock mode for testing, rate limiting, caching
 - **GameState.js**: Event-driven state management with validation, history, and undo
@@ -23,6 +24,7 @@ The engine follows Sierra's SCI philosophy of complete separation between engine
 - **EventManager.js**: Event system with scripted/dynamic responses and scheduling
 
 **Phase 2 - Graphics and Sound:**
+
 - **SceneRenderer.js**: Complete vector rendering with EGA palette, 9 dithering patterns, priority buffer
 - **ViewManager.js**: Full sprite animation with VIEW resources, smooth interpolation, effects
 - **SoundManager.js**: Tone.js integration with ADSR envelopes, filters, effects, 16 channels
