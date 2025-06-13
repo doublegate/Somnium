@@ -612,10 +612,7 @@ export class ViewManager {
     const view2 = this.views.get(id2);
     if (!view1 || !view2) return false;
 
-    return this.checkBoundingBoxCollision(
-      view1.boundingBox,
-      view2.boundingBox
-    );
+    return this.checkBoundingBoxCollision(view1.boundingBox, view2.boundingBox);
   }
 
   /**
@@ -717,20 +714,6 @@ export class ViewManager {
       view.visible = false;
       view.loopCallback = null;
       this.spritePool.push(view);
-    }
-  }
-
-  /**
-   * Remove view and return to pool
-   * @override
-   * @param {string} id - View ID to remove
-   */
-  removeView(id) {
-    const view = this.views.get(id);
-    if (view) {
-      this.views.delete(id);
-      this.movements.delete(id);
-      this.returnToPool(view);
     }
   }
 

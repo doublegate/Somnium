@@ -460,7 +460,9 @@ describe('ViewManager', () => {
         ],
       });
 
-      const originalBox = { ...viewManager.getView('scale_bounds').boundingBox };
+      const originalBox = {
+        ...viewManager.getView('scale_bounds').boundingBox,
+      };
 
       viewManager.setScale('scale_bounds', 2.0);
 
@@ -533,7 +535,8 @@ describe('ViewManager', () => {
       viewManager.removeView('to_pool');
 
       // Check the pooled view is reset
-      const pooledView = viewManager.spritePool[viewManager.spritePool.length - 1];
+      const pooledView =
+        viewManager.spritePool[viewManager.spritePool.length - 1];
       expect(pooledView.id).toBe('');
       expect(pooledView.visible).toBe(false);
       expect(pooledView.loopCallback).toBeNull();

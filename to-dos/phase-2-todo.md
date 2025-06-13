@@ -13,6 +13,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Phase 2.1 Status: ✅ COMPLETE (June 13, 2025)
 
 **Completed**:
+
 - Enhanced EGA palette system with color validation
 - Implemented all primitive drawing functions
 - Added comprehensive dithering patterns
@@ -22,6 +23,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Phase 2.3 Status: ✅ COMPLETE (June 13, 2025)
 
 **Completed**:
+
 - Complete Tone.js integration with proper initialization
 - Implemented retro synthesizer presets (PC Speaker, AdLib, MT-32)
 - Created procedural sound generation for all common game sounds
@@ -36,12 +38,14 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Core Graphics Implementation
 
 - [x] **EGA Palette System**
+
   - [x] Implement strict 16-color EGA palette enforcement
   - [x] Create color lookup table with hex values
   - [x] Add palette validation for all color inputs
   - [x] Implement getEGAColor() helper function
 
 - [x] **Primitive Drawing Functions**
+
   - [x] Implement drawRectangle() with fill and stroke options
   - [x] Implement drawPolygon() with vertex support
   - [x] Implement drawLine() with proper pixel alignment
@@ -50,6 +54,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
   - [x] Create drawPath() for complex shapes
 
 - [x] **Dithering Pattern System**
+
   - [x] Implement 50% checkerboard dithering
   - [x] Add diagonal line patterns (25%, 75%)
   - [x] Create horizontal/vertical line patterns
@@ -67,6 +72,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Priority and Z-Order System
 
 - [x] **Priority Band Implementation**
+
   - [x] Create priority map (invisible layer)
   - [x] Implement 16 priority bands (0-15)
   - [ ] Add priority-based sprite sorting
@@ -83,6 +89,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Scene Rendering Pipeline
 
 - [x] **Background Rendering**
+
   - [x] Parse room graphics data from JSON
   - [x] Execute primitive drawing commands in order
   - [x] Cache rendered backgrounds
@@ -101,6 +108,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### VIEW Resource Implementation
 
 - [x] **Sprite Data Structure**
+
   - [x] Design VIEW format (loops, cels, dimensions)
   - [x] Implement sprite loader from JSON
   - [x] Add sprite caching system
@@ -118,8 +126,9 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Character Movement
 
 - [x] **Movement Controller**
+
   - [x] Implement keyboard-based movement (in demo)
-  - [ ] Add pathfinding system (A* or similar) (deferred to Phase 3)
+  - [ ] Add pathfinding system (A\* or similar) (deferred to Phase 3)
   - [x] Create smooth interpolation
   - [x] Handle diagonal movement
   - [x] Add movement speed control
@@ -147,6 +156,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Tone.js Integration
 
 - [x] **Audio Context Setup**
+
   - [x] Initialize Tone.js properly
   - [x] Configure audio routing
   - [x] Set up master volume control
@@ -163,6 +173,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Sound Effect Engine
 
 - [x] **Effect Generation**
+
   - [x] Implement procedural SFX generation
   - [x] Create common effects (door, footsteps, etc.)
   - [x] Add effect parameter randomization
@@ -179,6 +190,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Audio Management
 
 - [x] **Channel System**
+
   - [x] Implement multi-channel mixer
   - [x] Add channel allocation logic
   - [x] Create channel priority system
@@ -197,6 +209,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Musical Structure
 
 - [x] **Melody Generation**
+
   - [x] Implement phrase-based composition
   - [x] Add scale/mode selection
   - [x] Create melodic patterns
@@ -213,6 +226,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Music Playback
 
 - [x] **Sequencer Implementation**
+
   - [x] Create MIDI-like sequencer
   - [x] Implement tempo control
   - [x] Add time signature support
@@ -236,6 +250,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
   - [x] Add leitmotif support
 
 **Completed Features**:
+
 - Comprehensive music theory foundation with scales, chords, and progressions
 - Procedural melody generation with question/answer phrasing
 - Multi-track sequencer (melody, harmony, bass, drums)
@@ -252,6 +267,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Graphics Testing
 
 - [ ] **Rendering Tests**
+
   - [ ] Test all primitive types
   - [ ] Verify EGA color accuracy
   - [ ] Test dithering patterns
@@ -268,6 +284,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ### Audio Testing
 
 - [ ] **Sound Tests**
+
   - [ ] Test all synthesizers
   - [ ] Verify effect generation
   - [ ] Test channel management
@@ -284,6 +301,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ## Integration Tasks
 
 - [ ] **Module Integration**
+
   - [ ] Connect SceneRenderer to GameManager
   - [ ] Integrate ViewManager with game loop
   - [ ] Connect SoundManager to events
@@ -300,6 +318,7 @@ Phase 2 implements the visual and audio rendering systems that bring Somnium's S
 ## Documentation Tasks
 
 - [ ] **Technical Documentation**
+
   - [ ] Document graphics pipeline
   - [ ] Create sprite format guide
   - [ ] Document audio architecture

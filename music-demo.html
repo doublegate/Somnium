@@ -1,568 +1,653 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Somnium - Music Generation Demo</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: 'Courier New', monospace;
-      background-color: #000000;
-      color: #ffffff;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium - Music Generation Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: 'Courier New', monospace;
+        background-color: #000000;
+        color: #ffffff;
+      }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-    h1, h2 {
-      color: #55ffff;
-      text-shadow: 2px 2px 0 #005555;
-    }
+      h1,
+      h2 {
+        color: #55ffff;
+        text-shadow: 2px 2px 0 #005555;
+      }
 
-    .controls {
-      background-color: #0000aa;
-      border: 2px solid #55ffff;
-      padding: 20px;
-      margin-bottom: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
+      .controls {
+        background-color: #0000aa;
+        border: 2px solid #55ffff;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
 
-    .control-group {
-      background-color: #000055;
-      padding: 15px;
-      border: 1px solid #5555ff;
-    }
+      .control-group {
+        background-color: #000055;
+        padding: 15px;
+        border: 1px solid #5555ff;
+      }
 
-    .control-group h3 {
-      margin: 0 0 10px 0;
-      color: #ffff55;
-      font-size: 14px;
-    }
+      .control-group h3 {
+        margin: 0 0 10px 0;
+        color: #ffff55;
+        font-size: 14px;
+      }
 
-    button {
-      background-color: #0000aa;
-      color: #ffffff;
-      border: 2px solid #55ffff;
-      padding: 8px 16px;
-      margin: 2px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 14px;
-      text-transform: uppercase;
-    }
+      button {
+        background-color: #0000aa;
+        color: #ffffff;
+        border: 2px solid #55ffff;
+        padding: 8px 16px;
+        margin: 2px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 14px;
+        text-transform: uppercase;
+      }
 
-    button:hover {
-      background-color: #5555ff;
-    }
+      button:hover {
+        background-color: #5555ff;
+      }
 
-    button:active {
-      background-color: #aa00aa;
-    }
+      button:active {
+        background-color: #aa00aa;
+      }
 
-    button.active {
-      background-color: #00aa00;
-      border-color: #55ff55;
-    }
+      button.active {
+        background-color: #00aa00;
+        border-color: #55ff55;
+      }
 
-    button:disabled {
-      background-color: #555555;
-      border-color: #aaaaaa;
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
+      button:disabled {
+        background-color: #555555;
+        border-color: #aaaaaa;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
 
-    .slider-group {
-      margin: 10px 0;
-    }
+      .slider-group {
+        margin: 10px 0;
+      }
 
-    label {
-      display: block;
-      color: #55ff55;
-      margin-bottom: 5px;
-      font-size: 12px;
-    }
+      label {
+        display: block;
+        color: #55ff55;
+        margin-bottom: 5px;
+        font-size: 12px;
+      }
 
-    input[type="range"] {
-      width: 100%;
-      margin: 5px 0;
-    }
+      input[type='range'] {
+        width: 100%;
+        margin: 5px 0;
+      }
 
-    .value-display {
-      color: #ffff55;
-      font-size: 12px;
-      float: right;
-    }
+      .value-display {
+        color: #ffff55;
+        font-size: 12px;
+        float: right;
+      }
 
-    .visualizer {
-      background-color: #000055;
-      border: 2px solid #5555ff;
-      padding: 20px;
-      margin-bottom: 20px;
-      height: 200px;
-      position: relative;
-      overflow: hidden;
-    }
+      .visualizer {
+        background-color: #000055;
+        border: 2px solid #5555ff;
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+      }
 
-    .track {
-      height: 40px;
-      position: relative;
-      margin-bottom: 10px;
-      background-color: #000033;
-      border: 1px solid #333399;
-    }
+      .track {
+        height: 40px;
+        position: relative;
+        margin-bottom: 10px;
+        background-color: #000033;
+        border: 1px solid #333399;
+      }
 
-    .track-label {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #55ff55;
-      font-size: 12px;
-      text-transform: uppercase;
-    }
+      .track-label {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #55ff55;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
 
-    .note {
-      position: absolute;
-      height: 100%;
-      background-color: #55ff55;
-      opacity: 0.8;
-      border-radius: 2px;
-    }
+      .note {
+        position: absolute;
+        height: 100%;
+        background-color: #55ff55;
+        opacity: 0.8;
+        border-radius: 2px;
+      }
 
-    .note.melody { background-color: #ff5555; }
-    .note.harmony { background-color: #5555ff; }
-    .note.bass { background-color: #ffaa00; }
-    .note.drums { background-color: #55ff55; }
+      .note.melody {
+        background-color: #ff5555;
+      }
+      .note.harmony {
+        background-color: #5555ff;
+      }
+      .note.bass {
+        background-color: #ffaa00;
+      }
+      .note.drums {
+        background-color: #55ff55;
+      }
 
-    .status {
-      background-color: #000055;
-      border: 1px solid #5555ff;
-      padding: 10px;
-      margin-bottom: 20px;
-      font-size: 12px;
-    }
+      .status {
+        background-color: #000055;
+        border: 1px solid #5555ff;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 12px;
+      }
 
-    .status-item {
-      margin: 5px 0;
-    }
+      .status-item {
+        margin: 5px 0;
+      }
 
-    .status-label {
-      color: #55ff55;
-      display: inline-block;
-      width: 150px;
-    }
+      .status-label {
+        color: #55ff55;
+        display: inline-block;
+        width: 150px;
+      }
 
-    .status-value {
-      color: #ffff55;
-    }
+      .status-value {
+        color: #ffff55;
+      }
 
-    .theme-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-    }
+      .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+      }
 
-    .preset-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-    }
+      .preset-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+      }
 
-    .track-mute-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 5px;
-    }
+      .track-mute-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+      }
 
-    .leitmotif-section {
-      background-color: #000055;
-      border: 1px solid #5555ff;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
+      .leitmotif-section {
+        background-color: #000055;
+        border: 1px solid #5555ff;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
 
-    .leitmotif-buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
+      .leitmotif-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
 
-    #playhead {
-      position: absolute;
-      top: 0;
-      width: 2px;
-      height: 100%;
-      background-color: #ffffff;
-      box-shadow: 0 0 10px #ffffff;
-      z-index: 10;
-    }
+      #playhead {
+        position: absolute;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px #ffffff;
+        z-index: 10;
+      }
 
-    @keyframes pulse {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
+      @keyframes pulse {
+        0% {
+          opacity: 0.8;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.8;
+        }
+      }
 
-    .playing {
-      animation: pulse 1s infinite;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Somnium Music Generation Demo</h1>
-    
-    <div class="status" id="status">
-      <div class="status-item">
-        <span class="status-label">Current Theme:</span>
-        <span class="status-value" id="currentTheme">None</span>
+      .playing {
+        animation: pulse 1s infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Somnium Music Generation Demo</h1>
+
+      <div class="status" id="status">
+        <div class="status-item">
+          <span class="status-label">Current Theme:</span>
+          <span class="status-value" id="currentTheme">None</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Tempo:</span>
+          <span class="status-value" id="currentTempo">0 BPM</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Time Signature:</span>
+          <span class="status-value" id="currentTimeSignature">4/4</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Key:</span>
+          <span class="status-value" id="currentKey">C Major</span>
+        </div>
       </div>
-      <div class="status-item">
-        <span class="status-label">Tempo:</span>
-        <span class="status-value" id="currentTempo">0 BPM</span>
+
+      <div class="controls">
+        <div class="control-group">
+          <h3>Music Themes</h3>
+          <div class="theme-grid">
+            <button onclick="playTheme('heroic')">Heroic</button>
+            <button onclick="playTheme('mysterious')">Mysterious</button>
+            <button onclick="playTheme('peaceful')">Peaceful</button>
+            <button onclick="playTheme('danger')">Danger</button>
+            <button onclick="playTheme('exploration')">Exploration</button>
+            <button onclick="playTheme('combat')">Combat</button>
+            <button onclick="playTheme('village')">Village</button>
+            <button onclick="playTheme('castle')">Castle</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Synthesizer Presets</h3>
+          <div class="preset-grid">
+            <button onclick="changePreset('pcSpeaker')" id="preset-pcSpeaker">
+              PC Speaker
+            </button>
+            <button
+              onclick="changePreset('adlib')"
+              id="preset-adlib"
+              class="active"
+            >
+              AdLib
+            </button>
+            <button onclick="changePreset('mt32')" id="preset-mt32">
+              MT-32
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Track Controls</h3>
+          <div class="track-mute-grid">
+            <button
+              onclick="toggleTrack('melody')"
+              id="track-melody"
+              class="active"
+            >
+              Melody
+            </button>
+            <button
+              onclick="toggleTrack('harmony')"
+              id="track-harmony"
+              class="active"
+            >
+              Harmony
+            </button>
+            <button
+              onclick="toggleTrack('bass')"
+              id="track-bass"
+              class="active"
+            >
+              Bass
+            </button>
+            <button
+              onclick="toggleTrack('drums')"
+              id="track-drums"
+              class="active"
+            >
+              Drums
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Music Controls</h3>
+          <button onclick="stopMusic()" id="stopButton">Stop Music</button>
+          <button onclick="transitionDemo()">Transition Demo</button>
+
+          <div class="slider-group">
+            <label>
+              Music Intensity
+              <span class="value-display" id="intensityValue">1.0</span>
+            </label>
+            <input
+              type="range"
+              id="intensitySlider"
+              min="0"
+              max="100"
+              value="100"
+              oninput="updateIntensity(this.value)"
+            />
+          </div>
+
+          <div class="slider-group">
+            <label>
+              Master Volume
+              <span class="value-display" id="volumeValue">0.7</span>
+            </label>
+            <input
+              type="range"
+              id="volumeSlider"
+              min="0"
+              max="100"
+              value="70"
+              oninput="updateVolume(this.value)"
+            />
+          </div>
+        </div>
       </div>
-      <div class="status-item">
-        <span class="status-label">Time Signature:</span>
-        <span class="status-value" id="currentTimeSignature">4/4</span>
+
+      <div class="leitmotif-section">
+        <h3>Character Leitmotifs</h3>
+        <p style="font-size: 12px; color: #aaaaaa">
+          Define memorable musical phrases for characters and locations
+        </p>
+        <div class="leitmotif-buttons">
+          <button onclick="defineLeitmotif('hero')">Define Hero Theme</button>
+          <button onclick="defineLeitmotif('villain')">
+            Define Villain Theme
+          </button>
+          <button onclick="defineLeitmotif('mentor')">
+            Define Mentor Theme
+          </button>
+          <button onclick="playLeitmotif('hero')">Play Hero</button>
+          <button onclick="playLeitmotif('villain')">Play Villain</button>
+          <button onclick="playLeitmotif('mentor')">Play Mentor</button>
+        </div>
       </div>
-      <div class="status-item">
-        <span class="status-label">Key:</span>
-        <span class="status-value" id="currentKey">C Major</span>
+
+      <h2>Music Sequencer Visualization</h2>
+      <div class="visualizer" id="visualizer">
+        <div id="playhead"></div>
+        <div class="track" id="track-melody-viz">
+          <span class="track-label">Melody</span>
+        </div>
+        <div class="track" id="track-harmony-viz">
+          <span class="track-label">Harmony</span>
+        </div>
+        <div class="track" id="track-bass-viz">
+          <span class="track-label">Bass</span>
+        </div>
+        <div class="track" id="track-drums-viz">
+          <span class="track-label">Drums</span>
+        </div>
       </div>
     </div>
 
-    <div class="controls">
-      <div class="control-group">
-        <h3>Music Themes</h3>
-        <div class="theme-grid">
-          <button onclick="playTheme('heroic')">Heroic</button>
-          <button onclick="playTheme('mysterious')">Mysterious</button>
-          <button onclick="playTheme('peaceful')">Peaceful</button>
-          <button onclick="playTheme('danger')">Danger</button>
-          <button onclick="playTheme('exploration')">Exploration</button>
-          <button onclick="playTheme('combat')">Combat</button>
-          <button onclick="playTheme('village')">Village</button>
-          <button onclick="playTheme('castle')">Castle</button>
-        </div>
-      </div>
+    <script type="module">
+      import { SoundManager } from './js/SoundManager.js';
 
-      <div class="control-group">
-        <h3>Synthesizer Presets</h3>
-        <div class="preset-grid">
-          <button onclick="changePreset('pcSpeaker')" id="preset-pcSpeaker">PC Speaker</button>
-          <button onclick="changePreset('adlib')" id="preset-adlib" class="active">AdLib</button>
-          <button onclick="changePreset('mt32')" id="preset-mt32">MT-32</button>
-        </div>
-      </div>
+      // Global variables
+      let soundManager = null;
+      let currentPreset = 'adlib';
+      let trackMutes = {
+        melody: false,
+        harmony: false,
+        bass: false,
+        drums: false,
+      };
+      let visualizerInterval = null;
 
-      <div class="control-group">
-        <h3>Track Controls</h3>
-        <div class="track-mute-grid">
-          <button onclick="toggleTrack('melody')" id="track-melody" class="active">Melody</button>
-          <button onclick="toggleTrack('harmony')" id="track-harmony" class="active">Harmony</button>
-          <button onclick="toggleTrack('bass')" id="track-bass" class="active">Bass</button>
-          <button onclick="toggleTrack('drums')" id="track-drums" class="active">Drums</button>
-        </div>
-      </div>
+      // Initialize sound manager
+      async function initSoundManager() {
+        soundManager = new SoundManager();
+        await soundManager.initialize();
+        console.log('Sound manager initialized');
 
-      <div class="control-group">
-        <h3>Music Controls</h3>
-        <button onclick="stopMusic()" id="stopButton">Stop Music</button>
-        <button onclick="transitionDemo()">Transition Demo</button>
-        
-        <div class="slider-group">
-          <label>
-            Music Intensity
-            <span class="value-display" id="intensityValue">1.0</span>
-          </label>
-          <input type="range" id="intensitySlider" min="0" max="100" value="100" 
-                 oninput="updateIntensity(this.value)">
-        </div>
+        // Define default leitmotifs
+        defineDefaultLeitmotifs();
 
-        <div class="slider-group">
-          <label>
-            Master Volume
-            <span class="value-display" id="volumeValue">0.7</span>
-          </label>
-          <input type="range" id="volumeSlider" min="0" max="100" value="70" 
-                 oninput="updateVolume(this.value)">
-        </div>
-      </div>
-    </div>
-
-    <div class="leitmotif-section">
-      <h3>Character Leitmotifs</h3>
-      <p style="font-size: 12px; color: #aaaaaa;">
-        Define memorable musical phrases for characters and locations
-      </p>
-      <div class="leitmotif-buttons">
-        <button onclick="defineLeitmotif('hero')">Define Hero Theme</button>
-        <button onclick="defineLeitmotif('villain')">Define Villain Theme</button>
-        <button onclick="defineLeitmotif('mentor')">Define Mentor Theme</button>
-        <button onclick="playLeitmotif('hero')">Play Hero</button>
-        <button onclick="playLeitmotif('villain')">Play Villain</button>
-        <button onclick="playLeitmotif('mentor')">Play Mentor</button>
-      </div>
-    </div>
-
-    <h2>Music Sequencer Visualization</h2>
-    <div class="visualizer" id="visualizer">
-      <div id="playhead"></div>
-      <div class="track" id="track-melody-viz">
-        <span class="track-label">Melody</span>
-      </div>
-      <div class="track" id="track-harmony-viz">
-        <span class="track-label">Harmony</span>
-      </div>
-      <div class="track" id="track-bass-viz">
-        <span class="track-label">Bass</span>
-      </div>
-      <div class="track" id="track-drums-viz">
-        <span class="track-label">Drums</span>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { SoundManager } from './js/SoundManager.js';
-
-    // Global variables
-    let soundManager = null;
-    let currentPreset = 'adlib';
-    let trackMutes = {
-      melody: false,
-      harmony: false,
-      bass: false,
-      drums: false
-    };
-    let visualizerInterval = null;
-
-    // Initialize sound manager
-    async function initSoundManager() {
-      soundManager = new SoundManager();
-      await soundManager.initialize();
-      console.log('Sound manager initialized');
+        // Update initial volume display
+        document.getElementById('volumeValue').textContent =
+          soundManager.volumes.master.toFixed(1);
+      }
 
       // Define default leitmotifs
-      defineDefaultLeitmotifs();
-      
-      // Update initial volume display
-      document.getElementById('volumeValue').textContent = soundManager.volumes.master.toFixed(1);
-    }
+      function defineDefaultLeitmotifs() {
+        // Hero theme - triumphant ascending melody
+        soundManager.addLeitmotif('hero', {
+          notes: [
+            { pitch: 'C4', duration: '8n' },
+            { pitch: 'E4', duration: '8n' },
+            { pitch: 'G4', duration: '8n' },
+            { pitch: 'C5', duration: '4n' },
+            { pitch: 'B4', duration: '8n' },
+            { pitch: 'G4', duration: '4n' },
+          ],
+        });
 
-    // Define default leitmotifs
-    function defineDefaultLeitmotifs() {
-      // Hero theme - triumphant ascending melody
-      soundManager.addLeitmotif('hero', {
-        notes: [
-          { pitch: 'C4', duration: '8n' },
-          { pitch: 'E4', duration: '8n' },
-          { pitch: 'G4', duration: '8n' },
-          { pitch: 'C5', duration: '4n' },
-          { pitch: 'B4', duration: '8n' },
-          { pitch: 'G4', duration: '4n' }
-        ]
-      });
+        // Villain theme - ominous descending chromatic
+        soundManager.addLeitmotif('villain', {
+          notes: [
+            { pitch: 'A4', duration: '4n' },
+            { pitch: 'G#4', duration: '8n' },
+            { pitch: 'G4', duration: '8n' },
+            { pitch: 'F#4', duration: '8n' },
+            { pitch: 'F4', duration: '8n' },
+            { pitch: 'E4', duration: '2n' },
+          ],
+        });
 
-      // Villain theme - ominous descending chromatic
-      soundManager.addLeitmotif('villain', {
-        notes: [
-          { pitch: 'A4', duration: '4n' },
-          { pitch: 'G#4', duration: '8n' },
-          { pitch: 'G4', duration: '8n' },
-          { pitch: 'F#4', duration: '8n' },
-          { pitch: 'F4', duration: '8n' },
-          { pitch: 'E4', duration: '2n' }
-        ]
-      });
-
-      // Mentor theme - wise and peaceful
-      soundManager.addLeitmotif('mentor', {
-        notes: [
-          { pitch: 'F4', duration: '4n' },
-          { pitch: 'A4', duration: '4n' },
-          { pitch: 'C5', duration: '4n' },
-          { pitch: 'A4', duration: '8n' },
-          { pitch: 'F4', duration: '8n' },
-          { pitch: 'G4', duration: '2n' }
-        ]
-      });
-    }
-
-    // Play a theme
-    window.playTheme = function(theme) {
-      if (!soundManager || !soundManager.isInitialized) {
-        console.error('Sound manager not initialized');
-        return;
+        // Mentor theme - wise and peaceful
+        soundManager.addLeitmotif('mentor', {
+          notes: [
+            { pitch: 'F4', duration: '4n' },
+            { pitch: 'A4', duration: '4n' },
+            { pitch: 'C5', duration: '4n' },
+            { pitch: 'A4', duration: '8n' },
+            { pitch: 'F4', duration: '8n' },
+            { pitch: 'G4', duration: '2n' },
+          ],
+        });
       }
 
-      soundManager.playMusic(theme, currentPreset);
-      
-      // Update status
-      document.getElementById('currentTheme').textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
-      const themeConfig = soundManager.musicTheory.themes[theme];
-      if (themeConfig) {
-        document.getElementById('currentTempo').textContent = themeConfig.tempo + ' BPM';
-        document.getElementById('currentTimeSignature').textContent = themeConfig.timeSignature;
-        document.getElementById('currentKey').textContent = 'C ' + themeConfig.scale.charAt(0).toUpperCase() + themeConfig.scale.slice(1);
-      }
+      // Play a theme
+      window.playTheme = function (theme) {
+        if (!soundManager || !soundManager.isInitialized) {
+          console.error('Sound manager not initialized');
+          return;
+        }
 
-      // Start visualizer
-      startVisualizer();
-    };
+        soundManager.playMusic(theme, currentPreset);
 
-    // Stop music
-    window.stopMusic = function() {
-      if (!soundManager) return;
-      
-      soundManager.stopMusic();
-      document.getElementById('currentTheme').textContent = 'None';
-      document.getElementById('currentTempo').textContent = '0 BPM';
-      stopVisualizer();
-    };
-
-    // Change synthesizer preset
-    window.changePreset = function(preset) {
-      currentPreset = preset;
-      
-      // Update button states
-      document.querySelectorAll('[id^="preset-"]').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      document.getElementById('preset-' + preset).classList.add('active');
-
-      // If music is playing, restart with new preset
-      if (soundManager && soundManager.currentTheme) {
-        const theme = soundManager.currentTheme;
-        soundManager.playMusic(theme, preset);
-      }
-    };
-
-    // Toggle track mute
-    window.toggleTrack = function(track) {
-      if (!soundManager) return;
-      
-      trackMutes[track] = !trackMutes[track];
-      soundManager.muteTrack(track, trackMutes[track]);
-      
-      // Update button state
-      const button = document.getElementById('track-' + track);
-      if (trackMutes[track]) {
-        button.classList.remove('active');
-      } else {
-        button.classList.add('active');
-      }
-    };
-
-    // Update music intensity
-    window.updateIntensity = function(value) {
-      if (!soundManager) return;
-      
-      const intensity = value / 100;
-      soundManager.setMusicIntensity(intensity);
-      document.getElementById('intensityValue').textContent = intensity.toFixed(1);
-    };
-
-    // Update master volume
-    window.updateVolume = function(value) {
-      if (!soundManager) return;
-      
-      const volume = value / 100;
-      soundManager.setVolume('master', volume);
-      document.getElementById('volumeValue').textContent = volume.toFixed(1);
-    };
-
-    // Transition demo
-    window.transitionDemo = async function() {
-      if (!soundManager || !soundManager.isInitialized) return;
-      
-      const themes = ['peaceful', 'exploration', 'danger', 'combat', 'heroic'];
-      
-      for (let i = 0; i < themes.length; i++) {
-        await soundManager.transitionToTheme(themes[i], 2);
-        
         // Update status
-        document.getElementById('currentTheme').textContent = themes[i].charAt(0).toUpperCase() + themes[i].slice(1);
-        const themeConfig = soundManager.musicTheory.themes[themes[i]];
+        document.getElementById('currentTheme').textContent =
+          theme.charAt(0).toUpperCase() + theme.slice(1);
+        const themeConfig = soundManager.musicTheory.themes[theme];
         if (themeConfig) {
-          document.getElementById('currentTempo').textContent = themeConfig.tempo + ' BPM';
-          document.getElementById('currentTimeSignature').textContent = themeConfig.timeSignature;
+          document.getElementById('currentTempo').textContent =
+            themeConfig.tempo + ' BPM';
+          document.getElementById('currentTimeSignature').textContent =
+            themeConfig.timeSignature;
+          document.getElementById('currentKey').textContent =
+            'C ' +
+            themeConfig.scale.charAt(0).toUpperCase() +
+            themeConfig.scale.slice(1);
         }
-        
-        // Wait before next transition
-        await new Promise(resolve => setTimeout(resolve, 5000));
-      }
-    };
 
-    // Define custom leitmotif
-    window.defineLeitmotif = function(character) {
-      // For demo, just show alert - in real implementation would have UI for entering notes
-      alert(`In the full game, you could define a custom musical theme for ${character}`);
-    };
+        // Start visualizer
+        startVisualizer();
+      };
 
-    // Play leitmotif
-    window.playLeitmotif = function(character) {
-      if (!soundManager || !soundManager.isInitialized) return;
-      soundManager.playLeitmotif(character);
-    };
+      // Stop music
+      window.stopMusic = function () {
+        if (!soundManager) return;
 
-    // Visualizer functions
-    function startVisualizer() {
-      stopVisualizer();
-      
-      // Clear existing notes
-      document.querySelectorAll('.note').forEach(note => note.remove());
-      
-      // Start playhead animation
-      let playheadPosition = 0;
-      const playhead = document.getElementById('playhead');
-      const visualizerWidth = document.getElementById('visualizer').offsetWidth;
-      
-      visualizerInterval = setInterval(() => {
-        playheadPosition = (playheadPosition + 2) % visualizerWidth;
-        playhead.style.left = playheadPosition + 'px';
-        
-        // Add random notes for visualization (in real implementation, would sync with actual music)
-        if (Math.random() > 0.7) {
-          addVisualizerNote();
+        soundManager.stopMusic();
+        document.getElementById('currentTheme').textContent = 'None';
+        document.getElementById('currentTempo').textContent = '0 BPM';
+        stopVisualizer();
+      };
+
+      // Change synthesizer preset
+      window.changePreset = function (preset) {
+        currentPreset = preset;
+
+        // Update button states
+        document.querySelectorAll('[id^="preset-"]').forEach((btn) => {
+          btn.classList.remove('active');
+        });
+        document.getElementById('preset-' + preset).classList.add('active');
+
+        // If music is playing, restart with new preset
+        if (soundManager && soundManager.currentTheme) {
+          const theme = soundManager.currentTheme;
+          soundManager.playMusic(theme, preset);
         }
-      }, 50);
-    }
+      };
 
-    function stopVisualizer() {
-      if (visualizerInterval) {
-        clearInterval(visualizerInterval);
-        visualizerInterval = null;
+      // Toggle track mute
+      window.toggleTrack = function (track) {
+        if (!soundManager) return;
+
+        trackMutes[track] = !trackMutes[track];
+        soundManager.muteTrack(track, trackMutes[track]);
+
+        // Update button state
+        const button = document.getElementById('track-' + track);
+        if (trackMutes[track]) {
+          button.classList.remove('active');
+        } else {
+          button.classList.add('active');
+        }
+      };
+
+      // Update music intensity
+      window.updateIntensity = function (value) {
+        if (!soundManager) return;
+
+        const intensity = value / 100;
+        soundManager.setMusicIntensity(intensity);
+        document.getElementById('intensityValue').textContent =
+          intensity.toFixed(1);
+      };
+
+      // Update master volume
+      window.updateVolume = function (value) {
+        if (!soundManager) return;
+
+        const volume = value / 100;
+        soundManager.setVolume('master', volume);
+        document.getElementById('volumeValue').textContent = volume.toFixed(1);
+      };
+
+      // Transition demo
+      window.transitionDemo = async function () {
+        if (!soundManager || !soundManager.isInitialized) return;
+
+        const themes = [
+          'peaceful',
+          'exploration',
+          'danger',
+          'combat',
+          'heroic',
+        ];
+
+        for (let i = 0; i < themes.length; i++) {
+          await soundManager.transitionToTheme(themes[i], 2);
+
+          // Update status
+          document.getElementById('currentTheme').textContent =
+            themes[i].charAt(0).toUpperCase() + themes[i].slice(1);
+          const themeConfig = soundManager.musicTheory.themes[themes[i]];
+          if (themeConfig) {
+            document.getElementById('currentTempo').textContent =
+              themeConfig.tempo + ' BPM';
+            document.getElementById('currentTimeSignature').textContent =
+              themeConfig.timeSignature;
+          }
+
+          // Wait before next transition
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
+      };
+
+      // Define custom leitmotif
+      window.defineLeitmotif = function (character) {
+        // For demo, just show alert - in real implementation would have UI for entering notes
+        alert(
+          `In the full game, you could define a custom musical theme for ${character}`
+        );
+      };
+
+      // Play leitmotif
+      window.playLeitmotif = function (character) {
+        if (!soundManager || !soundManager.isInitialized) return;
+        soundManager.playLeitmotif(character);
+      };
+
+      // Visualizer functions
+      function startVisualizer() {
+        stopVisualizer();
+
+        // Clear existing notes
+        document.querySelectorAll('.note').forEach((note) => note.remove());
+
+        // Start playhead animation
+        let playheadPosition = 0;
+        const playhead = document.getElementById('playhead');
+        const visualizerWidth =
+          document.getElementById('visualizer').offsetWidth;
+
+        visualizerInterval = setInterval(() => {
+          playheadPosition = (playheadPosition + 2) % visualizerWidth;
+          playhead.style.left = playheadPosition + 'px';
+
+          // Add random notes for visualization (in real implementation, would sync with actual music)
+          if (Math.random() > 0.7) {
+            addVisualizerNote();
+          }
+        }, 50);
       }
-    }
 
-    function addVisualizerNote() {
-      const tracks = ['melody', 'harmony', 'bass', 'drums'];
-      const track = tracks[Math.floor(Math.random() * tracks.length)];
-      
-      if (trackMutes[track]) return;
-      
-      const trackElement = document.getElementById(`track-${track}-viz`);
-      const note = document.createElement('div');
-      note.className = `note ${track}`;
-      note.style.left = document.getElementById('playhead').style.left;
-      note.style.width = (Math.random() * 30 + 10) + 'px';
-      
-      trackElement.appendChild(note);
-      
-      // Remove note after it scrolls off
-      setTimeout(() => note.remove(), 10000);
-    }
+      function stopVisualizer() {
+        if (visualizerInterval) {
+          clearInterval(visualizerInterval);
+          visualizerInterval = null;
+        }
+      }
 
-    // Initialize on load
-    initSoundManager();
-  </script>
-</body>
+      function addVisualizerNote() {
+        const tracks = ['melody', 'harmony', 'bass', 'drums'];
+        const track = tracks[Math.floor(Math.random() * tracks.length)];
+
+        if (trackMutes[track]) return;
+
+        const trackElement = document.getElementById(`track-${track}-viz`);
+        const note = document.createElement('div');
+        note.className = `note ${track}`;
+        note.style.left = document.getElementById('playhead').style.left;
+        note.style.width = Math.random() * 30 + 10 + 'px';
+
+        trackElement.appendChild(note);
+
+        // Remove note after it scrolls off
+        setTimeout(() => note.remove(), 10000);
+      }
+
+      // Initialize on load
+      initSoundManager();
+    </script>
+  </body>
 </html>

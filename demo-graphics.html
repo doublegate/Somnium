@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -46,17 +46,17 @@
       }
       h2 {
         text-align: center;
-        color: #55FF55;
+        color: #55ff55;
       }
       .info {
         text-align: center;
         margin: 10px 0;
-        color: #AAAAAA;
+        color: #aaaaaa;
       }
     </style>
   </head>
   <body>
-    <h1 style="text-align: center; color: #FFFF55">
+    <h1 style="text-align: center; color: #ffff55">
       Somnium Vector Graphics Engine Demo
     </h1>
     <p class="info">Phase 2.1 - EGA Palette, Primitives, and Dithering</p>
@@ -533,7 +533,7 @@
       window.togglePriorityMap = function () {
         renderer.showPriorityMap = !renderer.showPriorityMap;
         renderer.debugMode = renderer.showPriorityMap || renderer.showGrid;
-        
+
         // Redraw current scene
         if (renderer.currentRoomId && renderer.sceneCache) {
           renderer.ctx.drawImage(renderer.sceneCache, 0, 0);
@@ -546,7 +546,7 @@
       window.toggleGrid = function () {
         renderer.showGrid = !renderer.showGrid;
         renderer.debugMode = renderer.showPriorityMap || renderer.showGrid;
-        
+
         // Redraw current scene
         if (renderer.currentRoomId && renderer.sceneCache) {
           renderer.ctx.drawImage(renderer.sceneCache, 0, 0);

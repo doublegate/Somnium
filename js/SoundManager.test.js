@@ -13,7 +13,7 @@ const mockTone = {
     pause: jest.fn(),
   },
   Destination: {
-    volume: { value: 0 }
+    volume: { value: 0 },
   },
   Gain: jest.fn().mockImplementation((value) => ({
     gain: { value },
@@ -95,12 +95,12 @@ const mockTone = {
     disconnect: jest.fn(),
     dispose: jest.fn(),
   })),
-  Pattern: jest.fn().mockImplementation((callback, notes, pattern) => ({
+  Pattern: jest.fn().mockImplementation((_callback, _notes, _pattern) => ({
     start: jest.fn(),
     stop: jest.fn(),
     interval: '4n',
   })),
-  Frequency: jest.fn().mockImplementation((note) => ({
+  Frequency: jest.fn().mockImplementation((_note) => ({
     toFrequency: jest.fn().mockReturnValue(440),
   })),
 };
@@ -127,14 +127,14 @@ describe('SoundManager', () => {
 
     it('should initialize audio context', async () => {
       await soundManager.initialize();
-      
+
       expect(mockTone.start).toHaveBeenCalled();
       expect(soundManager.isInitialized).toBe(true);
     });
 
     it('should set up volume nodes', async () => {
       await soundManager.initialize();
-      
+
       expect(mockTone.Gain).toHaveBeenCalledTimes(4); // master, music, sfx, ambient
       expect(soundManager.volumeNodes).toBeDefined();
       expect(soundManager.volumeNodes.master).toBeDefined();
@@ -142,7 +142,7 @@ describe('SoundManager', () => {
 
     it('should initialize retro presets', async () => {
       await soundManager.initialize();
-      
+
       expect(soundManager.retroPresets).toBeDefined();
       expect(soundManager.retroPresets.pcSpeaker).toBeDefined();
       expect(soundManager.retroPresets.adlib).toBeDefined();
@@ -164,7 +164,7 @@ describe('SoundManager', () => {
     it('should clamp volume values', () => {
       soundManager.setVolume('master', 1.5);
       expect(soundManager.volumes.master).toBe(1);
-      
+
       soundManager.setVolume('master', -0.5);
       expect(soundManager.volumes.master).toBe(0);
     });
@@ -179,9 +179,9 @@ describe('SoundManager', () => {
         master: 0.8,
         music: 0.7,
         sfx: 0.6,
-        ambient: 0.5
+        ambient: 0.5,
       });
-      
+
       expect(soundManager.volumes.master).toBe(0.8);
       expect(soundManager.volumes.music).toBe(0.7);
       expect(soundManager.volumes.sfx).toBe(0.6);
@@ -196,7 +196,7 @@ describe('SoundManager', () => {
 
     it('should play music with theme', () => {
       soundManager.playMusic('mysterious');
-      
+
       expect(mockTone.Pattern).toHaveBeenCalled();
       expect(mockTone.Transport.start).toHaveBeenCalled();
       expect(soundManager.channelStates.music).toBe(true);
@@ -204,7 +204,7 @@ describe('SoundManager', () => {
 
     it('should use specified preset', () => {
       soundManager.playMusic('heroic', 'pcSpeaker');
-      
+
       expect(mockTone.MonoSynth).toHaveBeenCalled();
       expect(mockTone.BitCrusher).toHaveBeenCalled(); // PC speaker effect
     });
@@ -212,7 +212,7 @@ describe('SoundManager', () => {
     it('should stop music', () => {
       soundManager.playMusic('peaceful');
       soundManager.stopMusic();
-      
+
       expect(soundManager.channelStates.music).toBe(false);
       expect(soundManager.channels.music).toBeNull();
     });
@@ -225,21 +225,20 @@ describe('SoundManager', () => {
 
     it('should play simple sound effect', () => {
       soundManager.playSound('pickup');
-      
+
       expect(mockTone.Synth).toHaveBeenCalled();
       expect(soundManager.channelStates.sfx1).toBe(true);
     });
 
     it('should handle spatial audio', () => {
       soundManager.playSound('footstep', { x: 100, y: 50 });
-      
+
       expect(soundManager.spatialPanner.pan.value).toBeCloseTo(-0.375, 2);
     });
 
     it('should apply pitch variation', () => {
-      const originalFreq = mockTone.Frequency;
       soundManager.playSound('pickup', { pitch: 1.5 });
-      
+
       expect(mockTone.Frequency).toHaveBeenCalled();
     });
 
@@ -247,24 +246,24 @@ describe('SoundManager', () => {
       // Play and let finish
       soundManager.playSound('beep');
       jest.advanceTimersByTime(200);
-      
+
       // Play again - should reuse
       soundManager.playSound('beep');
-      
+
       // Pool should have been used
       expect(soundManager.soundPool.has('beep')).toBe(true);
     });
 
     it('should handle procedural sounds', () => {
       soundManager.playSound('door_open');
-      
+
       expect(mockTone.PolySynth).toHaveBeenCalled();
       expect(mockTone.Chorus).toHaveBeenCalled();
     });
 
     it('should play footstep variations', () => {
       soundManager.playSound('footstep_wood');
-      
+
       expect(mockTone.NoiseSynth).toHaveBeenCalled();
       expect(mockTone.MembraneSynth).toHaveBeenCalled();
     });
@@ -277,7 +276,7 @@ describe('SoundManager', () => {
 
     it('should play ambient sound', () => {
       soundManager.playAmbience('wind');
-      
+
       expect(mockTone.Noise).toHaveBeenCalled();
       expect(mockTone.AutoFilter).toHaveBeenCalled();
       expect(soundManager.channelStates.ambient).toBe(true);
@@ -285,14 +284,14 @@ describe('SoundManager', () => {
 
     it('should add reverb for cave ambience', () => {
       soundManager.playAmbience('cave drips');
-      
+
       expect(mockTone.Reverb).toHaveBeenCalled();
     });
 
     it('should stop ambient sound', () => {
       soundManager.playAmbience('forest');
       soundManager.stopAmbience();
-      
+
       expect(soundManager.channelStates.ambient).toBe(false);
       expect(soundManager.channels.ambient).toBeNull();
     });
@@ -306,7 +305,7 @@ describe('SoundManager', () => {
     it('should use alternating SFX channels', () => {
       soundManager.playSound('pickup');
       expect(soundManager.channelStates.sfx1).toBe(true);
-      
+
       soundManager.playSound('drop');
       expect(soundManager.channelStates.sfx2).toBe(true);
     });
@@ -315,9 +314,9 @@ describe('SoundManager', () => {
       soundManager.playMusic('mysterious');
       soundManager.playAmbience('wind');
       soundManager.playSound('pickup');
-      
+
       soundManager.stopAll();
-      
+
       expect(soundManager.channelStates.music).toBe(false);
       expect(soundManager.channelStates.ambient).toBe(false);
       expect(soundManager.channelStates.sfx1).toBe(false);
@@ -374,24 +373,24 @@ describe('SoundManager', () => {
     it('should have PC speaker limitations', () => {
       const pcSpeaker = soundManager.retroPresets.pcSpeaker;
       expect(pcSpeaker.polyphony).toBe(1); // monophonic
-      
-      const synth = pcSpeaker.synth();
+
+      pcSpeaker.synth();
       expect(mockTone.MonoSynth).toHaveBeenCalled();
     });
 
     it('should have AdLib FM synthesis', () => {
       const adlib = soundManager.retroPresets.adlib;
       expect(adlib.polyphony).toBe(9); // 9 channels
-      
-      const synth = adlib.synth();
+
+      adlib.synth();
       expect(mockTone.FMSynth).toHaveBeenCalled();
     });
 
     it('should have MT-32 capabilities', () => {
       const mt32 = soundManager.retroPresets.mt32;
       expect(mt32.polyphony).toBe(32); // 32 voices
-      
-      const synth = mt32.synth();
+
+      mt32.synth();
       expect(mockTone.PolySynth).toHaveBeenCalled();
     });
   });

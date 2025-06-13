@@ -12,21 +12,21 @@
 export class SoundManager {
   constructor() {
     this.isInitialized = false;
-    
+
     // Volume controls by category
     this.volumes = {
       master: 0.7,
       music: 0.8,
       sfx: 0.9,
-      ambient: 0.7
+      ambient: 0.7,
     };
 
     // Audio channels (4 total, like SCI0)
     this.channels = {
-      music: null,      // Channel 0: Background music
-      ambient: null,    // Channel 1: Ambient sounds
-      sfx1: null,       // Channel 2: Sound effects 1
-      sfx2: null        // Channel 3: Sound effects 2
+      music: null, // Channel 0: Background music
+      ambient: null, // Channel 1: Ambient sounds
+      sfx1: null, // Channel 2: Sound effects 1
+      sfx2: null, // Channel 3: Sound effects 2
     };
 
     // Sound effect cache and pool
@@ -42,12 +42,12 @@ export class SoundManager {
       music: false,
       ambient: false,
       sfx1: false,
-      sfx2: false
+      sfx2: false,
     };
 
     // Retro presets
     this.retroPresets = null;
-    
+
     // Spatial audio settings
     this.spatialEnabled = true;
     this.listenerPosition = { x: 160, y: 100 }; // Center of 320x200 screen
@@ -60,7 +60,7 @@ export class SoundManager {
       melody: null,
       harmony: null,
       bass: null,
-      drums: null
+      drums: null,
     };
     this.musicIntensity = 1.0; // 0.0 to 1.0
     this.leitmotifs = new Map(); // Character/location themes
@@ -85,7 +85,7 @@ export class SoundManager {
         master: new this.Tone.Gain(this.volumes.master).toDestination(),
         music: new this.Tone.Gain(this.volumes.music),
         sfx: new this.Tone.Gain(this.volumes.sfx),
-        ambient: new this.Tone.Gain(this.volumes.ambient)
+        ambient: new this.Tone.Gain(this.volumes.ambient),
       };
 
       // Connect category volumes to master
@@ -131,13 +131,13 @@ export class SoundManager {
     try {
       // Store current theme
       this.currentTheme = musicTheme;
-      
+
       // Generate complete musical arrangement
       const arrangement = this.generateArrangement(musicTheme, options);
-      
+
       // Set up sequencer with the arrangement
       this.setupSequencer(arrangement, preset);
-      
+
       // Start playing
       this.startSequencer();
       this.channelStates.music = true;
@@ -151,7 +151,7 @@ export class SoundManager {
    * @param {string} ambienceDesc - Ambience descriptor (e.g., "wind", "cave drips", "forest")
    * @param {Object} options - Additional options
    */
-  playAmbience(ambienceDesc, options = {}) {
+  playAmbience(ambienceDesc, _options = {}) {
     if (!this.isInitialized) {
       console.warn('Audio not initialized');
       return;
@@ -183,7 +183,7 @@ export class SoundManager {
       if (ambienceDesc.includes('cave') || ambienceDesc.includes('chamber')) {
         reverb = new this.Tone.Reverb({
           decay: 4,
-          wet: 0.3
+          wet: 0.3,
         });
       }
 
@@ -225,19 +225,21 @@ export class SoundManager {
     try {
       // Check sound pool for available instance
       let source = this.getFromPool(soundId);
-      
+
       if (!source) {
         // Get sound parameters
         const soundParams = this.getSoundParameters(soundId);
-        
+
         // Apply pitch variation if specified
         if (options.pitch && soundParams.frequency) {
           if (typeof soundParams.frequency === 'string') {
             // Convert note to frequency, then apply pitch
-            const baseFreq = this.Tone.Frequency(soundParams.frequency).toFrequency();
+            const baseFreq = this.Tone.Frequency(
+              soundParams.frequency
+            ).toFrequency();
             soundParams.frequency = baseFreq * (options.pitch || 1);
           } else {
-            soundParams.frequency *= (options.pitch || 1);
+            soundParams.frequency *= options.pitch || 1;
           }
         }
 
@@ -248,7 +250,10 @@ export class SoundManager {
       if (!source) return;
 
       // Apply spatial audio if position provided
-      if (this.spatialEnabled && (options.x !== undefined || options.y !== undefined)) {
+      if (
+        this.spatialEnabled &&
+        (options.x !== undefined || options.y !== undefined)
+      ) {
         const panner = this.calculatePanning(options.x, options.y);
         source.connect(this.spatialPanner);
         this.spatialPanner.pan.value = panner;
@@ -342,43 +347,49 @@ export class SoundManager {
    */
   createProceduralSound(params) {
     switch (params.procedural) {
-      case 'door':
+      case 'door': {
         // Combination of low frequency and metallic sound
         const doorSynth = new this.Tone.PolySynth(this.Tone.Synth, {
           oscillator: { type: 'sawtooth' },
-          envelope: { attack: 0.01, decay: 0.3, sustain: 0.1, release: 0.2 }
+          envelope: { attack: 0.01, decay: 0.3, sustain: 0.1, release: 0.2 },
         });
-        
+
         // Add slight chorus for wooden effect
         const chorus = new this.Tone.Chorus(4, 2.5, 0.5);
         doorSynth.connect(chorus);
         chorus.connect(this.volumeNodes.sfx);
-        
-        return doorSynth;
 
-      case 'footstep':
+        return doorSynth;
+      }
+
+      case 'footstep': {
         // Layer noise with pitched percussion
         const footNoise = new this.Tone.NoiseSynth({
           noise: { type: params.surface === 'metal' ? 'white' : 'brown' },
-          envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.03 }
+          envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.03 },
         });
-        
+
         const footThud = new this.Tone.MembraneSynth({
           pitchDecay: 0.008,
           octaves: params.surface === 'wood' ? 2 : 4,
-          envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 }
+          envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 },
         });
-        
+
         // Mix both sounds
         const footMixer = new this.Tone.Gain(0.5);
         footNoise.connect(footMixer);
         footThud.connect(footMixer);
         footMixer.connect(this.volumeNodes.sfx);
-        
-        return { noise: footNoise, thud: footThud, trigger: (freq) => {
-          footNoise.triggerAttackRelease(params.duration);
-          footThud.triggerAttackRelease(freq || 60, params.duration);
-        }};
+
+        return {
+          noise: footNoise,
+          thud: footThud,
+          trigger: (freq) => {
+            footNoise.triggerAttackRelease(params.duration);
+            footThud.triggerAttackRelease(freq || 60, params.duration);
+          },
+        };
+      }
 
       default:
         return null;
@@ -411,17 +422,17 @@ export class SoundManager {
    */
   calculatePanning(x, y) {
     if (x === undefined) return 0;
-    
+
     // Convert x position (0-320) to panning (-1 to 1)
     const normalizedX = x / 320;
     const pan = (normalizedX - 0.5) * 2;
-    
+
     // Apply distance attenuation based on y if provided
     if (y !== undefined) {
       const distance = Math.abs(y - this.listenerPosition.y) / 200;
       return pan * (1 - distance * 0.3); // Reduce panning effect with distance
     }
-    
+
     return Math.max(-1, Math.min(1, pan));
   }
 
@@ -445,7 +456,7 @@ export class SoundManager {
     if (!this.soundPool.has(soundId)) {
       this.soundPool.set(soundId, []);
     }
-    
+
     const pool = this.soundPool.get(soundId);
     if (pool.length < this.maxPoolSize) {
       // Reset the source
@@ -464,7 +475,7 @@ export class SoundManager {
   stopMusic() {
     // Stop sequencer
     this.clearSequencer();
-    
+
     // Clear old pattern-based music if any
     if (this.channels.music) {
       if (this.channels.music.pattern) {
@@ -475,7 +486,7 @@ export class SoundManager {
       }
       this.channels.music = null;
     }
-    
+
     this.channelStates.music = false;
     this.currentTheme = null;
   }
@@ -505,7 +516,7 @@ export class SoundManager {
    */
   stopAllSounds() {
     // Stop channel sounds
-    ['sfx1', 'sfx2'].forEach(channel => {
+    ['sfx1', 'sfx2'].forEach((channel) => {
       if (this.channels[channel]) {
         if (this.channels[channel].dispose) {
           this.channels[channel].dispose();
@@ -517,7 +528,7 @@ export class SoundManager {
 
     // Clear sound pool
     this.soundPool.forEach((pool) => {
-      pool.forEach(sound => {
+      pool.forEach((sound) => {
         if (sound.dispose) sound.dispose();
       });
     });
@@ -596,63 +607,66 @@ export class SoundManager {
     this.retroPresets = {
       // PC Speaker emulation (square waves only)
       pcSpeaker: {
-        synth: () => new this.Tone.MonoSynth({
-          oscillator: { type: 'square' },
-          envelope: {
-            attack: 0.001,
-            decay: 0.01,
-            sustain: 0.8,
-            release: 0.01
-          },
-          filterEnvelope: {
-            attack: 0.001,
-            decay: 0.01,
-            sustain: 1,
-            release: 0.01,
-            baseFrequency: 8000,
-            octaves: 0
-          }
-        }),
+        synth: () =>
+          new this.Tone.MonoSynth({
+            oscillator: { type: 'square' },
+            envelope: {
+              attack: 0.001,
+              decay: 0.01,
+              sustain: 0.8,
+              release: 0.01,
+            },
+            filterEnvelope: {
+              attack: 0.001,
+              decay: 0.01,
+              sustain: 1,
+              release: 0.01,
+              baseFrequency: 8000,
+              octaves: 0,
+            },
+          }),
         // PC speaker could only play one note at a time
-        polyphony: 1
+        polyphony: 1,
       },
 
       // AdLib FM synthesis emulation
       adlib: {
-        synth: () => new this.Tone.FMSynth({
-          harmonicity: 3,
-          modulationIndex: 10,
-          oscillator: { type: 'sine' },
-          envelope: {
-            attack: 0.01,
-            decay: 0.2,
-            sustain: 0.3,
-            release: 0.1
-          },
-          modulation: { type: 'sine' },
-          modulationEnvelope: {
-            attack: 0.01,
-            decay: 0.2,
-            sustain: 0.3,
-            release: 0.1
-          }
-        }),
-        polyphony: 9 // AdLib had 9 channels
+        synth: () =>
+          new this.Tone.FMSynth({
+            harmonicity: 3,
+            modulationIndex: 10,
+            oscillator: { type: 'sine' },
+            envelope: {
+              attack: 0.01,
+              decay: 0.2,
+              sustain: 0.3,
+              release: 0.1,
+            },
+            modulation: { type: 'sine' },
+            modulationEnvelope: {
+              attack: 0.01,
+              decay: 0.2,
+              sustain: 0.3,
+              release: 0.1,
+            },
+          }),
+        polyphony: 9, // AdLib had 9 channels
       },
 
       // Roland MT-32 emulation (simplified)
       mt32: {
-        synth: () => new this.Tone.PolySynth(this.Tone.Synth, {
-          oscillator: { type: 'sawtooth' },
-          envelope: {
-            attack: 0.02,
-            decay: 0.3,
-            sustain: 0.4,
-            release: 0.5
-          }
-        }),
-        polyphony: 32
-      }
+        synth: () =>
+          new this.Tone.PolySynth(this.Tone.Synth, {
+            oscillator: { type: 'sawtooth' },
+            envelope: {
+              attack: 0.02,
+              decay: 0.3,
+              sustain: 0.4,
+              release: 0.5,
+            },
+          }),
+        polyphony: 32,
+      },
     };
   }
 
@@ -746,9 +760,9 @@ export class SoundManager {
         dorian: [0, 2, 3, 5, 7, 9, 10],
         phrygian: [0, 1, 3, 5, 7, 8, 10],
         lydian: [0, 2, 4, 6, 7, 9, 11],
-        mixolydian: [0, 2, 4, 5, 7, 9, 10]
+        mixolydian: [0, 2, 4, 5, 7, 9, 10],
       },
-      
+
       // Chord progressions for different moods
       progressions: {
         heroic: ['I', 'V', 'vi', 'IV', 'I', 'V', 'I', 'IV'],
@@ -758,9 +772,9 @@ export class SoundManager {
         sad: ['i', 'VI', 'III', 'VII', 'i', 'iv', 'V', 'i'],
         triumphant: ['I', 'I', 'IV', 'IV', 'V', 'V', 'I', 'I'],
         exploration: ['I', 'ii', 'IV', 'vi', 'V', 'iii', 'IV', 'I'],
-        combat: ['i', 'V', 'i', 'VII', 'VI', 'V', 'i', 'V']
+        combat: ['i', 'V', 'i', 'VII', 'VI', 'V', 'i', 'V'],
       },
-      
+
       // Rhythm patterns (1 = note, 0 = rest)
       rhythms: {
         steady: [1, 0, 1, 0, 1, 0, 1, 0],
@@ -770,9 +784,9 @@ export class SoundManager {
         waltz: [1, 0, 0, 1, 0, 0, 1, 0, 0],
         march: [1, 0, 1, 0, 1, 1, 1, 0],
         flowing: [1, 1, 0, 1, 1, 0, 1, 0],
-        dramatic: [1, 0, 0, 0, 0, 1, 1, 1]
+        dramatic: [1, 0, 0, 0, 0, 1, 1, 1],
       },
-      
+
       // Theme characteristics
       themes: {
         heroic: {
@@ -782,7 +796,7 @@ export class SoundManager {
           rhythm: 'march',
           octaveRange: [3, 5],
           noteLength: '8n',
-          intensity: 0.8
+          intensity: 0.8,
         },
         mysterious: {
           scale: 'harmonicMinor',
@@ -791,7 +805,7 @@ export class SoundManager {
           rhythm: 'sparse',
           octaveRange: [2, 4],
           noteLength: '4n',
-          intensity: 0.5
+          intensity: 0.5,
         },
         peaceful: {
           scale: 'major',
@@ -800,7 +814,7 @@ export class SoundManager {
           rhythm: 'waltz',
           octaveRange: [3, 5],
           noteLength: '2n',
-          intensity: 0.3
+          intensity: 0.3,
         },
         danger: {
           scale: 'phrygian',
@@ -809,7 +823,7 @@ export class SoundManager {
           rhythm: 'driving',
           octaveRange: [2, 4],
           noteLength: '16n',
-          intensity: 0.9
+          intensity: 0.9,
         },
         exploration: {
           scale: 'lydian',
@@ -818,7 +832,7 @@ export class SoundManager {
           rhythm: 'flowing',
           octaveRange: [3, 5],
           noteLength: '8n',
-          intensity: 0.6
+          intensity: 0.6,
         },
         combat: {
           scale: 'minor',
@@ -827,7 +841,7 @@ export class SoundManager {
           rhythm: 'driving',
           octaveRange: [2, 5],
           noteLength: '16n',
-          intensity: 1.0
+          intensity: 1.0,
         },
         village: {
           scale: 'dorian',
@@ -836,7 +850,7 @@ export class SoundManager {
           rhythm: 'steady',
           octaveRange: [3, 4],
           noteLength: '8n',
-          intensity: 0.4
+          intensity: 0.4,
         },
         castle: {
           scale: 'mixolydian',
@@ -845,12 +859,12 @@ export class SoundManager {
           rhythm: 'march',
           octaveRange: [2, 4],
           noteLength: '4n',
-          intensity: 0.7
-        }
+          intensity: 0.7,
+        },
       },
-      
+
       // Note names
-      notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+      notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
     };
   }
 
@@ -868,7 +882,7 @@ export class SoundManager {
       isPlaying: false,
       loopPoint: 0,
       variations: [],
-      intensity: 1.0
+      intensity: 1.0,
     };
   }
 
@@ -880,14 +894,17 @@ export class SoundManager {
    * @returns {Object} Complete arrangement
    */
   generateArrangement(theme, options = {}) {
-    const themeConfig = this.musicTheory.themes[theme] || this.musicTheory.themes.peaceful;
+    const themeConfig =
+      this.musicTheory.themes[theme] || this.musicTheory.themes.peaceful;
     const scale = this.musicTheory.scales[themeConfig.scale];
-    const progression = this.musicTheory.progressions[theme] || this.musicTheory.progressions.peaceful;
-    
+    const progression =
+      this.musicTheory.progressions[theme] ||
+      this.musicTheory.progressions.peaceful;
+
     // Generate key and root note
     const rootNote = options.key || 'C';
     const rootOctave = themeConfig.octaveRange[0];
-    
+
     // Generate arrangement structure
     const arrangement = {
       theme: theme,
@@ -896,9 +913,9 @@ export class SoundManager {
       tempo: options.tempo || themeConfig.tempo,
       timeSignature: themeConfig.timeSignature,
       intensity: options.intensity || themeConfig.intensity,
-      tracks: {}
+      tracks: {},
     };
-    
+
     // Generate melody track
     arrangement.tracks.melody = this.generateMelody({
       progression,
@@ -907,35 +924,35 @@ export class SoundManager {
       rootOctave: rootOctave + 1,
       rhythm: this.musicTheory.rhythms[themeConfig.rhythm],
       noteLength: themeConfig.noteLength,
-      phrases: 4
+      phrases: 4,
     });
-    
+
     // Generate harmony track
     arrangement.tracks.harmony = this.generateHarmony({
       progression,
       scale,
       rootNote,
       rootOctave,
-      noteLength: '2n'
+      noteLength: '2n',
     });
-    
+
     // Generate bass track
     arrangement.tracks.bass = this.generateBassLine({
       progression,
       rootNote,
       rootOctave: rootOctave - 1,
       rhythm: this.musicTheory.rhythms.steady,
-      noteLength: '4n'
+      noteLength: '4n',
     });
-    
+
     // Generate drum track (if not PC speaker)
     if (options.preset !== 'pcSpeaker') {
       arrangement.tracks.drums = this.generateDrumPattern({
         style: theme,
-        timeSignature: themeConfig.timeSignature
+        timeSignature: themeConfig.timeSignature,
       });
     }
-    
+
     return arrangement;
   }
 
@@ -944,16 +961,24 @@ export class SoundManager {
    * @private
    */
   generateMelody(params) {
-    const { progression, scale, rootNote, rootOctave, rhythm, noteLength, phrases } = params;
+    const {
+      progression,
+      scale,
+      rootNote,
+      rootOctave,
+      rhythm,
+      noteLength,
+      phrases,
+    } = params;
     const melody = [];
-    
+
     for (let phrase = 0; phrase < phrases; phrase++) {
       const isQuestion = phrase % 2 === 0; // Alternating question/answer phrases
-      
+
       for (let bar = 0; bar < progression.length; bar++) {
         const chord = progression[bar];
         const chordTones = this.getChordTones(chord, rootNote, scale);
-        
+
         for (let beat = 0; beat < rhythm.length; beat++) {
           if (rhythm[beat] === 1) {
             // Choose note based on melodic contour
@@ -961,31 +986,36 @@ export class SoundManager {
             if (isQuestion && beat === rhythm.length - 1) {
               // Question phrases end on unstable note
               note = this.chooseNonChordTone(chordTones, scale, rootNote);
-            } else if (!isQuestion && beat === rhythm.length - 1 && bar === progression.length - 1) {
+            } else if (
+              !isQuestion &&
+              beat === rhythm.length - 1 &&
+              bar === progression.length - 1
+            ) {
               // Answer phrases end on tonic
               note = rootNote;
             } else {
               // Mix of chord tones and passing notes
-              note = Math.random() > 0.7 
-                ? this.choosePassingNote(chordTones, scale, rootNote)
-                : this.chooseChordTone(chordTones);
+              note =
+                Math.random() > 0.7
+                  ? this.choosePassingNote(chordTones, scale, rootNote)
+                  : this.chooseChordTone(chordTones);
             }
-            
+
             // Add octave
             const octaveVariation = Math.floor(Math.random() * 2);
             const octave = rootOctave + octaveVariation;
-            
+
             melody.push({
               note: note + octave,
               duration: noteLength,
               time: `${bar}:${beat}:0`,
-              velocity: 0.5 + Math.random() * 0.3
+              velocity: 0.5 + Math.random() * 0.3,
             });
           }
         }
       }
     }
-    
+
     return melody;
   }
 
@@ -996,33 +1026,41 @@ export class SoundManager {
   generateHarmony(params) {
     const { progression, scale, rootNote, rootOctave, noteLength } = params;
     const harmony = [];
-    
+
     for (let bar = 0; bar < progression.length; bar++) {
       const chord = progression[bar];
       const chordNotes = this.getChordNotes(chord, rootNote, rootOctave, scale);
-      
+
       // Add chord on beat 1
       harmony.push({
         notes: chordNotes,
         duration: noteLength,
         time: `${bar}:0:0`,
-        velocity: 0.4
+        velocity: 0.4,
       });
-      
+
       // Sometimes add passing chord on beat 3
       if (Math.random() > 0.6) {
-        const passingChord = this.getPassingChord(chord, progression[bar + 1] || progression[0]);
-        const passingNotes = this.getChordNotes(passingChord, rootNote, rootOctave, scale);
-        
+        const passingChord = this.getPassingChord(
+          chord,
+          progression[bar + 1] || progression[0]
+        );
+        const passingNotes = this.getChordNotes(
+          passingChord,
+          rootNote,
+          rootOctave,
+          scale
+        );
+
         harmony.push({
           notes: passingNotes,
           duration: '8n',
           time: `${bar}:2:0`,
-          velocity: 0.3
+          velocity: 0.3,
         });
       }
     }
-    
+
     return harmony;
   }
 
@@ -1033,15 +1071,15 @@ export class SoundManager {
   generateBassLine(params) {
     const { progression, rootNote, rootOctave, rhythm, noteLength } = params;
     const bass = [];
-    
+
     for (let bar = 0; bar < progression.length; bar++) {
       const chord = progression[bar];
       const bassNote = this.getChordRoot(chord, rootNote);
-      
+
       for (let beat = 0; beat < rhythm.length; beat++) {
         if (rhythm[beat] === 1) {
           let note = bassNote;
-          
+
           // Add some variation - occasional fifth or octave
           if (beat > 0 && Math.random() > 0.7) {
             const variation = Math.random();
@@ -1053,17 +1091,17 @@ export class SoundManager {
               note = bassNote;
             }
           }
-          
+
           bass.push({
             note: note + rootOctave,
             duration: noteLength,
             time: `${bar}:${beat}:0`,
-            velocity: 0.6
+            velocity: 0.6,
           });
         }
       }
     }
-    
+
     return bass;
   }
 
@@ -1074,34 +1112,34 @@ export class SoundManager {
   generateDrumPattern(params) {
     const { style, timeSignature } = params;
     const drums = [];
-    
+
     // Simple drum patterns based on style
     const patterns = {
       heroic: {
         kick: [1, 0, 0, 0, 1, 0, 0, 0],
         snare: [0, 0, 1, 0, 0, 0, 1, 0],
-        hihat: [1, 1, 0, 1, 1, 1, 0, 1]
+        hihat: [1, 1, 0, 1, 1, 1, 0, 1],
       },
       mysterious: {
         kick: [1, 0, 0, 0, 0, 0, 0, 0],
         snare: [0, 0, 0, 0, 1, 0, 0, 0],
-        hihat: [0, 1, 0, 1, 0, 1, 0, 1]
+        hihat: [0, 1, 0, 1, 0, 1, 0, 1],
       },
       combat: {
         kick: [1, 0, 1, 0, 1, 0, 1, 0],
         snare: [0, 1, 0, 1, 0, 1, 0, 1],
-        hihat: [1, 1, 1, 1, 1, 1, 1, 1]
+        hihat: [1, 1, 1, 1, 1, 1, 1, 1],
       },
       peaceful: {
         kick: [1, 0, 0, 0, 0, 0],
         snare: [0, 0, 1, 0, 0, 0],
-        hihat: [1, 0, 1, 0, 1, 0]
-      }
+        hihat: [1, 0, 1, 0, 1, 0],
+      },
     };
-    
+
     const pattern = patterns[style] || patterns.peaceful;
     const barLength = timeSignature === '3/4' ? 6 : 8;
-    
+
     // Generate 4 bars of drums
     for (let bar = 0; bar < 4; bar++) {
       for (let beat = 0; beat < barLength; beat++) {
@@ -1109,26 +1147,26 @@ export class SoundManager {
           drums.push({
             drum: 'kick',
             time: `${bar}:${beat}:0`,
-            velocity: 0.8
+            velocity: 0.8,
           });
         }
         if (pattern.snare[beat % pattern.snare.length]) {
           drums.push({
             drum: 'snare',
             time: `${bar}:${beat}:0`,
-            velocity: 0.6
+            velocity: 0.6,
           });
         }
         if (pattern.hihat[beat % pattern.hihat.length]) {
           drums.push({
             drum: 'hihat',
             time: `${bar}:${beat}:0`,
-            velocity: 0.4
+            velocity: 0.4,
           });
         }
       }
     }
-    
+
     return drums;
   }
 
@@ -1139,67 +1177,82 @@ export class SoundManager {
   setupSequencer(arrangement, preset) {
     // Clear existing tracks
     this.clearSequencer();
-    
+
     // Set tempo
     this.Tone.Transport.bpm.value = arrangement.tempo;
-    
+
     // Create synthesizers for each track
     const synthPreset = this.retroPresets[preset] || this.retroPresets.adlib;
-    
+
     // Melody track
     if (arrangement.tracks.melody) {
       const melodySynth = synthPreset.synth();
       melodySynth.connect(this.volumeNodes.music);
-      
+
       const melodyPart = new this.Tone.Part((time, note) => {
-        melodySynth.triggerAttackRelease(note.note, note.duration, time, note.velocity);
+        melodySynth.triggerAttackRelease(
+          note.note,
+          note.duration,
+          time,
+          note.velocity
+        );
       }, arrangement.tracks.melody);
-      
+
       melodyPart.loop = true;
       melodyPart.loopEnd = '4m';
-      
+
       this.musicTracks.melody = { synth: melodySynth, part: melodyPart };
     }
-    
+
     // Harmony track (not for PC speaker)
     if (arrangement.tracks.harmony && preset !== 'pcSpeaker') {
       const harmonySynth = new this.Tone.PolySynth(this.Tone.Synth, {
         oscillator: { type: 'triangle' },
-        envelope: { attack: 0.02, decay: 0.5, sustain: 0.3, release: 0.5 }
+        envelope: { attack: 0.02, decay: 0.5, sustain: 0.3, release: 0.5 },
       });
       harmonySynth.connect(this.volumeNodes.music);
       harmonySynth.volume.value = -6; // Quieter than melody
-      
+
       const harmonyPart = new this.Tone.Part((time, chord) => {
-        harmonySynth.triggerAttackRelease(chord.notes, chord.duration, time, chord.velocity);
+        harmonySynth.triggerAttackRelease(
+          chord.notes,
+          chord.duration,
+          time,
+          chord.velocity
+        );
       }, arrangement.tracks.harmony);
-      
+
       harmonyPart.loop = true;
       harmonyPart.loopEnd = '4m';
-      
+
       this.musicTracks.harmony = { synth: harmonySynth, part: harmonyPart };
     }
-    
+
     // Bass track (not for PC speaker)
     if (arrangement.tracks.bass && preset !== 'pcSpeaker') {
       const bassSynth = new this.Tone.MonoSynth({
         oscillator: { type: 'sawtooth' },
         envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 0.2 },
-        filter: { Q: 2, frequency: 200, type: 'lowpass' }
+        filter: { Q: 2, frequency: 200, type: 'lowpass' },
       });
       bassSynth.connect(this.volumeNodes.music);
       bassSynth.volume.value = -3;
-      
+
       const bassPart = new this.Tone.Part((time, note) => {
-        bassSynth.triggerAttackRelease(note.note, note.duration, time, note.velocity);
+        bassSynth.triggerAttackRelease(
+          note.note,
+          note.duration,
+          time,
+          note.velocity
+        );
       }, arrangement.tracks.bass);
-      
+
       bassPart.loop = true;
       bassPart.loopEnd = '4m';
-      
+
       this.musicTracks.bass = { synth: bassSynth, part: bassPart };
     }
-    
+
     // Drum track (if present)
     if (arrangement.tracks.drums) {
       const drumSynths = {
@@ -1207,11 +1260,11 @@ export class SoundManager {
           pitchDecay: 0.05,
           octaves: 10,
           oscillator: { type: 'sine' },
-          envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 }
+          envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 },
         }),
         snare: new this.Tone.NoiseSynth({
           noise: { type: 'white' },
-          envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
+          envelope: { attack: 0.001, decay: 0.2, sustain: 0 },
         }),
         hihat: new this.Tone.MetalSynth({
           frequency: 200,
@@ -1219,10 +1272,10 @@ export class SoundManager {
           harmonicity: 5.1,
           modulationIndex: 32,
           resonance: 4000,
-          octaves: 1.5
-        })
+          octaves: 1.5,
+        }),
       };
-      
+
       // Connect and adjust volumes
       drumSynths.kick.connect(this.volumeNodes.music);
       drumSynths.kick.volume.value = -10;
@@ -1230,7 +1283,7 @@ export class SoundManager {
       drumSynths.snare.volume.value = -12;
       drumSynths.hihat.connect(this.volumeNodes.music);
       drumSynths.hihat.volume.value = -18;
-      
+
       const drumPart = new this.Tone.Part((time, hit) => {
         if (hit.drum === 'kick') {
           drumSynths.kick.triggerAttackRelease('C1', '8n', time, hit.velocity);
@@ -1240,10 +1293,10 @@ export class SoundManager {
           drumSynths.hihat.triggerAttackRelease('32n', time, hit.velocity);
         }
       }, arrangement.tracks.drums);
-      
+
       drumPart.loop = true;
       drumPart.loopEnd = '4m';
-      
+
       this.musicTracks.drums = { synths: drumSynths, part: drumPart };
     }
   }
@@ -1254,12 +1307,12 @@ export class SoundManager {
    */
   startSequencer() {
     // Start all parts
-    Object.values(this.musicTracks).forEach(track => {
+    Object.values(this.musicTracks).forEach((track) => {
       if (track && track.part) {
         track.part.start(0);
       }
     });
-    
+
     // Start transport
     this.Tone.Transport.start();
     this.sequencer.isPlaying = true;
@@ -1273,26 +1326,26 @@ export class SoundManager {
     // Stop transport
     this.Tone.Transport.stop();
     this.Tone.Transport.cancel();
-    
+
     // Dispose of all tracks
-    Object.values(this.musicTracks).forEach(track => {
+    Object.values(this.musicTracks).forEach((track) => {
       if (track) {
         if (track.part) track.part.dispose();
         if (track.synth) track.synth.dispose();
         if (track.synths) {
-          Object.values(track.synths).forEach(synth => synth.dispose());
+          Object.values(track.synths).forEach((synth) => synth.dispose());
         }
       }
     });
-    
+
     // Clear references
     this.musicTracks = {
       melody: null,
       harmony: null,
       bass: null,
-      drums: null
+      drums: null,
     };
-    
+
     this.sequencer.isPlaying = false;
   }
 
@@ -1302,21 +1355,25 @@ export class SoundManager {
    */
   setMusicIntensity(intensity) {
     this.musicIntensity = Math.max(0, Math.min(1, intensity));
-    
+
     // Adjust track volumes based on intensity
     if (this.musicTracks.melody && this.musicTracks.melody.synth) {
-      this.musicTracks.melody.synth.volume.value = -6 + (this.musicIntensity * 6);
+      this.musicTracks.melody.synth.volume.value = -6 + this.musicIntensity * 6;
     }
     if (this.musicTracks.harmony && this.musicTracks.harmony.synth) {
-      this.musicTracks.harmony.synth.volume.value = -12 + (this.musicIntensity * 6);
+      this.musicTracks.harmony.synth.volume.value =
+        -12 + this.musicIntensity * 6;
     }
     if (this.musicTracks.bass && this.musicTracks.bass.synth) {
-      this.musicTracks.bass.synth.volume.value = -9 + (this.musicIntensity * 6);
+      this.musicTracks.bass.synth.volume.value = -9 + this.musicIntensity * 6;
     }
     if (this.musicTracks.drums && this.musicTracks.drums.synths) {
-      this.musicTracks.drums.synths.kick.volume.value = -16 + (this.musicIntensity * 6);
-      this.musicTracks.drums.synths.snare.volume.value = -18 + (this.musicIntensity * 6);
-      this.musicTracks.drums.synths.hihat.volume.value = -24 + (this.musicIntensity * 6);
+      this.musicTracks.drums.synths.kick.volume.value =
+        -16 + this.musicIntensity * 6;
+      this.musicTracks.drums.synths.snare.volume.value =
+        -18 + this.musicIntensity * 6;
+      this.musicTracks.drums.synths.hihat.volume.value =
+        -24 + this.musicIntensity * 6;
     }
   }
 
@@ -1327,17 +1384,17 @@ export class SoundManager {
    */
   async transitionToTheme(newTheme, transitionTime = 2) {
     if (this.currentTheme === newTheme) return;
-    
+
     // Fade out current music
     const fadeOut = new this.Tone.Gain(1).connect(this.volumeNodes.music);
     fadeOut.gain.linearRampTo(0, transitionTime);
-    
+
     // Wait for fade
-    await new Promise(resolve => setTimeout(resolve, transitionTime * 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, transitionTime * 1000));
+
     // Play new theme
     this.playMusic(newTheme, this.channels.music?.preset || 'adlib');
-    
+
     // Fade in
     const fadeIn = new this.Tone.Gain(0).connect(this.volumeNodes.music);
     fadeIn.gain.linearRampTo(1, transitionTime);
@@ -1359,16 +1416,16 @@ export class SoundManager {
   playLeitmotif(id) {
     const motif = this.leitmotifs.get(id);
     if (!motif) return;
-    
+
     // Create a simple synth for the motif
     const synth = new this.Tone.Synth().connect(this.volumeNodes.music);
-    
+
     // Play the motif notes
     const now = this.Tone.now();
     motif.notes.forEach((note, i) => {
       synth.triggerAttackRelease(note.pitch, note.duration, now + i * 0.25);
     });
-    
+
     // Clean up after playing
     setTimeout(() => synth.dispose(), motif.notes.length * 250 + 1000);
   }
@@ -1380,14 +1437,14 @@ export class SoundManager {
   getChordTones(chordSymbol, rootNote, scale) {
     const degree = this.parseChordDegree(chordSymbol);
     const chordRoot = this.getScaleNote(rootNote, scale, degree - 1);
-    
+
     // Build triad
     const tones = [
       chordRoot,
       this.getScaleNote(rootNote, scale, (degree + 1) % scale.length),
-      this.getScaleNote(rootNote, scale, (degree + 3) % scale.length)
+      this.getScaleNote(rootNote, scale, (degree + 3) % scale.length),
     ];
-    
+
     return tones;
   }
 
@@ -1397,7 +1454,7 @@ export class SoundManager {
    */
   getChordNotes(chordSymbol, rootNote, octave, scale) {
     const tones = this.getChordTones(chordSymbol, rootNote, scale);
-    return tones.map(tone => tone + octave);
+    return tones.map((tone) => tone + octave);
   }
 
   /**
@@ -1415,7 +1472,7 @@ export class SoundManager {
    * @private
    */
   parseChordDegree(chordSymbol) {
-    const numerals = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7 };
+    const numerals = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7 };
     const baseNumeral = chordSymbol.toUpperCase().replace(/[^IVX]/g, '');
     return numerals[baseNumeral] || 1;
   }
@@ -1445,8 +1502,11 @@ export class SoundManager {
    */
   chooseNonChordTone(chordTones, scale, rootNote) {
     const allNotes = scale.map((_, i) => this.getScaleNote(rootNote, scale, i));
-    const nonChordTones = allNotes.filter(note => !chordTones.includes(note));
-    return nonChordTones[Math.floor(Math.random() * nonChordTones.length)] || chordTones[0];
+    const nonChordTones = allNotes.filter((note) => !chordTones.includes(note));
+    return (
+      nonChordTones[Math.floor(Math.random() * nonChordTones.length)] ||
+      chordTones[0]
+    );
   }
 
   /**
@@ -1493,7 +1553,7 @@ export class SoundManager {
       if (track.synth) {
         track.synth.volume.value = mute ? -Infinity : 0;
       } else if (track.synths) {
-        Object.values(track.synths).forEach(synth => {
+        Object.values(track.synths).forEach((synth) => {
           synth.volume.value = mute ? -Infinity : -10;
         });
       }
@@ -1649,7 +1709,7 @@ export class SoundManager {
         duration: 1.5,
         envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 0.8 },
       },
-      
+
       // Retro PC speaker beeps
       beep: {
         type: 'synth',
@@ -1678,7 +1738,7 @@ export class SoundManager {
     if (sounds[soundId]) {
       return sounds[soundId];
     }
-    
+
     // Try to find a base version (e.g., "footstep" for "footstep_grass")
     const baseSoundId = soundId.split('_')[0];
     return sounds[baseSoundId] || sounds.error;

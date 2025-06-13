@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -55,25 +55,25 @@
         cursor: not-allowed;
       }
       button.active {
-        background: #55AA55;
-        border-color: #77CC77;
+        background: #55aa55;
+        border-color: #77cc77;
       }
       h2 {
         text-align: center;
-        color: #55FF55;
+        color: #55ff55;
         margin: 10px 0;
       }
       .info {
         text-align: center;
         margin: 10px 0;
-        color: #AAAAAA;
+        color: #aaaaaa;
       }
       .status {
         font-size: 12px;
-        color: #55FFFF;
+        color: #55ffff;
         margin-top: 10px;
       }
-      input[type="range"] {
+      input[type='range'] {
         width: 200px;
         vertical-align: middle;
       }
@@ -93,7 +93,7 @@
     </style>
   </head>
   <body>
-    <h1 style="text-align: center; color: #FFFF55">
+    <h1 style="text-align: center; color: #ffff55">
       Somnium Sprite Animation & Movement Demo
     </h1>
     <p class="info">Phase 2.2 - VIEW Resources, Animation, and Movement</p>
@@ -105,9 +105,9 @@
     </div>
 
     <div class="keyboard-info">
-      <strong>Keyboard Controls:</strong> Arrow Keys = Move Character | 
-      Space = Change Animation | R = Reset Position | 
-      C = Toggle Collision | M = Mirror Sprite
+      <strong>Keyboard Controls:</strong> Arrow Keys = Move Character | Space =
+      Change Animation | R = Reset Position | C = Toggle Collision | M = Mirror
+      Sprite
     </div>
 
     <div class="controls">
@@ -167,9 +167,7 @@
         </button>
       </div>
 
-      <div class="status" id="status">
-        Status: Ready | Sprites: 0 | FPS: 60
-      </div>
+      <div class="status" id="status">Status: Ready | Sprites: 0 | FPS: 60</div>
     </div>
 
     <script type="module">
@@ -825,9 +823,8 @@
       // Status update
       function updateStatus() {
         const viewCount = viewManager.getAllViewIds().length;
-        document.getElementById(
-          'status'
-        ).textContent = `Status: Running | Sprites: ${viewCount} | FPS: ${fps}`;
+        document.getElementById('status').textContent =
+          `Status: Running | Sprites: ${viewCount} | FPS: ${fps}`;
       }
 
       // Keyboard controls

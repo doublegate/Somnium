@@ -183,6 +183,7 @@ Draw a single primitive shape.
 - `primitive`: Primitive object with type and properties
 
 Supported primitive types:
+
 - `rect`: Rectangle with optional fill/stroke
 - `polygon`: Polygon with vertex array
 - `circle`: Circle with center and radius
@@ -417,46 +418,46 @@ Evaluate conditional expression.
 
 ```javascript
 {
-  type: 'rect' | 'polygon' | 'dithered_gradient' | 'circle' | 'ellipse' | 
+  type: 'rect' | 'polygon' | 'dithered_gradient' | 'circle' | 'ellipse' |
         'line' | 'star' | 'triangle' | 'path',
   color?: String,      // EGA hex color or name or index
   filled?: Boolean,    // Whether to fill or stroke (default: true)
   priority?: Number,   // Priority value 0-15
-  
+
   // Type-specific properties:
-  
+
   // For rect/dithered_gradient:
   dims?: [x, y, w, h],
-  
+
   // For polygon/triangle/line:
   points?: [[x,y]...],
-  
+
   // For circle:
   center?: [x, y],
   radius?: Number,
-  
+
   // For ellipse:
   center?: [x, y],
   radiusX?: Number,
   radiusY?: Number,
   rotation?: Number,
-  
+
   // For star (pixels):
   points?: [[x,y]...], // Star pixel locations
-  
+
   // For star (shape):
   center?: [x, y],
   radius?: Number,
   numPoints?: Number,  // Number of star points (default: 5)
-  
+
   // For line:
   width?: Number,      // Line width (default: 1)
-  
+
   // For dithered_gradient:
   color1?: String,     // First color
   color2?: String,     // Second color
   pattern?: Number,    // Pattern 0-8 (default: 2)
-  
+
   // For path:
   commands?: [         // Path drawing commands
     { type: 'moveTo', x: Number, y: Number },

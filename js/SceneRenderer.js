@@ -169,7 +169,9 @@ export class SceneRenderer {
     this.priorityBuffer.fill(0);
 
     // Set background color
-    const bgColor = this.validateColor(roomGraphics.backgroundColor || '#000000');
+    const bgColor = this.validateColor(
+      roomGraphics.backgroundColor || '#000000'
+    );
     this.backCtx.fillStyle = bgColor;
     this.backCtx.fillRect(0, 0, 640, 400);
 
@@ -401,7 +403,15 @@ export class SceneRenderer {
     ctx.fillStyle = color;
     ctx.strokeStyle = color;
     ctx.beginPath();
-    ctx.ellipse(scaledCx, scaledCy, scaledRadiusX, scaledRadiusY, rotation, 0, Math.PI * 2);
+    ctx.ellipse(
+      scaledCx,
+      scaledCy,
+      scaledRadiusX,
+      scaledRadiusY,
+      rotation,
+      0,
+      Math.PI * 2
+    );
 
     if (filled) {
       ctx.fill();
@@ -426,7 +436,7 @@ export class SceneRenderer {
         // Draw a small plus shape
         const scaledX = x * 2;
         const scaledY = y * 2;
-        
+
         // Center pixel
         ctx.fillRect(scaledX, scaledY, 2, 2);
         // Cross pattern for sparkle effect
@@ -460,7 +470,7 @@ export class SceneRenderer {
       }
 
       ctx.closePath();
-      
+
       if (filled) {
         ctx.fill();
       } else {
@@ -677,7 +687,7 @@ export class SceneRenderer {
     // Find bounding box
     let minY = 200,
       maxY = 0;
-    points.forEach(([x, y]) => {
+    points.forEach(([_x, y]) => {
       minY = Math.min(minY, Math.floor(y));
       maxY = Math.max(maxY, Math.ceil(y));
     });
