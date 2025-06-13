@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somnium - AI Adventure Game</title>
+  <meta name="description" content="Experience unique AI-generated adventures in the style of classic Sierra games">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+  <!-- Menu Bar -->
+  <div id="menu-bar" class="menu-bar">
+    <div class="menu-item" data-menu="file">File</div>
+    <div class="menu-item" data-menu="game">Game</div>
+    <div class="menu-item" data-menu="speed">Speed</div>
+    <div class="menu-item" data-menu="sound">Sound</div>
+    <div class="menu-item" data-menu="help">Help</div>
+    <div class="menu-status">
+      <span id="game-title">Somnium</span>
+      <span id="score">Score: 0</span>
+    </div>
+  </div>
+
+  <!-- Dropdown Menus -->
+  <div id="dropdown-menus" class="dropdown-container"></div>
+
+  <!-- Main Game Container -->
+  <div id="game-container" class="game-container">
+    <!-- Game Canvas (320x200) -->
+    <canvas id="game-canvas" width="320" height="200"></canvas>
+    
+    <!-- Text Window (hidden by default) -->
+    <div id="text-window" class="text-window hidden">
+      <div id="text-output" class="text-output"></div>
+      <div class="text-input-container">
+        <span class="prompt">&gt;</span>
+        <input type="text" id="text-input" class="text-input" maxlength="80" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen hidden">
+    <div class="loading-content">
+      <h2>Generating Your Adventure...</h2>
+      <div class="loading-spinner"></div>
+      <p id="loading-message">Weaving narrative threads...</p>
+    </div>
+  </div>
+
+  <!-- Main Menu -->
+  <div id="main-menu" class="main-menu">
+    <h1>Somnium</h1>
+    <p class="tagline">Every adventure is unique</p>
+    <div class="menu-options">
+      <button id="new-game-btn" class="menu-button">New Adventure</button>
+      <button id="load-game-btn" class="menu-button">Load Game</button>
+      <button id="about-btn" class="menu-button">About</button>
+    </div>
+  </div>
+
+  <!-- Theme Selection Modal -->
+  <div id="theme-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Choose Your Adventure Theme</h2>
+      <p>Enter a theme or leave blank for a surprise:</p>
+      <input type="text" id="theme-input" class="theme-input" placeholder="e.g., haunted castle, space station, pirate island">
+      <div class="modal-buttons">
+        <button id="start-adventure-btn" class="button-primary">Start Adventure</button>
+        <button id="cancel-theme-btn" class="button-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>About Somnium</h2>
+      <p>Somnium is an AI-driven adventure game inspired by Sierra On-Line's classic SCI0 games.</p>
+      <p>Every time you play, a unique world is generated just for you.</p>
+      <p>Version: <span id="version">0.0.1</span></p>
+      <button id="close-about-btn" class="button-primary">Close</button>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div id="error-modal" class="modal hidden">
+    <div class="modal-content error">
+      <h2>Error</h2>
+      <p id="error-message"></p>
+      <button id="close-error-btn" class="button-primary">OK</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module">
+    // Check for config file
+    import('./js/config.js').then(module => {
+      window.API_CONFIG = module.API_CONFIG;
+    }).catch(() => {
+      document.getElementById('error-message').textContent = 
+        'Missing config.js file. Please create js/config.js with your API configuration.';
+      document.getElementById('error-modal').classList.remove('hidden');
+    });
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

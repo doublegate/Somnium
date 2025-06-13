@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Documentation
+docs/
+ref_docs/
+
+# Config files
+*.config.js
+.eslintrc.js
+
+# Vendor files
+vendor/
+lib/
+
+# Generated files
+*.min.js
+*.bundle.js
+
+# Test fixtures
+test/fixtures/
+__fixtures__/
+
+# Cache
+.cache/
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# API config (contains secrets)
+config.js
+apiKey.js

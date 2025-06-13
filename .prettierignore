@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+out/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Generated files
+*.min.js
+*.bundle.js
+
+# Git
+.git/
+.gitignore
+
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.pdf
+
+# Vendor files
+vendor/
+lib/
+
+# Config that shouldn't be formatted
+.nvmrc
+VERSION

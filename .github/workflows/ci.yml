@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run ESLint
+      run: npm run lint
+    
+    - name: Check formatting
+      run: npm run format:check
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Generate coverage report
+      run: npm run test:coverage
+      if: matrix.node-version == '18.x'
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      if: matrix.node-version == '18.x'
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  browser-test:
+    name: Browser Compatibility Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: |
+        # Add build command when implemented
+        echo "Build step placeholder"
+    
+    - name: Test in Chrome
+      run: |
+        # Add Chrome tests when implemented
+        echo "Chrome tests placeholder"
+    
+    - name: Test in Firefox
+      run: |
+        # Add Firefox tests when implemented
+        echo "Firefox tests placeholder"
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+    
+    - name: Run npm audit
+      run: npm audit --production
+      continue-on-error: true
+    
+    - name: Check for sensitive data
+      run: |
+        # Check for API keys or sensitive data
+        ! grep -r "sk-[a-zA-Z0-9]*" --include="*.js" --include="*.json" --exclude-dir=node_modules .
+        ! grep -r "api[_-]?key.*=.*['\"][^'\"]+['\"]" --include="*.js" --exclude-dir=node_modules .

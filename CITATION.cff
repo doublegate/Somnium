@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: 'Somnium: AI-Driven Adventure Game Engine'
+message: 'If you use this software, please cite it as below.'
+type: software
+authors:
+  - name: 'Somnium Contributors'
+repository-code: 'https://github.com/doublegate/Somnium'
+url: 'https://github.com/doublegate/Somnium'
+abstract: 'An AI-driven graphical text-adventure game engine inspired by Sierra On-Line''s SCI0-era games. Generates unique adventures using Large Language Models while maintaining authentic retro aesthetics.'
+keywords:
+  - adventure-game
+  - text-adventure
+  - game-engine
+  - artificial-intelligence
+  - llm
+  - retro-gaming
+  - sierra
+  - sci-engine
+license: MIT
+version: 0.0.1
+date-released: '2025-01-13'

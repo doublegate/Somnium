@@ -1,0 +1,374 @@
+/* Somnium - Main Stylesheet */
+
+/* CSS Variables for EGA Colors */
+:root {
+  --ega-black: #000000;
+  --ega-blue: #0000AA;
+  --ega-green: #00AA00;
+  --ega-cyan: #00AAAA;
+  --ega-red: #AA0000;
+  --ega-magenta: #AA00AA;
+  --ega-brown: #AA5500;
+  --ega-light-gray: #AAAAAA;
+  --ega-dark-gray: #555555;
+  --ega-light-blue: #5555FF;
+  --ega-light-green: #55FF55;
+  --ega-light-cyan: #55FFFF;
+  --ega-light-red: #FF5555;
+  --ega-light-magenta: #FF55FF;
+  --ega-yellow: #FFFF55;
+  --ega-white: #FFFFFF;
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background-color: var(--ega-black);
+  color: var(--ega-white);
+  overflow: hidden;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Menu Bar */
+.menu-bar {
+  background-color: var(--ega-light-gray);
+  color: var(--ega-black);
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  user-select: none;
+  font-size: 14px;
+}
+
+.menu-item {
+  padding: 0 8px;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menu-item:hover {
+  background-color: var(--ega-blue);
+  color: var(--ega-white);
+}
+
+.menu-status {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+}
+
+/* Game Container */
+.game-container {
+  width: 640px;
+  height: 400px;
+  margin: 20px auto;
+  background-color: var(--ega-black);
+  position: relative;
+}
+
+/* Game Canvas */
+#game-canvas {
+  width: 640px;
+  height: 400px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+/* Text Window */
+.text-window {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--ega-black);
+  border: 2px solid var(--ega-white);
+  padding: 8px;
+  max-height: 120px;
+}
+
+.text-window.hidden {
+  display: none;
+}
+
+.text-output {
+  color: var(--ega-white);
+  margin-bottom: 8px;
+  max-height: 80px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.text-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.prompt {
+  color: var(--ega-white);
+  margin-right: 4px;
+}
+
+.text-input {
+  background-color: var(--ega-black);
+  color: var(--ega-white);
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  flex: 1;
+  caret-color: var(--ega-white);
+}
+
+/* Main Menu */
+.main-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: var(--ega-black);
+  padding: 40px;
+  border: 2px solid var(--ega-white);
+}
+
+.main-menu h1 {
+  font-size: 48px;
+  color: var(--ega-light-cyan);
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 0 var(--ega-blue);
+}
+
+.tagline {
+  color: var(--ega-light-gray);
+  margin-bottom: 32px;
+  font-style: italic;
+}
+
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-button {
+  background-color: var(--ega-blue);
+  color: var(--ega-white);
+  border: 2px solid var(--ega-light-blue);
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.menu-button:hover {
+  background-color: var(--ega-light-blue);
+  transform: translate(-2px, -2px);
+  box-shadow: 2px 2px 0 var(--ega-dark-gray);
+}
+
+/* Modals */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: var(--ega-black);
+  border: 2px solid var(--ega-white);
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h2 {
+  color: var(--ega-light-cyan);
+  margin-bottom: 16px;
+}
+
+.modal-content p {
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.theme-input {
+  width: 100%;
+  padding: 8px;
+  background-color: var(--ega-dark-gray);
+  color: var(--ega-white);
+  border: 1px solid var(--ega-light-gray);
+  font-family: inherit;
+  margin-bottom: 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.button-primary,
+.button-secondary {
+  padding: 8px 16px;
+  font-family: inherit;
+  cursor: pointer;
+  border: 2px solid;
+}
+
+.button-primary {
+  background-color: var(--ega-blue);
+  color: var(--ega-white);
+  border-color: var(--ega-light-blue);
+}
+
+.button-primary:hover {
+  background-color: var(--ega-light-blue);
+}
+
+.button-secondary {
+  background-color: var(--ega-dark-gray);
+  color: var(--ega-white);
+  border-color: var(--ega-light-gray);
+}
+
+.button-secondary:hover {
+  background-color: var(--ega-light-gray);
+  color: var(--ega-black);
+}
+
+/* Loading Screen */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--ega-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-content h2 {
+  color: var(--ega-light-cyan);
+  margin-bottom: 24px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--ega-dark-gray);
+  border-top-color: var(--ega-light-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loading-message {
+  color: var(--ega-light-gray);
+  font-style: italic;
+}
+
+/* Error Modal */
+.modal-content.error {
+  border-color: var(--ega-light-red);
+}
+
+.modal-content.error h2 {
+  color: var(--ega-light-red);
+}
+
+/* Dropdown Menus */
+.dropdown-container {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  z-index: 100;
+}
+
+.dropdown-menu {
+  background-color: var(--ega-light-gray);
+  border: 1px solid var(--ega-black);
+  min-width: 120px;
+  position: absolute;
+  display: none;
+}
+
+.dropdown-menu.visible {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 4px 8px;
+  cursor: pointer;
+  color: var(--ega-black);
+}
+
+.dropdown-item:hover {
+  background-color: var(--ega-blue);
+  color: var(--ega-white);
+}
+
+.dropdown-separator {
+  height: 1px;
+  background-color: var(--ega-dark-gray);
+  margin: 2px 0;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ega-dark-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ega-light-gray);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ega-white);
+}
