@@ -5,6 +5,12 @@
  * The actual game engine modules will be imported and initialized here.
  */
 
+// Import game modules
+import { GameManager } from './GameManager.js';
+
+// Global game manager instance
+let gameManager = null;
+
 // Main initialization
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Somnium v0.0.1 - Initializing...');
@@ -17,6 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize UI handlers
   initializeUI();
+  
+  // Setup FPS counter listener
+  window.addEventListener('game-fps', (event) => {
+    const fpsCounter = document.getElementById('fps-counter');
+    if (fpsCounter) {
+      fpsCounter.textContent = `FPS: ${event.detail.fps}`;
+    }
+  });
 });
 
 /**
@@ -125,13 +139,19 @@ async function startNewGame(theme) {
   loadingScreen.classList.remove('hidden');
 
   try {
-    // TODO: Import and initialize game modules
-    // const { GameManager } = await import('./GameManager.js');
-    // const gameManager = new GameManager(...);
-    // await gameManager.startNewGame(theme);
-
-    // Temporary: Simulate loading
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Get the game canvas
+    const canvas = document.getElementById('game-canvas');
+    
+    // Initialize game manager
+    gameManager = new GameManager(canvas, {
+      apiKey: window.API_CONFIG.apiKey,
+      apiEndpoint: window.API_CONFIG.apiEndpoint,
+      moderationEnabled: window.API_CONFIG.moderationEnabled || false,
+      debugMode: window.API_CONFIG.debugMode || false
+    });
+    
+    // Start new game
+    await gameManager.startNewGame(theme);
 
     // Hide loading screen
     loadingScreen.classList.add('hidden');
@@ -139,9 +159,15 @@ async function startNewGame(theme) {
     // Show game canvas
     const gameContainer = document.getElementById('game-container');
     gameContainer.style.display = 'block';
+    
+    // Show debug info if in debug mode
+    if (window.API_CONFIG.debugMode) {
+      document.getElementById('debug-info').classList.remove('hidden');
+    }
+    
+    // Set up input handler
+    setupGameInput();
 
-    // TODO: Remove this when game engine is implemented
-    showError('Game engine not yet implemented. Check back soon!');
   } catch (error) {
     console.error('Failed to start game:', error);
     loadingScreen.classList.add('hidden');
@@ -159,6 +185,65 @@ function showError(message) {
 
   errorMessage.textContent = message;
   errorModal.classList.remove('hidden');
+}
+
+/**
+ * Set up game input handling
+ */
+function setupGameInput() {
+  const inputLine = document.querySelector('.input-line');
+  const promptSpan = inputLine.querySelector('.prompt');
+  const commandInput = inputLine.querySelector('#command-input');
+  
+  // Show input line
+  inputLine.style.display = 'flex';
+  
+  // Focus on input
+  commandInput.focus();
+  
+  // Handle command submission
+  commandInput.addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+      const command = commandInput.value.trim();
+      if (command && gameManager) {
+        // Clear input
+        commandInput.value = '';
+        
+        // Display command in text window
+        displayGameText(`> ${command}`);
+        
+        // Process command
+        await gameManager.handlePlayerInput(command);
+      }
+    }
+  });
+  
+  // Listen for game messages
+  window.addEventListener('game-message', (e) => {
+    displayGameText(e.detail.message);
+  });
+}
+
+/**
+ * Display text in the game text window
+ * @param {string} text - Text to display
+ */
+function displayGameText(text) {
+  const textDisplay = document.getElementById('text-display');
+  
+  // Add text line
+  const line = document.createElement('div');
+  line.className = 'text-line';
+  line.textContent = text;
+  textDisplay.appendChild(line);
+  
+  // Scroll to bottom
+  textDisplay.scrollTop = textDisplay.scrollHeight;
+  
+  // Limit history to 100 lines
+  while (textDisplay.children.length > 100) {
+    textDisplay.removeChild(textDisplay.firstChild);
+  }
 }
 
 // Export for testing

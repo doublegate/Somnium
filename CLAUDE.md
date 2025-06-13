@@ -28,15 +28,23 @@ The engine follows Sierra's SCI philosophy of complete separation between engine
 
 ```bash
 # Local development server (required due to CORS for modules)
-python -m http.server 8000
-# or
-npx http-server -c-1 .
+npm start  # runs http-server on port 8080
+npm run dev  # runs http-server on port 8000
 
-# Install dependencies (when package.json exists)
-npm install
+# Install dependencies
+npm install  # or npm ci for clean install
 
-# Run tests (when implemented)
-npm test
+# Testing
+npm test  # run Jest tests
+npm run test:watch  # run tests in watch mode
+npm run test:coverage  # generate coverage report
+
+# Code Quality
+npm run lint  # run ESLint
+npm run lint:fix  # auto-fix ESLint issues
+npm run format  # format with Prettier
+npm run format:check  # check formatting
+npm run validate  # run all checks
 ```
 
 ## Key Technical Constraints
@@ -76,6 +84,16 @@ npm test
 - Implement proper API key management (never commit keys)
 - Focus on authentic SCI0 experience over modern conveniences
 - Text window pauses game action (critical SCI0 behavior)
+
+## CI/CD Configuration
+
+The project uses GitHub Actions for continuous integration:
+
+- **Node.js versions**: 18.x and 20.x (Jest 30 requires Node.js 18+)
+- **Jobs**: Lint, Test (with coverage), Security Audit, Browser Compatibility
+- **ESLint**: v9 with flat config format (eslint.config.js)
+- **Coverage**: Reports uploaded to Codecov for the 18.x test run
+- **All checks must pass** before merging pull requests
 
 ## Reference Documentation
 

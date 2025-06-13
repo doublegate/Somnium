@@ -7,107 +7,107 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 ## Phase Status
 
 - [x] Phase 1.1: Project Setup ✅ COMPLETE
-- [ ] Phase 1.2: Core Module Stubs (Current)
-- [ ] Phase 1.3: Basic Game Loop
+- [x] Phase 1.2: Core Module Stubs ✅ COMPLETE (June 13, 2025)
+- [ ] Phase 1.3: Basic Game Loop (Current)
 - [ ] Phase 1.4: State Management Foundation
 
-## Phase 1.2: Core Module Stubs (Current Priority)
+## Phase 1.2: Core Module Stubs ✅ COMPLETE
 
-### GameManager.js
+### GameManager.js ✅
 
-- [ ] Create file with module export structure
-- [ ] Add properties for game state, modules, and loop control
-- [ ] Define init() method signature
-- [ ] Define start() method signature
-- [ ] Define stop() method signature
-- [ ] Define update() method signature
-- [ ] Define render() method signature
-- [ ] Add module registration system
-- [ ] Add basic error handling structure
+- [x] Create file with module export structure
+- [x] Add properties for game state, modules, and loop control
+- [x] Define init() method signature (constructor)
+- [x] Define start() method signature (startNewGame)
+- [x] Define stop() method signature (stopGame)
+- [x] Define update() method signature
+- [x] Define render() method signature
+- [x] Add module registration system (constructor initialization)
+- [x] Add basic error handling structure
 
-### GameState.js
+### GameState.js ✅
 
-- [ ] Create file with state container
-- [ ] Define room state structure
-- [ ] Define object state structure
-- [ ] Define player state structure
-- [ ] Define inventory structure
-- [ ] Add state getter methods
-- [ ] Add state setter methods
-- [ ] Add state validation stubs
-- [ ] Add state change notification system
+- [x] Create file with state container
+- [x] Define room state structure
+- [x] Define object state structure
+- [x] Define player state structure (currentRoom, inventory)
+- [x] Define inventory structure
+- [x] Add state getter methods
+- [x] Add state setter methods
+- [x] Add state validation stubs
+- [x] Add state change notification system (state snapshots)
 
-### SceneRenderer.js
+### SceneRenderer.js ✅
 
-- [ ] Create file with canvas management
-- [ ] Add canvas context acquisition
-- [ ] Define coordinate system (320×200)
-- [ ] Add clear() method
-- [ ] Add drawRectangle() stub
-- [ ] Add drawPolygon() stub
-- [ ] Add drawLine() stub
-- [ ] Add fillPattern() stub for dithering
-- [ ] Add render queue structure
+- [x] Create file with canvas management
+- [x] Add canvas context acquisition
+- [x] Define coordinate system (320×200)
+- [x] Add clear() method
+- [x] Add drawRectangle() stub (drawRect)
+- [x] Add drawPolygon() stub
+- [x] Add drawLine() stub
+- [x] Add fillPattern() stub for dithering (drawDitheredGradient)
+- [x] Add render queue structure (priority buffer)
 
-### ViewManager.js
+### ViewManager.js ✅
 
-- [ ] Create file with sprite system structure
-- [ ] Define View class for sprites
-- [ ] Define Loop class for animation loops
-- [ ] Define Cel class for individual frames
-- [ ] Add sprite loading stub
-- [ ] Add animation update stub
-- [ ] Add sprite rendering stub
-- [ ] Add position management
-- [ ] Add z-order sorting structure
+- [x] Create file with sprite system structure
+- [x] Define View class for sprites (view objects)
+- [x] Define Loop class for animation loops (in view data)
+- [x] Define Cel class for individual frames (frame objects)
+- [x] Add sprite loading stub (createView)
+- [x] Add animation update stub
+- [x] Add sprite rendering stub
+- [x] Add position management
+- [x] Add z-order sorting structure (priority sorting)
 
-### SoundManager.js
+### SoundManager.js ✅
 
-- [ ] Create file with Tone.js import
-- [ ] Initialize Tone.js context
-- [ ] Define Sound class structure
-- [ ] Add play() method stub
-- [ ] Add stop() method stub
-- [ ] Add volume control structure
-- [ ] Add sound loading stub
-- [ ] Add music/sfx channel separation
-- [ ] Add basic synthesizer setup
+- [x] Create file with Tone.js import
+- [x] Initialize Tone.js context
+- [x] Define Sound class structure (sound parameters)
+- [x] Add play() method stub (playSound)
+- [x] Add stop() method stub (stopAll)
+- [x] Add volume control structure
+- [x] Add sound loading stub (parameter generation)
+- [x] Add music/sfx channel separation
+- [x] Add basic synthesizer setup
 
-### Parser.js
+### Parser.js ✅
 
-- [ ] Create file with parser structure
-- [ ] Define token types (verb, noun, etc.)
-- [ ] Add tokenize() method stub
-- [ ] Add parse() method stub
-- [ ] Define command structure
-- [ ] Add vocabulary structure
-- [ ] Add synonym mapping structure
-- [ ] Add abbreviation system stub
-- [ ] Add command validation stub
+- [x] Create file with parser structure
+- [x] Define token types (verb, noun, etc.)
+- [x] Add tokenize() method stub (in parse method)
+- [x] Add parse() method stub
+- [x] Define command structure (ParsedCommand)
+- [x] Add vocabulary structure
+- [x] Add synonym mapping structure
+- [x] Add abbreviation system stub (expandSynonyms)
+- [x] Add command validation stub
 
-### EventManager.js
+### EventManager.js ✅
 
-- [ ] Create file with event system
-- [ ] Define Event class structure
-- [ ] Add event queue array
-- [ ] Add queueEvent() method
-- [ ] Add processEvents() stub
-- [ ] Add event priority system
-- [ ] Add conditional trigger structure
-- [ ] Add timer event structure
-- [ ] Add event handler registration
+- [x] Create file with event system
+- [x] Define Event class structure (action objects)
+- [x] Add event queue array (scheduledEvents)
+- [x] Add queueEvent() method (scheduleEvent)
+- [x] Add processEvents() stub (updateScheduledEvents)
+- [x] Add event priority system (scheduled by time)
+- [x] Add conditional trigger structure
+- [x] Add timer event structure
+- [x] Add event handler registration
 
-### AIManager.js
+### AIManager.js ✅
 
-- [ ] Create file with AI interface
-- [ ] Add API configuration structure
-- [ ] Define generateWorld() stub
-- [ ] Define processAction() stub
-- [ ] Add prompt template structure
-- [ ] Add response validation stub
-- [ ] Add context collection stub
-- [ ] Add mock mode for testing
-- [ ] Add error handling structure
+- [x] Create file with AI interface
+- [x] Add API configuration structure
+- [x] Define generateWorld() stub
+- [x] Define processAction() stub (getDynamicResponse)
+- [x] Add prompt template structure
+- [x] Add response validation stub
+- [x] Add context collection stub
+- [x] Add mock mode for testing
+- [x] Add error handling structure
 
 ## Phase 1.3: Basic Game Loop
 
