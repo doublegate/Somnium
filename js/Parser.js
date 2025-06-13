@@ -249,6 +249,8 @@ export class Parser {
 
       if (this.vocabulary.special.all.includes(token)) {
         command.modifiers.push('all');
+        command.directObject = 'all';
+        command.resolvedDirectObject = { type: 'special', value: 'all' };
         continue;
       }
 
@@ -291,6 +293,15 @@ export class Parser {
       const directPhrase = processedTokens.join(' ');
       command.directObject = directPhrase;
       command.resolvedDirectObject = this.resolveObject(directPhrase);
+    }
+
+    // Special case: "look at X" should treat X as direct object
+    if (command.verb === 'look' && command.preposition === 'at' && command.indirectObject && !command.directObject) {
+      command.directObject = command.indirectObject;
+      command.resolvedDirectObject = command.resolvedIndirectObject;
+      command.indirectObject = null;
+      command.resolvedIndirectObject = null;
+      command.preposition = null;
     }
 
     return command;

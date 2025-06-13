@@ -326,7 +326,7 @@ describe('GameState', () => {
       gameState.addItem('item1');
       gameState.setFlag('test', true);
 
-      expect(gameState.stateHistory.length).toBe(2);
+      expect(gameState.stateHistory.length).toBe(3);
     });
 
     test('should undo last action', () => {

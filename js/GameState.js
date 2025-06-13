@@ -76,6 +76,9 @@ export class GameState extends EventTarget {
     // Initialize flags from puzzle definitions
     this.initializeFlags();
 
+    // Save initial state for undo functionality
+    this.saveStateSnapshot();
+
     // Dispatch loaded event
     this.dispatchEvent(
       new CustomEvent('resourcesLoaded', {
@@ -392,7 +395,7 @@ export class GameState extends EventTarget {
     if (!currentRoom || !currentRoom.exits) return false;
 
     const exit = currentRoom.exits[direction];
-    return exit && exit.enabled;
+    return exit ? exit.enabled : false;
   }
 
   /**

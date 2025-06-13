@@ -9,40 +9,68 @@ describe('Parser', () => {
     parser = new Parser();
     gameState = new GameState();
 
-    // Set up mock game state
-    gameState.currentRoom = 'library';
-    gameState.rooms = {
-      library: {
-        id: 'library',
-        name: 'Library',
-        description: 'A dusty old library.',
-        objects: {
-          desk: {
-            id: 'desk',
-            name: 'wooden desk',
-            description: 'An old oak desk.',
+    // Set up mock game data in the correct format
+    const mockGameData = {
+      startRoom: 'library',
+      rooms: {
+        library: {
+          id: 'library',
+          name: 'Library',
+          description: 'A dusty old library.',
+          graphics: {
+            background: '#0000aa',
+            objects: []
           },
-          book: {
-            id: 'book',
-            name: 'red book',
-            description: 'A leather-bound book.',
+          objects: {
+            desk: {
+              id: 'desk',
+              name: 'wooden desk',
+              description: 'An old oak desk.',
+            },
+            book: {
+              id: 'book',
+              name: 'red book',
+              description: 'A leather-bound book.',
+            },
+          },
+          items: ['brass_key'],
+          exits: {
+            north: { roomId: 'hallway', enabled: true },
+            east: { roomId: 'study', enabled: true }
           },
         },
-        items: ['brass_key'],
-        exits: { north: 'hallway', east: 'study' },
+        hallway: {
+          id: 'hallway',
+          name: 'Hallway',
+          description: 'A long corridor.',
+          graphics: { background: '#0000aa', objects: [] },
+          exits: {
+            south: { roomId: 'library', enabled: true }
+          }
+        },
+        study: {
+          id: 'study',
+          name: 'Study',
+          description: 'A cozy study.',
+          graphics: { background: '#0000aa', objects: [] },
+          exits: {
+            west: { roomId: 'library', enabled: true }
+          }
+        }
+      },
+      items: {
+        brass_key: {
+          id: 'brass_key',
+          name: 'brass key',
+          description: 'A small brass key.',
+        },
+        lamp: { id: 'lamp', name: 'lamp', description: 'An oil lamp.' },
       },
     };
 
-    gameState.objects = {
-      brass_key: {
-        id: 'brass_key',
-        name: 'brass key',
-        description: 'A small brass key.',
-      },
-      lamp: { id: 'lamp', name: 'lamp', description: 'An oil lamp.' },
-    };
-
-    gameState.inventory = ['lamp'];
+    // Load resources and add lamp to inventory
+    gameState.loadResources(mockGameData);
+    gameState.addToInventory('lamp');
 
     parser.setContext(gameState);
   });
@@ -116,7 +144,8 @@ describe('Parser', () => {
       const result = parser.parse('take it');
       expect(result.success).toBe(true);
       expect(result.command.verb).toBe('take');
-      expect(result.command.resolvedDirectObject).toBe('book');
+      expect(result.command.resolvedDirectObject.value).toBe('book');
+      expect(result.command.resolvedDirectObject.type).toBe('object');
     });
 
     test('should handle "all" modifier', () => {
@@ -139,6 +168,8 @@ describe('Parser', () => {
       const result = parser.parse('look at wooden desk');
       expect(result.success).toBe(true);
       expect(result.command.resolvedDirectObject.value).toBe('desk');
+      expect(result.command.verb).toBe('look');
+      expect(result.command.directObject).toBe('wooden desk');
     });
 
     test('should prioritize inventory items', () => {

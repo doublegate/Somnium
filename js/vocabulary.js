@@ -99,7 +99,6 @@ export const VOCABULARY = {
     'put down',
     'put on',
     'take off',
-    'look at',
     'talk to',
     'go to',
     'get in',
