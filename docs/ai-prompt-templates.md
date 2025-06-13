@@ -161,7 +161,7 @@ Wrap any player-influenced prompts with:
 ```
 Generate family-friendly content suitable for all ages. Avoid:
 - Violence beyond cartoon slapstick
-- Any sexual content or innuendo  
+- Any sexual content or innuendo
 - Profanity or crude language
 - Real-world political or religious references
 - Graphic descriptions of injury or death

@@ -10,7 +10,7 @@ This file lists all the people who have contributed to Somnium. Thank you to eve
 
 Contributors are listed in alphabetical order by GitHub username.
 
-<!-- 
+<!--
 To add yourself, please use the following format:
 - **[Your Name](https://github.com/yourusername)** - Brief description of contribution
 
@@ -20,19 +20,19 @@ For example:
 
 ### Code Contributors
 
-*Waiting for the first contributors! Your name could be here.*
+_Waiting for the first contributors! Your name could be here._
 
 ### Documentation Contributors
 
-*Waiting for the first contributors! Your name could be here.*
+_Waiting for the first contributors! Your name could be here._
 
 ### Testing Contributors
 
-*Waiting for the first contributors! Your name could be here.*
+_Waiting for the first contributors! Your name could be here._
 
 ### Design Contributors
 
-*Waiting for the first contributors! Your name could be here.*
+_Waiting for the first contributors! Your name could be here._
 
 ## Special Thanks
 
@@ -46,4 +46,4 @@ Want to see your name here? Check out our [Contributing Guide](CONTRIBUTING.md) 
 
 ---
 
-*This list is updated with each release. If you've contributed but don't see your name, please submit a PR to add it!*
+_This list is updated with each release. If you've contributed but don't see your name, please submit a PR to add it!_

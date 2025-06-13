@@ -16,9 +16,9 @@ export default [
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'semi': ['error', 'always'],
-      'quotes': ['error', 'single', { avoidEscape: true }],
-      'indent': ['error', 2],
+      semi: ['error', 'always'],
+      quotes: ['error', 'single', { avoidEscape: true }],
+      indent: ['error', 2],
       'comma-dangle': ['error', 'always-multiline'],
       'no-trailing-spaces': 'error',
       'eol-last': ['error', 'always'],
@@ -33,11 +33,6 @@ export default [
     },
   },
   {
-    ignores: [
-      'node_modules/**',
-      'coverage/**',
-      'dist/**',
-      '*.min.js',
-    ],
+    ignores: ['node_modules/**', 'coverage/**', 'dist/**', '*.min.js'],
   },
 ];

@@ -3,21 +3,21 @@
 /* CSS Variables for EGA Colors */
 :root {
   --ega-black: #000000;
-  --ega-blue: #0000AA;
-  --ega-green: #00AA00;
-  --ega-cyan: #00AAAA;
-  --ega-red: #AA0000;
-  --ega-magenta: #AA00AA;
-  --ega-brown: #AA5500;
-  --ega-light-gray: #AAAAAA;
+  --ega-blue: #0000aa;
+  --ega-green: #00aa00;
+  --ega-cyan: #00aaaa;
+  --ega-red: #aa0000;
+  --ega-magenta: #aa00aa;
+  --ega-brown: #aa5500;
+  --ega-light-gray: #aaaaaa;
   --ega-dark-gray: #555555;
-  --ega-light-blue: #5555FF;
-  --ega-light-green: #55FF55;
-  --ega-light-cyan: #55FFFF;
-  --ega-light-red: #FF5555;
-  --ega-light-magenta: #FF55FF;
-  --ega-yellow: #FFFF55;
-  --ega-white: #FFFFFF;
+  --ega-light-blue: #5555ff;
+  --ega-light-green: #55ff55;
+  --ega-light-cyan: #55ffff;
+  --ega-light-red: #ff5555;
+  --ega-light-magenta: #ff55ff;
+  --ega-yellow: #ffff55;
+  --ega-white: #ffffff;
 }
 
 /* Reset and Base Styles */
@@ -296,7 +296,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 #loading-message {

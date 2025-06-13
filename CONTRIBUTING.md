@@ -64,22 +64,27 @@ By participating in this project, you agree to abide by our Code of Conduct:
 ## Development Process
 
 ### 1. Check Existing Work
+
 - Review [Issues](https://github.com/doublegate/Somnium/issues) to avoid duplicating effort
 - Check the [implementation roadmap](docs/implementation-roadmap.md)
 - Look at open [Pull Requests](https://github.com/doublegate/Somnium/pulls)
 
 ### 2. Discuss Major Changes
+
 For significant changes:
+
 - Open an issue describing your proposal
 - Wait for feedback before starting work
 - This helps ensure your effort aligns with project goals
 
 ### 3. Follow the Architecture
+
 - Read the [architecture overview](docs/architecture-overview.md)
 - Maintain module boundaries and interfaces
 - Follow existing patterns (see [common patterns](docs/common-patterns.md))
 
 ### 4. Write Clean Code
+
 - Keep functions small and focused
 - Add JSDoc comments for public APIs
 - Use meaningful variable names
@@ -96,10 +101,10 @@ const myFunction = (param) => {
   if (condition) {
     return true;
   }
-  
+
   // Meaningful variable names
   const playerInventory = gameState.getInventory();
-  
+
   // Use === for comparisons
   if (item.id === 'brass_key') {
     // ...
@@ -126,13 +131,16 @@ class SceneRenderer {
 ```
 
 ### File Organization
+
 - One module per file
 - Name files after their primary export
 - Group related files in directories
 - Keep test files alongside source files
 
 ### Commit Messages
+
 Follow conventional commit format:
+
 ```
 type(scope): brief description
 
@@ -144,6 +152,7 @@ Fixes #123
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 Examples:
+
 - `feat(parser): add support for pronouns`
 - `fix(renderer): correct dithering pattern alignment`
 - `docs: update API reference for GameState`
@@ -151,6 +160,7 @@ Examples:
 ## Testing
 
 ### Running Tests
+
 ```bash
 npm test                 # Run all tests
 npm run test:watch      # Run tests in watch mode
@@ -158,24 +168,26 @@ npm run test:coverage   # Generate coverage report
 ```
 
 ### Writing Tests
+
 - Write tests for all new functionality
 - Place test files next to source files: `Parser.test.js`
 - Use descriptive test names
 - Test edge cases and error conditions
 
 Example:
+
 ```javascript
 describe('Parser', () => {
   test('parses simple verb-noun commands', () => {
     const parser = new Parser(vocabulary);
     const result = parser.parse('take key');
-    
+
     expect(result).toEqual({
       verb: 'take',
-      directObject: 'key'
+      directObject: 'key',
     });
   });
-  
+
   test('returns null for invalid input', () => {
     const parser = new Parser(vocabulary);
     expect(parser.parse('xyzzy')).toBeNull();
@@ -184,6 +196,7 @@ describe('Parser', () => {
 ```
 
 ### Manual Testing
+
 - Test your changes in multiple browsers
 - Try edge cases and unusual inputs
 - Verify no regressions in existing functionality
@@ -192,24 +205,29 @@ describe('Parser', () => {
 ## Submitting Changes
 
 ### 1. Update Your Branch
+
 ```bash
 git fetch upstream
 git rebase upstream/main
 ```
 
 ### 2. Run Tests
+
 Ensure all tests pass before submitting:
+
 ```bash
 npm test
 npm run lint
 ```
 
 ### 3. Push Changes
+
 ```bash
 git push origin feature/your-feature-name
 ```
 
 ### 4. Create Pull Request
+
 - Go to your fork on GitHub
 - Click "New Pull Request"
 - Provide a clear title and description
@@ -217,29 +235,36 @@ git push origin feature/your-feature-name
 - Include screenshots for UI changes
 
 ### Pull Request Template
+
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Documentation update
 - [ ] Performance improvement
 
 ## Testing
+
 - [ ] All tests pass
 - [ ] Added new tests
 - [ ] Manually tested in Chrome/Firefox/Safari
 
 ## Screenshots (if applicable)
+
 [Add screenshots here]
 
 ## Related Issues
+
 Fixes #123
 ```
 
 ### 5. Code Review
+
 - Respond to feedback constructively
 - Make requested changes promptly
 - Ask questions if requirements are unclear
@@ -248,39 +273,49 @@ Fixes #123
 ## Reporting Issues
 
 ### Before Creating an Issue
+
 - Search existing issues to avoid duplicates
 - Try to reproduce the problem
 - Gather relevant information
 
 ### Issue Template
+
 ```markdown
 ## Description
+
 Clear description of the issue
 
 ## Steps to Reproduce
+
 1. Go to...
 2. Type...
 3. See error...
 
 ## Expected Behavior
+
 What should happen
 
 ## Actual Behavior
+
 What actually happens
 
 ## Environment
+
 - Browser: Chrome 96
 - OS: Windows 10
 - Somnium Version: 0.1.0
 
 ## Screenshots
+
 [If applicable]
 
 ## Additional Context
+
 Any other relevant information
 ```
 
 ### Security Issues
+
 For security vulnerabilities, please see [SECURITY.md](SECURITY.md) for responsible disclosure procedures.
 
 ## Recognition

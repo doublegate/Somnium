@@ -9,6 +9,7 @@
 ## Initial Setup
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/doublegate/Somnium.git
 cd somnium
@@ -17,33 +18,38 @@ cd somnium
 ### 2. Configure API Access
 
 Create a `config.js` file (this will be gitignored):
+
 ```javascript
 // js/config.js
 export const API_CONFIG = {
   apiKey: 'your-openai-api-key-here',
   apiEndpoint: 'https://api.openai.com/v1/chat/completions',
-  model: 'gpt-3.5-turbo'  // or 'gpt-4'
+  model: 'gpt-3.5-turbo', // or 'gpt-4'
 };
 ```
 
 ### 3. Start Development Server
 
 Using Python:
+
 ```bash
 python -m http.server 8000
 ```
 
 Using Node.js:
+
 ```bash
 npx http-server -c-1 .
 ```
 
 ### 4. Open the Game
+
 Navigate to `http://localhost:8000` in your browser.
 
 ## Creating Your First Adventure
 
 ### Starting a New Game
+
 1. Click "New Adventure" from the main menu
 2. (Optional) Enter a theme like "haunted castle" or "space station"
 3. Wait for the AI to generate your unique world (5-10 seconds)
@@ -52,11 +58,13 @@ Navigate to `http://localhost:8000` in your browser.
 ### Basic Commands
 
 **Movement:**
+
 - `go north` or just `north` (also: south, east, west, up, down)
 - `enter [place]`
 - `exit`
 
 **Interaction:**
+
 - `look` or `look around` - Describe current location
 - `look at [object]` - Examine something specific
 - `take [item]` or `get [item]` - Pick up an item
@@ -64,11 +72,13 @@ Navigate to `http://localhost:8000` in your browser.
 - `use [item] on [object]` - Use an item
 
 **Communication:**
+
 - `talk to [character]`
 - `ask [character] about [topic]`
 - `give [item] to [character]`
 
 **Common Actions:**
+
 - `open [object]`
 - `close [object]`
 - `push [object]`
@@ -76,6 +86,7 @@ Navigate to `http://localhost:8000` in your browser.
 - `unlock [object] with [item]`
 
 ### Keyboard Shortcuts
+
 - `ESC` - Open game menu
 - `F1` - Help
 - `F5` - Save game
@@ -104,12 +115,14 @@ Navigate to `http://localhost:8000` in your browser.
 ## Saving and Loading
 
 ### To Save Your Game
+
 1. Click `File > Save` from the menu, or press `F5`
 2. Choose a save slot (1-10)
 3. Enter a description (optional)
 4. The game will download a `.sav` file to your computer
 
 ### To Load a Saved Game
+
 1. Click `File > Load` from the menu, or press `F7`
 2. Select the `.sav` file from your computer
 3. The game will restore exactly where you left off
@@ -117,6 +130,7 @@ Navigate to `http://localhost:8000` in your browser.
 ## Tips for Playing
 
 ### General Tips
+
 - **Examine everything** - Look at objects for clues
 - **Try different verbs** - If "open" doesn't work, try "unlock" or "push"
 - **Check your inventory** - You might already have what you need
@@ -124,12 +138,14 @@ Navigate to `http://localhost:8000` in your browser.
 - **Save often** - Before trying something dangerous
 
 ### Puzzle Solving
+
 - Most puzzles require finding and using the right item
 - Pay attention to descriptions - they often contain hints
 - If stuck, try exploring other areas first
 - The game is designed to be solvable - every puzzle has a solution
 
 ### Understanding the Parser
+
 - The parser understands many synonyms: "get" = "take" = "grab"
 - You can often omit articles: "take key" instead of "take the key"
 - Use simple commands - the parser works best with verb + noun
@@ -138,18 +154,21 @@ Navigate to `http://localhost:8000` in your browser.
 ## Troubleshooting
 
 ### "I don't understand that" Messages
+
 - Check your spelling
 - Try simpler phrasing
 - Make sure the object exists in the current room
 - Use "look" to see what's available
 
 ### Game Won't Start
+
 - Check your internet connection (needed for AI generation)
 - Verify your API key is correct in config.js
 - Check the browser console for error messages
 - Try refreshing the page
 
 ### Performance Issues
+
 - Close other browser tabs
 - Try a different browser
 - Reduce game speed in the Speed menu
@@ -159,7 +178,7 @@ Navigate to `http://localhost:8000` in your browser.
 
 ```
 > look
-You stand in a dusty library. Ancient tomes line the walls, and a 
+You stand in a dusty library. Ancient tomes line the walls, and a
 large oak desk dominates the center of the room. A door leads north.
 
 > look at desk
@@ -186,14 +205,18 @@ You enter the moonlit corridor...
 ## Advanced Features
 
 ### Debug Mode
+
 Add `?debug=true` to the URL for developer features:
+
 - Console access to game state
 - Frame rate display
 - Memory usage stats
 - Event log
 
 ### Custom Themes
+
 When starting a new game, you can combine themes:
+
 - "haunted pirate ship"
 - "cyberpunk detective story"
 - "medieval comedy"

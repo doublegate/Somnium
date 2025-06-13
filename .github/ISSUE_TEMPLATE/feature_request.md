@@ -4,7 +4,6 @@ about: Suggest an idea for this project
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
-
 ---
 
 **Is your feature request related to a problem? Please describe.**
@@ -21,6 +20,7 @@ Explain how this feature maintains the authentic Sierra experience while adding 
 
 **Implementation ideas**
 If you have thoughts on how this could be implemented:
+
 - Which modules would need changes?
 - Any technical considerations?
 - Performance impact?

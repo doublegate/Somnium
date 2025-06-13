@@ -27,21 +27,24 @@ An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/doublegate/Somnium.git
 cd Somnium
 ```
 
 2. Create a `config.js` file in the `js/` directory:
+
 ```javascript
 export const API_CONFIG = {
   apiKey: 'your-openai-api-key-here',
   apiEndpoint: 'https://api.openai.com/v1/chat/completions',
-  model: 'gpt-3.5-turbo'
+  model: 'gpt-3.5-turbo',
 };
 ```
 
 3. Start a local web server:
+
 ```bash
 # Using Python
 python -m http.server 8000
@@ -57,12 +60,14 @@ npx http-server -c-1 .
 ## How to Play
 
 ### Basic Commands
+
 - **Movement**: `go north`, `south`, `east`, `west`, `up`, `down`
 - **Interaction**: `look`, `look at [object]`, `take [item]`, `use [item] on [object]`
 - **Communication**: `talk to [character]`, `ask [character] about [topic]`
 - **Inventory**: `inventory` or `inv`
 
 ### Tips
+
 - Examine everything - descriptions often contain clues
 - Save your game frequently (F5)
 - The parser understands many synonyms (e.g., "get" = "take" = "grab")
@@ -71,6 +76,7 @@ npx http-server -c-1 .
 ## Development
 
 ### Project Structure
+
 ```
 Somnium/
 ├── index.html          # Main game file
@@ -90,6 +96,7 @@ Somnium/
 Currently, Somnium runs directly from source with no build step required. Simply serve the files from a web server.
 
 Future versions may include:
+
 - TypeScript migration
 - Module bundling with Webpack/Parcel
 - Automated testing with Jest
@@ -99,6 +106,7 @@ Future versions may include:
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 Areas where we especially need help:
+
 - Testing across different browsers and devices
 - Improving the AI prompts for better game generation
 - Adding new graphics primitives and effects
@@ -135,4 +143,4 @@ Somnium is currently in early development. Core engine architecture is designed 
 
 ---
 
-*Every adventure is unique. Every playthrough is a new dream. Welcome to Somnium.*
+_Every adventure is unique. Every playthrough is a new dream. Welcome to Somnium._

@@ -21,6 +21,7 @@ Security vulnerabilities should not be reported via GitHub issues as they are pu
 Send an email to: `security-somnium@example.com` (replace with actual security email)
 
 Include the following information:
+
 - Description of the vulnerability
 - Steps to reproduce the issue
 - Potential impact
@@ -76,6 +77,7 @@ Include the following information:
 ### Client-Side API Keys
 
 Currently, API keys are used client-side. This is a known limitation during development. For production:
+
 - Consider using a proxy server
 - Implement rate limiting
 - Use restricted API keys with limited permissions
@@ -83,6 +85,7 @@ Currently, API keys are used client-side. This is a known limitation during deve
 ### User-Generated Content
 
 Since the game generates content via AI:
+
 - Content moderation is probabilistic, not guaranteed
 - Users should report inappropriate content
 - Parents should monitor children's gameplay
@@ -90,6 +93,7 @@ Since the game generates content via AI:
 ### Save File Security
 
 Save files contain the entire game state:
+
 - Don't load save files from untrusted sources
 - Save files could potentially contain inappropriate content that bypassed initial filters
 - Future versions will include save file validation

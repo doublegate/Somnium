@@ -1,11 +1,13 @@
 # Somnium Implementation Roadmap
 
 ## Overview
+
 This document provides a structured approach to implementing Somnium, breaking down the project into manageable phases with clear dependencies and milestones.
 
 ## Phase 1: Core Engine Foundation (Weeks 1-2)
 
 ### 1.1 Project Setup
+
 - [ ] Initialize package.json with dependencies (Tone.js)
 - [ ] Create index.html with canvas element (320x200)
 - [ ] Set up basic CSS for retro styling
@@ -13,6 +15,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] Set up .gitignore for API keys and saves
 
 ### 1.2 Core Module Stubs
+
 - [ ] GameManager.js - Main game loop with requestAnimationFrame
 - [ ] GameState.js - Basic state structure and getters/setters
 - [ ] SceneRenderer.js - Canvas initialization and clear methods
@@ -20,6 +23,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] EventManager.js - Event queue and execution framework
 
 ### 1.3 Static Test Data
+
 - [ ] Create test-world.json with sample game data
 - [ ] Implement JSON loading and validation
 - [ ] Basic room rendering from static data
@@ -28,11 +32,13 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 2: Graphics System (Week 3)
 
 ### 2.1 EGA Palette Implementation
+
 - [ ] Define 16-color palette constants
 - [ ] Implement color validation utilities
 - [ ] Set up pixel-perfect rendering (imageSmoothingEnabled = false)
 
 ### 2.2 Primitive Rendering
+
 - [ ] Rectangle drawing with EGA colors
 - [ ] Polygon rendering with fill
 - [ ] Dithered gradient implementation (2x2 pattern)
@@ -40,6 +46,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] Z-order/priority system
 
 ### 2.3 Scene Composition
+
 - [ ] Background clearing and redraw
 - [ ] Primitive batching from JSON
 - [ ] Label system for scene regions
@@ -48,6 +55,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 3: Game Logic (Week 4)
 
 ### 3.1 Parser Enhancement
+
 - [ ] Verb synonym dictionary
 - [ ] Multi-word noun support
 - [ ] Pronoun resolution ("it", "them")
@@ -55,6 +63,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] Error message generation
 
 ### 3.2 Event System
+
 - [ ] Script action execution (SET_FLAG, GIVE_ITEM, etc.)
 - [ ] Conditional logic evaluation
 - [ ] Puzzle state tracking
@@ -62,6 +71,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] Timer/delayed event support
 
 ### 3.3 Navigation
+
 - [ ] Room exit handling
 - [ ] Player position tracking
 - [ ] Movement commands (north, south, etc.)
@@ -70,6 +80,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 4: AI Integration (Weeks 5-6)
 
 ### 4.1 AIManager Implementation
+
 - [ ] API key configuration system
 - [ ] Master prompt template
 - [ ] JSON generation request handling
@@ -77,12 +88,14 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] Theme/seed injection
 
 ### 4.2 Dynamic Interactions
+
 - [ ] Context gathering for LLM queries
 - [ ] Unscripted action handling
 - [ ] Response integration without state corruption
 - [ ] Rate limiting and caching
 
 ### 4.3 Content Moderation
+
 - [ ] Moderation API integration
 - [ ] Local filter implementation
 - [ ] Fallback response system
@@ -91,12 +104,14 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 5: Audio System (Week 7)
 
 ### 5.1 Tone.js Integration
+
 - [ ] Library setup and initialization
 - [ ] Basic synth instrument creation
 - [ ] Music theme interpreter
 - [ ] Ambient sound generator
 
 ### 5.2 Sound Management
+
 - [ ] Room-based music switching
 - [ ] Sound effect triggering
 - [ ] Volume controls
@@ -105,6 +120,7 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 6: UI and Polish (Week 8)
 
 ### 6.1 Menu System
+
 - [ ] Sierra-style menu bar
 - [ ] File menu (Save/Load/Quit)
 - [ ] Game menu (Inventory/Score)
@@ -112,12 +128,14 @@ This document provides a structured approach to implementing Somnium, breaking d
 - [ ] Help system
 
 ### 6.2 Text Window
+
 - [ ] Modal text display
 - [ ] Game pause during input
 - [ ] Command history
 - [ ] Text wrapping and scrolling
 
 ### 6.3 Save/Load System
+
 - [ ] Complete state serialization
 - [ ] File download/upload handlers
 - [ ] Version checking
@@ -126,12 +144,14 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 7: Animation System (Week 9)
 
 ### 7.1 ViewManager Development
+
 - [ ] Sprite data structure
 - [ ] Animation loop playback
 - [ ] Movement interpolation
 - [ ] Collision detection basics
 
 ### 7.2 Character Animation
+
 - [ ] Player character movement
 - [ ] NPC idle animations
 - [ ] Object state animations
@@ -140,18 +160,21 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 8: Testing and QA (Week 10)
 
 ### 8.1 Unit Testing
+
 - [ ] Parser test suite
 - [ ] State management tests
 - [ ] Event execution tests
 - [ ] Save/load integrity tests
 
 ### 8.2 Integration Testing
+
 - [ ] Full game flow testing
 - [ ] AI response validation
 - [ ] Cross-browser testing
 - [ ] Performance profiling
 
 ### 8.3 Puzzle Validation
+
 - [ ] Automated solver implementation
 - [ ] Solvability verification
 - [ ] Dead-end detection
@@ -160,12 +183,14 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 9: Optimization (Week 11)
 
 ### 9.1 Performance
+
 - [ ] Memory leak detection
 - [ ] Rendering optimization
 - [ ] API call reduction
 - [ ] Asset caching strategies
 
 ### 9.2 Error Handling
+
 - [ ] Graceful degradation
 - [ ] Error recovery flows
 - [ ] User-friendly error messages
@@ -174,12 +199,14 @@ This document provides a structured approach to implementing Somnium, breaking d
 ## Phase 10: Launch Preparation (Week 12)
 
 ### 10.1 Documentation
+
 - [ ] User manual creation
 - [ ] Command reference
 - [ ] Troubleshooting guide
 - [ ] API documentation
 
 ### 10.2 Deployment
+
 - [ ] Production build configuration
 - [ ] API key security
 - [ ] Hosting setup

@@ -11,6 +11,7 @@ This guide provides comprehensive testing strategies for Somnium, ensuring relia
 Test individual modules in isolation.
 
 #### Parser Tests
+
 ```javascript
 // test/parser.test.js
 describe('Parser', () => {
@@ -18,15 +19,15 @@ describe('Parser', () => {
     const parser = new Parser(vocabulary);
     expect(parser.parse('take key')).toEqual({
       verb: 'take',
-      directObject: 'key'
+      directObject: 'key',
     });
   });
 
   test('handles synonyms', () => {
     const parser = new Parser(vocabulary);
     expect(parser.parse('get brass key')).toEqual({
-      verb: 'take',  // canonical form
-      directObject: 'brass_key'
+      verb: 'take', // canonical form
+      directObject: 'brass_key',
     });
   });
 
@@ -36,7 +37,7 @@ describe('Parser', () => {
       verb: 'use',
       directObject: 'key',
       preposition: 'on',
-      indirectObject: 'door'
+      indirectObject: 'door',
     });
   });
 
@@ -46,13 +47,14 @@ describe('Parser', () => {
     expect(parser.parse('look at it')).toEqual({
       verb: 'look',
       preposition: 'at',
-      directObject: 'dragon'
+      directObject: 'dragon',
     });
   });
 });
 ```
 
 #### GameState Tests
+
 ```javascript
 describe('GameState', () => {
   test('manages inventory correctly', () => {
@@ -60,7 +62,7 @@ describe('GameState', () => {
     state.addItem('key');
     expect(state.hasItem('key')).toBe(true);
     expect(state.getInventory()).toContain('key');
-    
+
     state.removeItem('key');
     expect(state.hasItem('key')).toBe(false);
   });
@@ -76,12 +78,12 @@ describe('GameState', () => {
     state.loadResources(testGameJSON);
     state.addItem('key');
     state.setFlag('puzzle_solved', true);
-    
+
     const saved = state.serialize();
     const newState = new GameState();
     newState.loadResources(testGameJSON);
     newState.deserialize(saved);
-    
+
     expect(newState.hasItem('key')).toBe(true);
     expect(newState.getFlag('puzzle_solved')).toBe(true);
   });
@@ -89,6 +91,7 @@ describe('GameState', () => {
 ```
 
 #### SceneRenderer Tests
+
 ```javascript
 describe('SceneRenderer', () => {
   test('validates EGA colors', () => {
@@ -99,7 +102,7 @@ describe('SceneRenderer', () => {
 
   test('calculates priority correctly', () => {
     const renderer = new SceneRenderer(mockCanvas);
-    expect(renderer.getPixelPriority(160, 10)).toBe(1);   // Top
+    expect(renderer.getPixelPriority(160, 10)).toBe(1); // Top
     expect(renderer.getPixelPriority(160, 190)).toBe(14); // Bottom
   });
 });
@@ -110,20 +113,21 @@ describe('SceneRenderer', () => {
 Test module interactions.
 
 #### World Generation Tests
+
 ```javascript
 describe('World Generation', () => {
   test('generates valid game world', async () => {
     const aiManager = new AIManager(config);
     const gameJSON = await aiManager.generateWorld('space station');
-    
+
     expect(gameJSON).toHaveProperty('plot');
     expect(gameJSON).toHaveProperty('rooms');
     expect(gameJSON.rooms.length).toBeGreaterThan(5);
-    
+
     // Validate all room exits point to valid rooms
-    const roomIds = gameJSON.rooms.map(r => r.id);
-    gameJSON.rooms.forEach(room => {
-      Object.values(room.exits).forEach(exit => {
+    const roomIds = gameJSON.rooms.map((r) => r.id);
+    gameJSON.rooms.forEach((room) => {
+      Object.values(room.exits).forEach((exit) => {
         if (exit) expect(roomIds).toContain(exit);
       });
     });
@@ -132,7 +136,7 @@ describe('World Generation', () => {
   test('ensures puzzle solvability', async () => {
     const gameJSON = await aiManager.generateWorld();
     const validator = new PuzzleValidator(gameJSON);
-    
+
     expect(validator.areAllPuzzlesSolvable()).toBe(true);
     expect(validator.areAllItemsReachable()).toBe(true);
   });
@@ -140,36 +144,37 @@ describe('World Generation', () => {
 ```
 
 #### Command Execution Tests
+
 ```javascript
 describe('Command Execution', () => {
   test('executes scripted events', async () => {
     const gameState = new GameState();
     gameState.loadResources(testGameJSON);
     const eventManager = new EventManager(gameState);
-    
+
     await eventManager.executeCommand({
       verb: 'unlock',
       directObject: 'door',
-      indirectObject: 'key'
+      indirectObject: 'key',
     });
-    
+
     expect(gameState.getFlag('door_unlocked')).toBe(true);
   });
 
   test('handles dynamic LLM responses', async () => {
     const mockAIManager = {
-      getDynamicResponse: jest.fn().mockResolvedValue(
-        "The dragon snorts dismissively at your question."
-      )
+      getDynamicResponse: jest
+        .fn()
+        .mockResolvedValue('The dragon snorts dismissively at your question.'),
     };
-    
+
     const eventManager = new EventManager(gameState, mockAIManager);
     const result = await eventManager.executeCommand({
       verb: 'ask',
       directObject: 'dragon',
-      indirectObject: 'weather'
+      indirectObject: 'weather',
     });
-    
+
     expect(mockAIManager.getDynamicResponse).toHaveBeenCalled();
   });
 });
@@ -184,7 +189,7 @@ describe('Visual Rendering', () => {
   test('renders room consistently', async () => {
     const renderer = new SceneRenderer(canvas);
     renderer.renderRoom(testRoom.graphics);
-    
+
     const imageData = canvas.toDataURL();
     expect(imageData).toMatchImageSnapshot();
   });
@@ -192,10 +197,10 @@ describe('Visual Rendering', () => {
   test('dithering pattern is correct', () => {
     const renderer = new SceneRenderer(canvas);
     renderer.drawDitheredGradient(0, 0, 4, 4, '#0000AA', '#00AA00');
-    
+
     const ctx = canvas.getContext('2d');
     const pixels = ctx.getImageData(0, 0, 4, 4);
-    
+
     // Check checkerboard pattern
     expect(getPixelColor(pixels, 0, 0)).toBe('#0000AA');
     expect(getPixelColor(pixels, 1, 0)).toBe('#00AA00');
@@ -214,10 +219,10 @@ describe('Performance', () => {
   test('maintains 60 FPS during gameplay', async () => {
     const gameManager = new GameManager(canvas, config);
     await gameManager.loadGame(testSave);
-    
+
     const frameTimings = [];
     let lastTime = performance.now();
-    
+
     // Measure 100 frames
     for (let i = 0; i < 100; i++) {
       await animationFrame();
@@ -225,7 +230,7 @@ describe('Performance', () => {
       frameTimings.push(now - lastTime);
       lastTime = now;
     }
-    
+
     const avgFrameTime = average(frameTimings);
     expect(avgFrameTime).toBeLessThan(17); // 60 FPS = 16.67ms
   });
@@ -233,11 +238,11 @@ describe('Performance', () => {
   test('handles large game worlds', async () => {
     const largeWorld = generateLargeTestWorld(50); // 50 rooms
     const state = new GameState();
-    
+
     const startTime = performance.now();
     state.loadResources(largeWorld);
     const loadTime = performance.now() - startTime;
-    
+
     expect(loadTime).toBeLessThan(100); // Should load in < 100ms
   });
 });
@@ -251,26 +256,26 @@ Test across different browsers.
 // Run with Selenium or Playwright
 describe('Browser Compatibility', () => {
   const browsers = ['chrome', 'firefox', 'safari', 'edge'];
-  
-  browsers.forEach(browser => {
+
+  browsers.forEach((browser) => {
     test(`works in ${browser}`, async () => {
       const driver = await createDriver(browser);
       await driver.get('http://localhost:8000');
-      
+
       // Wait for game to load
       await driver.wait(until.elementLocated(By.id('gameCanvas')));
-      
+
       // Test basic interaction
       await driver.executeScript(`
         window.gameManager.startNewGame('test');
       `);
-      
+
       // Verify canvas rendered
       const canvasData = await driver.executeScript(`
         return document.getElementById('gameCanvas')
           .toDataURL().length;
       `);
-      
+
       expect(canvasData).toBeGreaterThan(1000);
       await driver.quit();
     });
@@ -286,20 +291,18 @@ Ensure safety features work.
 describe('Content Moderation', () => {
   test('filters inappropriate content', async () => {
     const aiManager = new AIManager(config);
-    
+
     const result = await aiManager.checkContent(
-      "This contains inappropriate content..."
+      'This contains inappropriate content...'
     );
-    
+
     expect(result.safe).toBe(false);
     expect(result.reason).toBeDefined();
   });
 
   test('allows safe content', async () => {
-    const result = await aiManager.checkContent(
-      "You see a beautiful garden."
-    );
-    
+    const result = await aiManager.checkContent('You see a beautiful garden.');
+
     expect(result.safe).toBe(true);
   });
 });
@@ -314,30 +317,32 @@ describe('Save/Load System', () => {
   test('preserves complete game state', async () => {
     const gameManager = new GameManager(canvas, config);
     await gameManager.startNewGame('castle');
-    
+
     // Play a bit
     gameManager.executeCommand('take sword');
     gameManager.executeCommand('go north');
-    
+
     // Save
     const saveData = gameManager.saveGame();
-    
+
     // Start fresh and load
     const newGameManager = new GameManager(canvas, config);
     await newGameManager.loadGame(saveData);
-    
+
     // Verify state
     expect(newGameManager.gameState.hasItem('sword')).toBe(true);
-    expect(newGameManager.gameState.getCurrentRoom().id)
-      .toBe(saveData.state.currentRoom);
+    expect(newGameManager.gameState.getCurrentRoom().id).toBe(
+      saveData.state.currentRoom
+    );
   });
-  
+
   test('handles version mismatch', () => {
     const oldSave = { version: 0, ...testSave };
     const gameManager = new GameManager(canvas, config);
-    
-    expect(() => gameManager.loadGame(oldSave))
-      .toThrow('Save file version not supported');
+
+    expect(() => gameManager.loadGame(oldSave)).toThrow(
+      'Save file version not supported'
+    );
   });
 });
 ```
@@ -345,62 +350,63 @@ describe('Save/Load System', () => {
 ## Test Data
 
 ### Sample Test World
+
 ```javascript
 const testGameJSON = {
   plot: {
-    title: "Test Adventure",
-    backstory: "A test world for unit tests.",
-    goal: "Reach the end room."
+    title: 'Test Adventure',
+    backstory: 'A test world for unit tests.',
+    goal: 'Reach the end room.',
   },
   rooms: [
     {
-      id: "start",
-      name: "Starting Room",
-      description: "A simple test room.",
-      exits: { north: "end" },
-      items: ["test_key"],
-      objects: ["test_door"],
+      id: 'start',
+      name: 'Starting Room',
+      description: 'A simple test room.',
+      exits: { north: 'end' },
+      items: ['test_key'],
+      objects: ['test_door'],
       sound: {
-        music_theme: "simple melody",
-        ambience: "silence"
+        music_theme: 'simple melody',
+        ambience: 'silence',
       },
       graphics: {
-        backgroundColor: "#0000AA",
+        backgroundColor: '#0000AA',
         primitives: [
           {
-            type: "rect",
-            color: "#00AA00",
-            dims: [0, 100, 320, 100]
-          }
-        ]
-      }
-    }
+            type: 'rect',
+            color: '#00AA00',
+            dims: [0, 100, 320, 100],
+          },
+        ],
+      },
+    },
   ],
   items: [
     {
-      id: "test_key",
-      name: "test key",
-      description: "A simple test key."
-    }
+      id: 'test_key',
+      name: 'test key',
+      description: 'A simple test key.',
+    },
   ],
   puzzles: [
     {
-      id: "test_puzzle",
-      description: "Test puzzle",
-      obstacle: "The door is locked.",
+      id: 'test_puzzle',
+      description: 'Test puzzle',
+      obstacle: 'The door is locked.',
       solution: {
-        verb: "unlock",
-        item: "test_key",
-        target: "test_door"
+        verb: 'unlock',
+        item: 'test_key',
+        target: 'test_door',
       },
-      reward_text: "The door opens.",
+      reward_text: 'The door opens.',
       unlocks: {
-        type: "ENABLE_EXIT",
-        roomId: "start",
-        exit: "north"
-      }
-    }
-  ]
+        type: 'ENABLE_EXIT',
+        roomId: 'start',
+        exit: 'north',
+      },
+    },
+  ],
 };
 ```
 
@@ -442,6 +448,7 @@ jobs:
 ## Manual Test Checklist
 
 ### Pre-Release Testing
+
 - [ ] Generate 10 different themed adventures
 - [ ] Complete at least 3 full adventures
 - [ ] Test all menu options
@@ -454,8 +461,9 @@ jobs:
 - [ ] Memory leak testing (play for 1 hour)
 
 ### Regression Test Scenarios
+
 1. The "locked door" scenario
-2. The "inventory full" scenario  
+2. The "inventory full" scenario
 3. The "invalid command spam" scenario
 4. The "rapid room changes" scenario
 5. The "save during animation" scenario
@@ -463,6 +471,7 @@ jobs:
 ## Performance Benchmarks
 
 Target metrics:
+
 - World generation: < 5 seconds
 - Room rendering: < 16ms
 - Command processing: < 100ms

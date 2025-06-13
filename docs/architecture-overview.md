@@ -48,8 +48,9 @@ Somnium follows the Sierra Creative Interpreter (SCI) philosophy: complete separ
 ## Data Flow
 
 ### 1. Game Generation Flow
+
 ```
-User Input (theme) 
+User Input (theme)
     ↓
 AIManager (constructs prompt)
     ↓
@@ -65,6 +66,7 @@ Game Ready
 ```
 
 ### 2. Command Processing Flow
+
 ```
 Player Types Command
     ↓
@@ -81,6 +83,7 @@ Render changes               Continue game
 ```
 
 ### 3. Render Pipeline
+
 ```
 GameManager tick
     ↓
@@ -98,6 +101,7 @@ Present frame
 ## Module Responsibilities
 
 ### GameManager
+
 - **Owner of**: Main game loop, timing, global coordination
 - **Depends on**: All other modules
 - **Key responsibilities**:
@@ -108,6 +112,7 @@ Present frame
   - Handle pause/resume states
 
 ### AIManager
+
 - **Owner of**: LLM communication, prompt generation
 - **Depends on**: GameState (for context)
 - **Key responsibilities**:
@@ -118,6 +123,7 @@ Present frame
   - Manage API rate limiting
 
 ### GameState
+
 - **Owner of**: All mutable game data
 - **Depends on**: None (pure data storage)
 - **Key responsibilities**:
@@ -127,6 +133,7 @@ Present frame
   - Handle state serialization/deserialization
 
 ### Parser
+
 - **Owner of**: Natural language processing
 - **Depends on**: GameState (for context)
 - **Key responsibilities**:
@@ -136,6 +143,7 @@ Present frame
   - Structure commands for execution
 
 ### EventManager
+
 - **Owner of**: Game logic execution
 - **Depends on**: GameState, AIManager
 - **Key responsibilities**:
@@ -146,6 +154,7 @@ Present frame
   - Update game state from actions
 
 ### SceneRenderer
+
 - **Owner of**: Static background rendering
 - **Depends on**: None
 - **Key responsibilities**:
@@ -156,6 +165,7 @@ Present frame
   - Optimize canvas operations
 
 ### ViewManager
+
 - **Owner of**: Sprite animation and movement
 - **Depends on**: SceneRenderer (for layering)
 - **Key responsibilities**:
@@ -166,6 +176,7 @@ Present frame
   - Update sprite positions
 
 ### SoundManager
+
 - **Owner of**: Audio playback
 - **Depends on**: Tone.js library
 - **Key responsibilities**:
@@ -178,26 +189,34 @@ Present frame
 ## Key Design Patterns
 
 ### 1. Resource-Based Architecture
+
 All game content is data-driven through JSON resources, similar to SCI's resource files:
+
 - **PIC** (backgrounds) → graphics.primitives array
 - **VIEW** (sprites) → view definitions with animation loops
 - **SCRIPT** (logic) → event definitions in objects
 - **SOUND** (audio) → music themes and sound descriptors
 
 ### 2. Event-Driven Interactions
+
 Player actions trigger events that cascade through the system:
+
 ```javascript
 PlayerInput → ParsedCommand → Event → Actions → StateChanges → Render
 ```
 
 ### 3. Fallback Chains
+
 Graceful degradation for unhandled scenarios:
+
 ```javascript
 Scripted Event → Dynamic AI Response → Generic Error Message
 ```
 
 ### 4. State Synchronization
+
 Central GameState ensures consistency:
+
 - Single source of truth for all game data
 - All modules read from GameState
 - Only EventManager writes to GameState
@@ -205,18 +224,21 @@ Central GameState ensures consistency:
 ## Performance Considerations
 
 ### Rendering Optimization
+
 - Use `requestAnimationFrame` for smooth 60 FPS
 - Only redraw changed screen regions when possible
 - Cache frequently used graphics operations
 - Disable image smoothing for pixel-perfect rendering
 
 ### Memory Management
+
 - Limit sprite cache size
 - Reuse animation frame objects
 - Clear unused audio buffers
 - Implement save file size limits
 
 ### Network Optimization
+
 - Cache AI responses for identical inputs
 - Implement request debouncing
 - Use smaller model for dynamic interactions
@@ -227,16 +249,19 @@ Central GameState ensures consistency:
 ### Adding New Features
 
 1. **New Primitive Shapes**
+
    - Add to SceneRenderer.drawPrimitive switch
    - Update AI prompt with new shape format
    - Add validation in AIManager
 
 2. **New Verb Commands**
+
    - Add to Parser vocabulary
    - Define synonyms in configuration
    - Update help documentation
 
 3. **New Event Actions**
+
    - Add to EventManager.executeAction
    - Update TypeScript/JSDoc types
    - Document in event action list
@@ -249,18 +274,21 @@ Central GameState ensures consistency:
 ## Security Architecture
 
 ### API Key Protection
+
 - Keys stored in gitignored config files
 - Consider proxy server for production
 - Implement key rotation mechanism
 - Monitor usage for anomalies
 
 ### Content Security
+
 - Validate all AI-generated JSON
 - Sanitize text output for XSS
 - Implement CSP headers
 - Restrict file system access
 
 ### User Data Protection
+
 - Save files stored locally only
 - No tracking or analytics by default
 - Clear sensitive data on exit
@@ -269,19 +297,25 @@ Central GameState ensures consistency:
 ## Testing Architecture
 
 ### Unit Test Boundaries
+
 Each module should be testable in isolation:
+
 - Mock dependencies via constructor injection
 - Test public APIs, not implementation
 - Achieve >80% code coverage
 
 ### Integration Test Points
+
 Critical paths that must be tested together:
+
 - Parser → EventManager → GameState
 - AIManager → GameState → Renderer
 - Save → Serialize → Deserialize → Load
 
 ### End-to-End Scenarios
+
 Complete user journeys to validate:
+
 - New game generation → First command → Save
 - Load game → Solve puzzle → Win condition
 - Network failure → Graceful degradation → Recovery
@@ -289,19 +323,25 @@ Complete user journeys to validate:
 ## Deployment Architecture
 
 ### Static Hosting
+
 The entire game runs client-side:
+
 - No server requirements beyond static files
 - CDN-friendly for global distribution
 - Works offline after initial load (except AI features)
 
 ### Progressive Enhancement
+
 Core features work without optional services:
+
 - Game engine runs without AI (using test data)
 - Plays without sound if Web Audio unavailable
 - Degrades gracefully on older browsers
 
 ### Configuration Management
+
 Environment-based configuration:
+
 - Development: Local API keys, debug enabled
 - Staging: Test API endpoints, limited rate
 - Production: Proxy server, full moderation

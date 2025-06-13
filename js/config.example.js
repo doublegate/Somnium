@@ -13,7 +13,7 @@ export const API_CONFIG = {
   apiEndpoint: 'https://api.openai.com/v1/chat/completions',
 
   // Model to use for world generation
-  model: 'gpt-3.5-turbo',  // or 'gpt-4' for better quality
+  model: 'gpt-3.5-turbo', // or 'gpt-4' for better quality
 
   // Optional: Model for dynamic interactions (can be same or different)
   interactionModel: 'gpt-3.5-turbo',

@@ -101,7 +101,7 @@ function initializeUI() {
 function initializeMenuBar() {
   const menuItems = document.querySelectorAll('.menu-item');
 
-  menuItems.forEach(item => {
+  menuItems.forEach((item) => {
     item.addEventListener('click', (e) => {
       const menuName = e.target.getAttribute('data-menu');
       // TODO: Implement dropdown menus
@@ -131,7 +131,7 @@ async function startNewGame(theme) {
     // await gameManager.startNewGame(theme);
 
     // Temporary: Simulate loading
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Hide loading screen
     loadingScreen.classList.add('hidden');
@@ -142,7 +142,6 @@ async function startNewGame(theme) {
 
     // TODO: Remove this when game engine is implemented
     showError('Game engine not yet implemented. Check back soon!');
-
   } catch (error) {
     console.error('Failed to start game:', error);
     loadingScreen.classList.add('hidden');

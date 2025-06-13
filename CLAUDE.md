@@ -9,6 +9,7 @@ Somnium is an AI-driven graphical text-adventure game inspired by Sierra On-Line
 ## Architecture
 
 The engine follows Sierra's SCI philosophy of complete separation between engine and content:
+
 - **Engine**: JavaScript modules that interpret game data (analogous to SCI interpreter)
 - **Content**: AI-generated JSON packages containing all game resources (analogous to compiled SCI resources)
 
@@ -49,11 +50,13 @@ npm test
 ## AI Integration Guidelines
 
 ### World Generation
+
 - Single master JSON request at game start containing all resources
 - Validate all object/item/room ID references for consistency
 - Ensure every puzzle has obtainable solution items
 
 ### Dynamic Interactions
+
 - Scripted events take precedence over LLM responses
 - Context includes: current room, visible objects, recent events, inventory
 - LLM fallback for unscripted actions must not break game logic
@@ -77,6 +80,7 @@ npm test
 ## Reference Documentation
 
 Comprehensive design documents are in `/ref_docs/`:
+
 - Game design philosophy and mechanics
 - Technical specifications for each subsystem
 - AI prompt engineering guidelines

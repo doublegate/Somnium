@@ -1,9 +1,11 @@
 # Phase 1: Core Architecture Implementation TODO
 
 ## Overview
+
 Phase 1 establishes the foundational architecture of the Somnium engine, creating the module structure and basic game loop that all other features will build upon.
 
 ## Phase Status
+
 - [x] Phase 1.1: Project Setup ✅ COMPLETE
 - [ ] Phase 1.2: Core Module Stubs (Current)
 - [ ] Phase 1.3: Basic Game Loop
@@ -12,6 +14,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 ## Phase 1.2: Core Module Stubs (Current Priority)
 
 ### GameManager.js
+
 - [ ] Create file with module export structure
 - [ ] Add properties for game state, modules, and loop control
 - [ ] Define init() method signature
@@ -23,6 +26,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add basic error handling structure
 
 ### GameState.js
+
 - [ ] Create file with state container
 - [ ] Define room state structure
 - [ ] Define object state structure
@@ -34,6 +38,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add state change notification system
 
 ### SceneRenderer.js
+
 - [ ] Create file with canvas management
 - [ ] Add canvas context acquisition
 - [ ] Define coordinate system (320×200)
@@ -45,6 +50,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add render queue structure
 
 ### ViewManager.js
+
 - [ ] Create file with sprite system structure
 - [ ] Define View class for sprites
 - [ ] Define Loop class for animation loops
@@ -56,6 +62,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add z-order sorting structure
 
 ### SoundManager.js
+
 - [ ] Create file with Tone.js import
 - [ ] Initialize Tone.js context
 - [ ] Define Sound class structure
@@ -67,6 +74,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add basic synthesizer setup
 
 ### Parser.js
+
 - [ ] Create file with parser structure
 - [ ] Define token types (verb, noun, etc.)
 - [ ] Add tokenize() method stub
@@ -78,6 +86,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add command validation stub
 
 ### EventManager.js
+
 - [ ] Create file with event system
 - [ ] Define Event class structure
 - [ ] Add event queue array
@@ -89,6 +98,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add event handler registration
 
 ### AIManager.js
+
 - [ ] Create file with AI interface
 - [ ] Add API configuration structure
 - [ ] Define generateWorld() stub
@@ -102,6 +112,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 ## Phase 1.3: Basic Game Loop
 
 ### Game Loop Implementation
+
 - [ ] Implement requestAnimationFrame loop
 - [ ] Add fixed timestep with interpolation
 - [ ] Add FPS counter
@@ -112,6 +123,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add performance monitoring
 
 ### Module Integration
+
 - [ ] Wire up all modules to GameManager
 - [ ] Create initialization sequence
 - [ ] Add module dependency checking
@@ -121,6 +133,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add module hot-reloading support
 
 ### Error Handling
+
 - [ ] Create central error handler
 - [ ] Add error logging system
 - [ ] Implement graceful degradation
@@ -131,6 +144,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 ## Phase 1.4: State Management Foundation
 
 ### State Structure Design
+
 - [ ] Create comprehensive state schema
 - [ ] Design room data structure
 - [ ] Design object data structure
@@ -141,6 +155,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Document state format
 
 ### State Operations
+
 - [ ] Implement state initialization
 - [ ] Add state loading from JSON
 - [ ] Create state mutation methods
@@ -151,6 +166,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add undo/redo structure
 
 ### State Events
+
 - [ ] Design state change events
 - [ ] Implement event dispatching
 - [ ] Add event listeners
@@ -160,6 +176,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Add event logging
 
 ### Debug Tools
+
 - [ ] Create state inspector UI
 - [ ] Add state export function
 - [ ] Implement state import
@@ -171,6 +188,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 ## Testing Requirements
 
 ### Unit Tests (per module)
+
 - [ ] GameManager tests
 - [ ] GameState tests
 - [ ] SceneRenderer tests
@@ -181,6 +199,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] AIManager tests
 
 ### Integration Tests
+
 - [ ] Module initialization tests
 - [ ] Module communication tests
 - [ ] Game loop tests
@@ -188,6 +207,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - [ ] Error handling tests
 
 ## Success Criteria
+
 - All modules created with proper structure
 - Modules can be imported and initialized
 - Basic game loop runs without errors
@@ -197,6 +217,7 @@ Phase 1 establishes the foundational architecture of the Somnium engine, creatin
 - Documentation updated for each module
 
 ## Next Steps After Phase 1
+
 - Phase 2.1: Implement vector graphics primitives
 - Phase 2.2: Create sprite rendering system
 - Phase 2.3: Build sound synthesis engine
