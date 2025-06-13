@@ -1,6 +1,6 @@
 /**
  * GameState - Centralized storage for all game state data
- * 
+ *
  * Responsibilities:
  * - Store world resources (rooms, items, etc.)
  * - Track dynamic state (inventory, flags)
@@ -11,7 +11,7 @@
 export class GameState extends EventTarget {
   constructor() {
     super();
-    
+
     // Static game data (from AI generation)
     this.gameJSON = null;
     this.rooms = {};
@@ -19,26 +19,26 @@ export class GameState extends EventTarget {
     this.objects = {};
     this.puzzles = [];
     this.vocabulary = {};
-    
+
     // Dynamic game state
     this.currentRoomId = null;
     this.inventory = [];
     this.flags = {};
     this.score = 0;
     this.moves = 0;
-    
+
     // State history for undo (optional feature)
     this.stateHistory = [];
     this.maxHistorySize = 10;
-    
+
     // State validation schema
     this.validators = {
       rooms: this.validateRooms.bind(this),
       items: this.validateItems.bind(this),
-      state: this.validateState.bind(this)
+      state: this.validateState.bind(this),
     };
   }
-  
+
   /**
    * Initialize state from generated game data
    * @param {Object} gameJSON - Complete game data from AI
@@ -46,37 +46,39 @@ export class GameState extends EventTarget {
    */
   loadResources(gameJSON) {
     console.log('Loading game resources...');
-    
+
     this.gameJSON = gameJSON;
     this.rooms = gameJSON.rooms || {};
     this.items = gameJSON.items || {};
     this.objects = gameJSON.objects || {};
     this.puzzles = gameJSON.puzzles || [];
     this.vocabulary = gameJSON.vocabulary || {};
-    
+
     // Validate loaded data
     const validation = this.validateAll();
     if (!validation.valid) {
       console.error('Game data validation failed:', validation.errors);
       throw new Error('Invalid game data: ' + validation.errors.join(', '));
     }
-    
+
     // Set initial room
     this.currentRoomId = gameJSON.startRoom || Object.keys(this.rooms)[0];
-    
+
     // Initialize flags from puzzle definitions
     this.initializeFlags();
-    
+
     // Dispatch loaded event
-    this.dispatchEvent(new CustomEvent('resourcesLoaded', {
-      detail: {
-        rooms: Object.keys(this.rooms).length,
-        items: Object.keys(this.items).length,
-        puzzles: this.puzzles.length
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('resourcesLoaded', {
+        detail: {
+          rooms: Object.keys(this.rooms).length,
+          items: Object.keys(this.items).length,
+          puzzles: this.puzzles.length,
+        },
+      })
+    );
   }
-  
+
   /**
    * Get current room object
    * @returns {Object} Current room data
@@ -84,7 +86,7 @@ export class GameState extends EventTarget {
   getCurrentRoom() {
     return this.rooms[this.currentRoomId] || null;
   }
-  
+
   /**
    * Change current room
    * @param {string} roomId - ID of room to move to
@@ -95,21 +97,23 @@ export class GameState extends EventTarget {
       const previousRoom = this.currentRoomId;
       this.currentRoomId = roomId;
       this.moves++;
-      
+
       // Dispatch room change event
-      this.dispatchEvent(new CustomEvent('roomChange', {
-        detail: {
-          previousRoom,
-          currentRoom: roomId,
-          room: this.rooms[roomId]
-        }
-      }));
-      
+      this.dispatchEvent(
+        new CustomEvent('roomChange', {
+          detail: {
+            previousRoom,
+            currentRoom: roomId,
+            room: this.rooms[roomId],
+          },
+        })
+      );
+
       return true;
     }
     return false;
   }
-  
+
   /**
    * Get player inventory
    * @returns {Array<string>} Array of item IDs
@@ -117,7 +121,7 @@ export class GameState extends EventTarget {
   getInventory() {
     return [...this.inventory]; // Return copy
   }
-  
+
   /**
    * Check if player has specific item
    * @param {string} itemId - Item ID to check
@@ -126,7 +130,7 @@ export class GameState extends EventTarget {
   hasItem(itemId) {
     return this.inventory.includes(itemId);
   }
-  
+
   /**
    * Add item to inventory
    * @param {string} itemId - Item ID to add
@@ -136,22 +140,24 @@ export class GameState extends EventTarget {
     if (this.items[itemId] && !this.hasItem(itemId)) {
       this.inventory.push(itemId);
       this.saveStateSnapshot();
-      
+
       // Dispatch inventory change event
-      this.dispatchEvent(new CustomEvent('inventoryChange', {
-        detail: {
-          action: 'add',
-          itemId,
-          item: this.items[itemId],
-          inventory: [...this.inventory]
-        }
-      }));
-      
+      this.dispatchEvent(
+        new CustomEvent('inventoryChange', {
+          detail: {
+            action: 'add',
+            itemId,
+            item: this.items[itemId],
+            inventory: [...this.inventory],
+          },
+        })
+      );
+
       return true;
     }
     return false;
   }
-  
+
   /**
    * Remove item from inventory
    * @param {string} itemId - Item ID to remove
@@ -162,22 +168,24 @@ export class GameState extends EventTarget {
     if (index > -1) {
       this.inventory.splice(index, 1);
       this.saveStateSnapshot();
-      
+
       // Dispatch inventory change event
-      this.dispatchEvent(new CustomEvent('inventoryChange', {
-        detail: {
-          action: 'remove',
-          itemId,
-          item: this.items[itemId],
-          inventory: [...this.inventory]
-        }
-      }));
-      
+      this.dispatchEvent(
+        new CustomEvent('inventoryChange', {
+          detail: {
+            action: 'remove',
+            itemId,
+            item: this.items[itemId],
+            inventory: [...this.inventory],
+          },
+        })
+      );
+
       return true;
     }
     return false;
   }
-  
+
   /**
    * Get game flag value
    * @param {string} flagName - Flag name
@@ -186,7 +194,7 @@ export class GameState extends EventTarget {
   getFlag(flagName) {
     return this.flags[flagName];
   }
-  
+
   /**
    * Set game flag value
    * @param {string} flagName - Flag name
@@ -196,18 +204,20 @@ export class GameState extends EventTarget {
     const previousValue = this.flags[flagName];
     this.flags[flagName] = value;
     this.saveStateSnapshot();
-    
+
     // Dispatch flag change event
-    this.dispatchEvent(new CustomEvent('flagChange', {
-      detail: {
-        flag: flagName,
-        previousValue,
-        value,
-        flags: { ...this.flags }
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('flagChange', {
+        detail: {
+          flag: flagName,
+          previousValue,
+          value,
+          flags: { ...this.flags },
+        },
+      })
+    );
   }
-  
+
   /**
    * Get object data by ID
    * @param {string} objectId - Object ID
@@ -220,11 +230,11 @@ export class GameState extends EventTarget {
       const roomObject = currentRoom.objects[objectId];
       if (roomObject) return roomObject;
     }
-    
+
     // Then check global objects
     return this.objects[objectId] || null;
   }
-  
+
   /**
    * Get item data by ID
    * @param {string} itemId - Item ID
@@ -233,7 +243,7 @@ export class GameState extends EventTarget {
   getItem(itemId) {
     return this.items[itemId] || null;
   }
-  
+
   /**
    * Update score
    * @param {number} points - Points to add (can be negative)
@@ -241,17 +251,19 @@ export class GameState extends EventTarget {
   updateScore(points) {
     const previousScore = this.score;
     this.score = Math.max(0, this.score + points);
-    
+
     // Dispatch score change event
-    this.dispatchEvent(new CustomEvent('scoreChange', {
-      detail: {
-        previousScore,
-        score: this.score,
-        change: points
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('scoreChange', {
+        detail: {
+          previousScore,
+          score: this.score,
+          change: points,
+        },
+      })
+    );
   }
-  
+
   /**
    * Create saveable state snapshot
    * @returns {Object} State object for save file
@@ -263,24 +275,24 @@ export class GameState extends EventTarget {
       flags: { ...this.flags },
       score: this.score,
       moves: this.moves,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
-  
+
   /**
    * Restore from saved state
    * @param {Object} state - Saved state object
    */
   deserialize(state) {
     if (!state) return;
-    
+
     this.currentRoomId = state.currentRoomId || this.currentRoomId;
     this.inventory = state.inventory || [];
     this.flags = state.flags || {};
     this.score = state.score || 0;
     this.moves = state.moves || 0;
   }
-  
+
   /**
    * Initialize flags from puzzle definitions
    * @private
@@ -288,7 +300,7 @@ export class GameState extends EventTarget {
   initializeFlags() {
     // Set default flags from puzzles
     if (this.puzzles) {
-      this.puzzles.forEach(puzzle => {
+      this.puzzles.forEach((puzzle) => {
         if (puzzle.flags) {
           Object.entries(puzzle.flags).forEach(([flag, defaultValue]) => {
             if (!(flag in this.flags)) {
@@ -298,27 +310,27 @@ export class GameState extends EventTarget {
         }
       });
     }
-    
+
     // Add standard flags
     this.flags.gameStarted = true;
     this.flags.debugMode = false;
   }
-  
+
   /**
    * Save current state to history (for undo feature)
    * @private
    */
   saveStateSnapshot() {
     const snapshot = this.serialize();
-    
+
     this.stateHistory.push(snapshot);
-    
+
     // Limit history size
     if (this.stateHistory.length > this.maxHistorySize) {
       this.stateHistory.shift();
     }
   }
-  
+
   /**
    * Undo last action
    * @returns {boolean} Success
@@ -327,16 +339,16 @@ export class GameState extends EventTarget {
     if (this.stateHistory.length > 1) {
       // Remove current state
       this.stateHistory.pop();
-      
+
       // Restore previous state
       const previousState = this.stateHistory[this.stateHistory.length - 1];
       this.deserialize(previousState);
-      
+
       return true;
     }
     return false;
   }
-  
+
   /**
    * Get all rooms
    * @returns {Object} Room dictionary
@@ -344,7 +356,7 @@ export class GameState extends EventTarget {
   getAllRooms() {
     return this.rooms;
   }
-  
+
   /**
    * Get all items
    * @returns {Object} Item dictionary
@@ -352,7 +364,7 @@ export class GameState extends EventTarget {
   getAllItems() {
     return this.items;
   }
-  
+
   /**
    * Get vocabulary data
    * @returns {Object} Vocabulary configuration
@@ -360,7 +372,7 @@ export class GameState extends EventTarget {
   getVocabulary() {
     return this.vocabulary;
   }
-  
+
   /**
    * Check if exit is available
    * @param {string} direction - Exit direction (north, south, etc.)
@@ -369,11 +381,11 @@ export class GameState extends EventTarget {
   canExit(direction) {
     const currentRoom = this.getCurrentRoom();
     if (!currentRoom || !currentRoom.exits) return false;
-    
+
     const exit = currentRoom.exits[direction];
     return exit && exit.enabled;
   }
-  
+
   /**
    * Get room ID for exit
    * @param {string} direction - Exit direction
@@ -382,11 +394,11 @@ export class GameState extends EventTarget {
   getExitRoom(direction) {
     const currentRoom = this.getCurrentRoom();
     if (!currentRoom || !currentRoom.exits) return null;
-    
+
     const exit = currentRoom.exits[direction];
-    return (exit && exit.enabled) ? exit.roomId : null;
+    return exit && exit.enabled ? exit.roomId : null;
   }
-  
+
   /**
    * Validate room data structure
    * @param {Object} rooms - Rooms object to validate
@@ -394,18 +406,18 @@ export class GameState extends EventTarget {
    */
   validateRooms(rooms) {
     const errors = [];
-    
+
     if (!rooms || typeof rooms !== 'object') {
       errors.push('Rooms must be an object');
       return { valid: false, errors };
     }
-    
+
     Object.entries(rooms).forEach(([roomId, room]) => {
       // Check required fields
       if (!room.name) errors.push(`Room ${roomId} missing name`);
       if (!room.description) errors.push(`Room ${roomId} missing description`);
       if (!room.graphics) errors.push(`Room ${roomId} missing graphics`);
-      
+
       // Validate exits
       if (room.exits) {
         Object.entries(room.exits).forEach(([direction, exit]) => {
@@ -413,15 +425,17 @@ export class GameState extends EventTarget {
             errors.push(`Room ${roomId} exit ${direction} missing roomId`);
           }
           if (!rooms[exit.roomId]) {
-            errors.push(`Room ${roomId} exit ${direction} points to non-existent room ${exit.roomId}`);
+            errors.push(
+              `Room ${roomId} exit ${direction} points to non-existent room ${exit.roomId}`
+            );
           }
         });
       }
     });
-    
+
     return { valid: errors.length === 0, errors };
   }
-  
+
   /**
    * Validate item data structure
    * @param {Object} items - Items object to validate
@@ -429,19 +443,19 @@ export class GameState extends EventTarget {
    */
   validateItems(items) {
     const errors = [];
-    
+
     if (!items || typeof items !== 'object') {
       return { valid: true, errors }; // Items are optional
     }
-    
+
     Object.entries(items).forEach(([itemId, item]) => {
       if (!item.name) errors.push(`Item ${itemId} missing name`);
       if (!item.description) errors.push(`Item ${itemId} missing description`);
     });
-    
+
     return { valid: errors.length === 0, errors };
   }
-  
+
   /**
    * Validate save state structure
    * @param {Object} state - State object to validate
@@ -449,35 +463,38 @@ export class GameState extends EventTarget {
    */
   validateState(state) {
     const errors = [];
-    
+
     if (!state || typeof state !== 'object') {
       errors.push('State must be an object');
       return { valid: false, errors };
     }
-    
+
     // Check required fields
     if (!state.currentRoomId) errors.push('State missing currentRoomId');
-    if (!Array.isArray(state.inventory)) errors.push('State inventory must be an array');
-    if (typeof state.score !== 'number') errors.push('State score must be a number');
-    if (typeof state.moves !== 'number') errors.push('State moves must be a number');
-    
+    if (!Array.isArray(state.inventory))
+      errors.push('State inventory must be an array');
+    if (typeof state.score !== 'number')
+      errors.push('State score must be a number');
+    if (typeof state.moves !== 'number')
+      errors.push('State moves must be a number');
+
     // Validate room exists
     if (state.currentRoomId && !this.rooms[state.currentRoomId]) {
       errors.push(`State references non-existent room ${state.currentRoomId}`);
     }
-    
+
     // Validate inventory items exist
     if (state.inventory) {
-      state.inventory.forEach(itemId => {
+      state.inventory.forEach((itemId) => {
         if (!this.items[itemId]) {
           errors.push(`State inventory contains non-existent item ${itemId}`);
         }
       });
     }
-    
+
     return { valid: errors.length === 0, errors };
   }
-  
+
   /**
    * Validate all game data
    * @returns {Object} Combined validation result
@@ -487,17 +504,17 @@ export class GameState extends EventTarget {
       rooms: this.validateRooms(this.rooms),
       items: this.validateItems(this.items),
       valid: true,
-      errors: []
+      errors: [],
     };
-    
+
     // Combine all errors
-    Object.values(results).forEach(result => {
+    Object.values(results).forEach((result) => {
       if (result.errors) {
         results.errors.push(...result.errors);
         if (!result.valid) results.valid = false;
       }
     });
-    
+
     return results;
   }
 }

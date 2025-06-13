@@ -1,6 +1,6 @@
 /**
  * ViewManager - Manages all animated sprites and moving objects
- * 
+ *
  * Responsibilities:
  * - Manage sprite animations
  * - Handle character movement
@@ -15,17 +15,17 @@ export class ViewManager {
    */
   constructor(sceneRenderer) {
     this.sceneRenderer = sceneRenderer;
-    
+
     // Active views (sprites)
     this.views = new Map();
-    
+
     // Animation timing
     this.animationSpeed = 1.0;
-    
+
     // Movement tracking
     this.movements = new Map();
   }
-  
+
   /**
    * Create new sprite from data
    * @param {string} id - Unique identifier
@@ -36,7 +36,7 @@ export class ViewManager {
       console.warn(`View with id ${id} already exists`);
       return;
     }
-    
+
     const view = {
       id: id,
       data: viewData,
@@ -47,13 +47,13 @@ export class ViewManager {
       frameTime: 0,
       visible: true,
       priority: viewData.priority || 0,
-      scale: viewData.scale || 1
+      scale: viewData.scale || 1,
     };
-    
+
     this.views.set(id, view);
     console.log(`Created view: ${id}`);
   }
-  
+
   /**
    * Remove a view
    * @param {string} id - View ID to remove
@@ -62,7 +62,7 @@ export class ViewManager {
     this.views.delete(id);
     this.movements.delete(id);
   }
-  
+
   /**
    * Update animation for view
    * @param {string} id - View ID
@@ -71,20 +71,20 @@ export class ViewManager {
   updateView(id, deltaTime) {
     const view = this.views.get(id);
     if (!view || !view.visible) return;
-    
+
     const loop = view.data.loops[view.currentLoop];
     if (!loop || !loop.frames || loop.frames.length === 0) return;
-    
+
     // Update frame timing
     view.frameTime += deltaTime * this.animationSpeed;
-    
+
     const frameDuration = loop.frameDuration || 0.1; // Default 100ms per frame
-    
+
     // Check if it's time to advance frame
     if (view.frameTime >= frameDuration) {
       view.frameTime = 0;
       view.currentFrame++;
-      
+
       // Loop or stop at end
       if (view.currentFrame >= loop.frames.length) {
         if (loop.repeat !== false) {
@@ -95,7 +95,7 @@ export class ViewManager {
       }
     }
   }
-  
+
   /**
    * Update animations only (variable timestep)
    * @param {number} deltaTime - Time since last update (seconds)
@@ -106,7 +106,7 @@ export class ViewManager {
       this.updateView(id, deltaTime);
     });
   }
-  
+
   /**
    * Update positions only (fixed timestep)
    * @param {number} deltaTime - Fixed timestep (seconds)
@@ -115,16 +115,16 @@ export class ViewManager {
     // Update movements
     this.updateMovements(deltaTime);
   }
-  
+
   /**
    * Update all views (legacy method for compatibility)
    * @param {number} deltaTime - Time since last update (seconds)
    */
-  updateAll(deltaTime) {
-    this.updateAnimations(deltaTime);
-    this.updatePositions(deltaTime);
+  updateAll(_deltaTime) {
+    this.updateAnimations(_deltaTime);
+    this.updatePositions(_deltaTime);
   }
-  
+
   /**
    * Move view to position over time
    * @param {string} id - View ID
@@ -135,7 +135,7 @@ export class ViewManager {
   moveView(id, x, y, duration) {
     const view = this.views.get(id);
     if (!view) return;
-    
+
     // Create movement data
     const movement = {
       startX: view.x,
@@ -143,12 +143,12 @@ export class ViewManager {
       targetX: x,
       targetY: y,
       duration: duration,
-      elapsed: 0
+      elapsed: 0,
     };
-    
+
     this.movements.set(id, movement);
   }
-  
+
   /**
    * Set view position immediately
    * @param {string} id - View ID
@@ -163,7 +163,7 @@ export class ViewManager {
       this.movements.delete(id); // Cancel any movement
     }
   }
-  
+
   /**
    * Change animation loop
    * @param {string} id - View ID
@@ -172,7 +172,7 @@ export class ViewManager {
   setLoop(id, loopName) {
     const view = this.views.get(id);
     if (!view) return;
-    
+
     if (view.data.loops[loopName]) {
       view.currentLoop = loopName;
       view.currentFrame = 0;
@@ -181,7 +181,7 @@ export class ViewManager {
       console.warn(`Loop ${loopName} not found for view ${id}`);
     }
   }
-  
+
   /**
    * Set view visibility
    * @param {string} id - View ID
@@ -193,7 +193,7 @@ export class ViewManager {
       view.visible = visible;
     }
   }
-  
+
   /**
    * Draw all active views with interpolation
    * @param {number} interpolation - Interpolation value (0-1) for smooth motion
@@ -201,15 +201,15 @@ export class ViewManager {
   renderAll(interpolation = 0) {
     // Sort views by priority (lower priority drawn first)
     const sortedViews = Array.from(this.views.values())
-      .filter(view => view.visible)
+      .filter((view) => view.visible)
       .sort((a, b) => a.priority - b.priority);
-    
+
     // Draw each view
-    sortedViews.forEach(view => {
+    sortedViews.forEach((view) => {
       this.renderView(view, interpolation);
     });
   }
-  
+
   /**
    * Draw a single view with interpolation
    * @private
@@ -219,46 +219,49 @@ export class ViewManager {
   renderView(view, interpolation = 0) {
     const loop = view.data.loops[view.currentLoop];
     if (!loop || !loop.frames || loop.frames.length === 0) return;
-    
+
     const frame = loop.frames[view.currentFrame];
     if (!frame) return;
-    
+
     // Get canvas context
     const ctx = this.sceneRenderer.ctx;
-    
+
     // Calculate interpolated position if moving
     let renderX = view.x;
     let renderY = view.y;
-    
+
     if (view.moving && view.startX !== undefined) {
-      const progress = view.progress + (interpolation * (1 / (view.duration * 60)));
-      renderX = view.startX + (view.targetX - view.startX) * Math.min(progress, 1);
-      renderY = view.startY + (view.targetY - view.startY) * Math.min(progress, 1);
+      const progress =
+        view.progress + interpolation * (1 / (view.duration * 60));
+      renderX =
+        view.startX + (view.targetX - view.startX) * Math.min(progress, 1);
+      renderY =
+        view.startY + (view.targetY - view.startY) * Math.min(progress, 1);
     }
-    
+
     // Calculate position (account for sprite anchor point)
     const anchorX = frame.anchorX || 0;
     const anchorY = frame.anchorY || 0;
     const drawX = (renderX - anchorX) * 2; // Scale to 640x400
     const drawY = (renderY - anchorY) * 2;
-    
+
     // Draw sprite pixels
     if (frame.pixels) {
-      frame.pixels.forEach(pixel => {
+      frame.pixels.forEach((pixel) => {
         const [x, y, colorIndex] = pixel;
         const color = this.getEGAColor(colorIndex);
-        
+
         ctx.fillStyle = color;
         ctx.fillRect(
-          drawX + (x * 2 * view.scale),
-          drawY + (y * 2 * view.scale),
+          drawX + x * 2 * view.scale,
+          drawY + y * 2 * view.scale,
           2 * view.scale,
           2 * view.scale
         );
       });
     }
   }
-  
+
   /**
    * Update all movements
    * @private
@@ -266,16 +269,16 @@ export class ViewManager {
    */
   updateMovements(deltaTime) {
     const completedMovements = [];
-    
+
     this.movements.forEach((movement, id) => {
       const view = this.views.get(id);
       if (!view) {
         completedMovements.push(id);
         return;
       }
-      
+
       movement.elapsed += deltaTime;
-      
+
       if (movement.elapsed >= movement.duration) {
         // Movement complete
         view.x = movement.targetX;
@@ -284,15 +287,17 @@ export class ViewManager {
       } else {
         // Interpolate position
         const progress = movement.elapsed / movement.duration;
-        view.x = movement.startX + (movement.targetX - movement.startX) * progress;
-        view.y = movement.startY + (movement.targetY - movement.startY) * progress;
+        view.x =
+          movement.startX + (movement.targetX - movement.startX) * progress;
+        view.y =
+          movement.startY + (movement.targetY - movement.startY) * progress;
       }
     });
-    
+
     // Remove completed movements
-    completedMovements.forEach(id => this.movements.delete(id));
+    completedMovements.forEach((id) => this.movements.delete(id));
   }
-  
+
   /**
    * Get EGA color from palette index
    * @private
@@ -301,15 +306,27 @@ export class ViewManager {
    */
   getEGAColor(index) {
     const egaColors = [
-      '#000000', '#0000AA', '#00AA00', '#00AAAA',
-      '#AA0000', '#AA00AA', '#AA5500', '#AAAAAA',
-      '#555555', '#5555FF', '#55FF55', '#55FFFF',
-      '#FF5555', '#FF55FF', '#FFFF55', '#FFFFFF'
+      '#000000',
+      '#0000AA',
+      '#00AA00',
+      '#00AAAA',
+      '#AA0000',
+      '#AA00AA',
+      '#AA5500',
+      '#AAAAAA',
+      '#555555',
+      '#5555FF',
+      '#55FF55',
+      '#55FFFF',
+      '#FF5555',
+      '#FF55FF',
+      '#FFFF55',
+      '#FFFFFF',
     ];
-    
+
     return egaColors[index] || '#000000';
   }
-  
+
   /**
    * Check if view is at specific position
    * @param {string} id - View ID
@@ -321,11 +338,12 @@ export class ViewManager {
   isViewAt(id, x, y, tolerance = 1) {
     const view = this.views.get(id);
     if (!view) return false;
-    
-    return Math.abs(view.x - x) <= tolerance && 
-           Math.abs(view.y - y) <= tolerance;
+
+    return (
+      Math.abs(view.x - x) <= tolerance && Math.abs(view.y - y) <= tolerance
+    );
   }
-  
+
   /**
    * Get view by ID
    * @param {string} id - View ID
@@ -334,7 +352,7 @@ export class ViewManager {
   getView(id) {
     return this.views.get(id) || null;
   }
-  
+
   /**
    * Get all view IDs
    * @returns {Array<string>} Array of view IDs
@@ -342,7 +360,7 @@ export class ViewManager {
   getAllViewIds() {
     return Array.from(this.views.keys());
   }
-  
+
   /**
    * Set animation speed multiplier
    * @param {number} speed - Speed multiplier (1.0 = normal)

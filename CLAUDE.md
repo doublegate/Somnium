@@ -13,16 +13,16 @@ The engine follows Sierra's SCI philosophy of complete separation between engine
 - **Engine**: JavaScript modules that interpret game data (analogous to SCI interpreter)
 - **Content**: AI-generated JSON packages containing all game resources (analogous to compiled SCI resources)
 
-### Core Modules
+### Core Modules (Phase 1 Complete ✅)
 
-- **GameManager.js**: Main game loop, orchestrates all subsystems
-- **AIManager.js**: LLM communication for world generation and dynamic interactions
-- **GameState.js**: Centralized game state management
-- **SceneRenderer.js**: Vector-based background rendering (320×200, 16-color EGA)
-- **ViewManager.js**: Sprite animation and character movement
-- **SoundManager.js**: Procedural music/SFX using Tone.js
-- **Parser.js**: Natural language text parser
-- **EventManager.js**: Script execution and puzzle logic
+- **GameManager.js**: Main game loop with fixed timestep, FPS monitoring, pause/resume
+- **AIManager.js**: LLM communication with mock mode for testing, rate limiting, caching
+- **GameState.js**: Event-driven state management with validation, history, and undo
+- **SceneRenderer.js**: Vector-based rendering with EGA palette and priority system
+- **ViewManager.js**: Sprite animation with interpolation, movement, and z-order
+- **SoundManager.js**: Audio synthesis using Tone.js with channel management
+- **Parser.js**: Natural language parser with vocabulary and synonym support
+- **EventManager.js**: Event system with scripted/dynamic responses and scheduling
 
 ## Development Commands
 
@@ -84,6 +84,11 @@ npm run validate  # run all checks
 - Implement proper API key management (never commit keys)
 - Focus on authentic SCI0 experience over modern conveniences
 - Text window pauses game action (critical SCI0 behavior)
+- Game loop uses fixed timestep (60 FPS) with interpolation
+- State management uses EventTarget for loose coupling
+- All modules have mock modes for testing without dependencies
+- Debug mode shows FPS counter and additional logging
+- Validation runs on all game data loading with detailed errors
 
 ## CI/CD Configuration
 
