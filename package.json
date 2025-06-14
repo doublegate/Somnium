@@ -12,6 +12,7 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint js/**/*.js",
     "lint:fix": "eslint js/**/*.js --fix",
+    "lint:errors": "eslint js/**/*.js --max-warnings 0",
     "format": "prettier --write \"**/*.{js,json,md,html,css}\"",
     "format:check": "prettier --check \"**/*.{js,json,md,html,css}\"",
     "fix": "npm run format && npm run lint:fix",
