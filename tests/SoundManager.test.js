@@ -3,7 +3,7 @@
  */
 
 import { jest } from '@jest/globals';
-import { SoundManager } from './SoundManager.js';
+import { SoundManager } from '../js/SoundManager.js';
 
 // Mock Tone.js
 const mockTone = {

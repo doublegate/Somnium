@@ -144,7 +144,6 @@ export class NPCSystem {
       };
     }
 
-    const npc = this.npcs.get(npcId);
     const currentNode = this.getDialogueNode(npcId, conversation.currentNode);
 
     if (!currentNode || !currentNode.options) {
@@ -292,7 +291,10 @@ export class NPCSystem {
 
         case 'UNLOCK_DIALOGUE':
           // Mark dialogue option as available
-          this.gameState.setFlag(`dialogue_${npcId}_${effect.dialogueId}`, true);
+          this.gameState.setFlag(
+            `dialogue_${npcId}_${effect.dialogueId}`,
+            true
+          );
           break;
 
         case 'START_TRADE':
@@ -535,7 +537,7 @@ export class NPCSystem {
           };
         }
       }
-      
+
       // Check required items
       if (npc.tradeRules.requires) {
         for (const required of npc.tradeRules.requires) {
@@ -627,7 +629,10 @@ export class NPCSystem {
     for (const reaction of npc.reactions) {
       if (reaction.trigger === action.type) {
         // Check conditions
-        if (reaction.condition && !this.eventManager.checkCondition(reaction.condition)) {
+        if (
+          reaction.condition &&
+          !this.eventManager.checkCondition(reaction.condition)
+        ) {
           continue;
         }
 
@@ -650,7 +655,7 @@ export class NPCSystem {
    * Update all NPCs
    * @param {number} deltaTime - Time since last update
    */
-  update(deltaTime) {
+  update(_deltaTime) {
     // Update NPC schedules
     for (const [npcId, npc] of this.npcs) {
       if (npc.schedule) {

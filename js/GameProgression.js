@@ -101,7 +101,7 @@ export class GameProgression {
     if (!this.eventManager || typeof this.eventManager.on !== 'function') {
       return;
     }
-    
+
     // Room changes
     this.eventManager.on('enterRoom', (data) => {
       this.statistics.roomsVisited.add(data.room);
@@ -247,17 +247,23 @@ export class GameProgression {
       case 'path':
         return this.currentPath === condition.path;
 
-      case 'factor':
+      case 'factor': {
         const value = this.endingFactors.get(condition.factor) || 0;
-        return this.checkValueCondition(value, condition.operator, condition.value);
+        return this.checkValueCondition(
+          value,
+          condition.operator,
+          condition.value
+        );
+      }
 
-      case 'time':
+      case 'time': {
         const timePlayed = Date.now() - this.startTime;
         return this.checkValueCondition(
           timePlayed,
           condition.operator,
           condition.value * 60000
         ); // Convert minutes to ms
+      }
 
       default:
         return this.eventManager.checkCondition(condition);
@@ -269,7 +275,11 @@ export class GameProgression {
    * @private
    */
   checkScoreCondition(condition) {
-    return this.checkValueCondition(this.score, condition.operator, condition.value);
+    return this.checkValueCondition(
+      this.score,
+      condition.operator,
+      condition.value
+    );
   }
 
   /**

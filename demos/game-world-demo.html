@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium - Game World Logic Demo</title>
+    <style>
+      body {
+        background-color: #000;
+        color: #aaa;
+        font-family: 'Courier New', monospace;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .game-container {
+        width: 800px;
+        max-width: 100%;
+      }
+
+      h1 {
+        color: #fff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .demo-section {
+        background-color: #111;
+        border: 2px solid #555;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        color: #5ff;
+        margin-bottom: 15px;
+      }
+
+      button {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+        padding: 8px 16px;
+        margin: 5px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      button:hover {
+        background-color: #444;
+      }
+
+      button:disabled {
+        background-color: #222;
+        color: #666;
+        cursor: not-allowed;
+      }
+
+      .output {
+        background-color: #000;
+        border: 1px solid #444;
+        padding: 10px;
+        margin-top: 10px;
+        min-height: 100px;
+        white-space: pre-wrap;
+        font-size: 12px;
+      }
+
+      .status {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .status-item {
+        background-color: #222;
+        padding: 5px 10px;
+        border: 1px solid #444;
+      }
+
+      .status-label {
+        color: #888;
+        font-size: 10px;
+      }
+
+      .status-value {
+        color: #fff;
+        font-size: 14px;
+      }
+
+      .dialogue-options {
+        margin-top: 10px;
+      }
+
+      .dialogue-option {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+        padding: 10px;
+      }
+
+      .achievement {
+        background-color: #050;
+        border: 1px solid #0a0;
+        padding: 10px;
+        margin-top: 10px;
+        animation: glow 0.5s ease-in-out;
+      }
+
+      @keyframes glow {
+        0% {
+          box-shadow: 0 0 5px #0f0;
+        }
+        50% {
+          box-shadow: 0 0 20px #0f0;
+        }
+        100% {
+          box-shadow: 0 0 5px #0f0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <h1>Somnium - Game World Logic Demo</h1>
+
+      <div class="demo-section">
+        <h2>Puzzle System Demo</h2>
+        <p>Try solving these puzzles to test the puzzle system:</p>
+
+        <button onclick="attemptSimplePuzzle()">Solve Door Puzzle</button>
+        <button onclick="attemptWrongSolution()">Try Wrong Solution</button>
+        <button onclick="startSequencePuzzle()">Start Sequence Puzzle</button>
+        <button onclick="getHint()">Get Hint</button>
+        <button onclick="resetPuzzle()">Reset Current Puzzle</button>
+
+        <div class="output" id="puzzleOutput">Puzzle system ready...</div>
+
+        <div class="status">
+          <div class="status-item">
+            <div class="status-label">Active Puzzles</div>
+            <div class="status-value" id="activePuzzles">0</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Puzzles Solved</div>
+            <div class="status-value" id="puzzlesSolved">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h2>NPC Interaction Demo</h2>
+        <p>Interact with various NPCs:</p>
+
+        <button onclick="talkToMerchant()">Talk to Merchant</button>
+        <button onclick="talkToWizard()">Talk to Wizard</button>
+        <button onclick="talkToGuard()">Talk to Guard</button>
+        <button onclick="startTrade()">Trade with Merchant</button>
+        <button onclick="insultNPC()">Insult Current NPC</button>
+
+        <div class="dialogue-options" id="dialogueOptions"></div>
+
+        <div class="output" id="npcOutput">NPCs are waiting...</div>
+
+        <div class="status">
+          <div class="status-item">
+            <div class="status-label">Merchant Relationship</div>
+            <div class="status-value" id="merchantRel">0</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Wizard Relationship</div>
+            <div class="status-value" id="wizardRel">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h2>Game Progression Demo</h2>
+        <p>Track your progress and achievements:</p>
+
+        <button onclick="earnPoints(50)">Find Treasure (+50 pts)</button>
+        <button onclick="earnPoints(100)">Solve Major Puzzle (+100 pts)</button>
+        <button onclick="visitSecretRoom()">Discover Secret Room</button>
+        <button onclick="collectItems()">Collect Items</button>
+        <button onclick="die()">Die (Test Death Counter)</button>
+        <button onclick="checkEnding()">Check Ending</button>
+
+        <div class="output" id="progressOutput">Game started!</div>
+
+        <div class="status">
+          <div class="status-item">
+            <div class="status-label">Score</div>
+            <div class="status-value" id="score">0 / 500</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Moves</div>
+            <div class="status-value" id="moves">0</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Achievements</div>
+            <div class="status-value" id="achievements">0 / 10</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Story Path</div>
+            <div class="status-value" id="storyPath">neutral</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Completion</div>
+            <div class="status-value" id="completion">0%</div>
+          </div>
+        </div>
+
+        <div id="achievementNotifications"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { GameState } from '../js/GameState.js';
+      import { EventManager } from '../js/EventManager.js';
+      import { PuzzleSystem } from '../js/PuzzleSystem.js';
+      import { NPCSystem } from '../js/NPCSystem.js';
+      import { GameProgression } from '../js/GameProgression.js';
+      import { MovementSystem } from '../js/MovementSystem.js';
+      import { ViewManager } from '../js/ViewManager.js';
+      import { SceneRenderer } from '../js/SceneRenderer.js';
+
+      // Initialize systems
+      const gameState = new GameState();
+      const eventManager = new EventManager(gameState, null);
+      const canvas = document.createElement('canvas');
+      const sceneRenderer = new SceneRenderer(canvas);
+      const viewManager = new ViewManager(sceneRenderer);
+      const movementSystem = new MovementSystem(
+        gameState,
+        viewManager,
+        eventManager
+      );
+      const puzzleSystem = new PuzzleSystem(gameState, eventManager);
+      const npcSystem = new NPCSystem(gameState, movementSystem, eventManager);
+      const gameProgression = new GameProgression(gameState, eventManager);
+
+      // Demo game data
+      const demoGameData = {
+        rooms: [
+          {
+            id: 'demoRoom',
+            name: 'Demo Room',
+            description: 'A room for testing game systems.',
+          },
+          {
+            id: 'secretRoom',
+            name: 'Secret Chamber',
+            description: 'A hidden room!',
+            secret: true,
+          },
+        ],
+
+        puzzles: [
+          {
+            id: 'doorPuzzle',
+            name: 'Locked Door',
+            solution: { verb: 'use', item: 'key', target: 'door' },
+            reward: { type: 'SET_FLAG', flag: 'doorUnlocked', value: true },
+            points: 50,
+            successMessage: 'The door clicks open!',
+            failureMessage: "That doesn't work on the door.",
+            hints: ['You need something to unlock it.', 'Try using a key.'],
+            maxAttempts: 10,
+          },
+          {
+            id: 'sequencePuzzle',
+            name: 'Button Sequence',
+            steps: [
+              {
+                solution: { verb: 'push', target: 'redButton' },
+                successMessage: 'The red button lights up!',
+                hint: 'Start with the red button.',
+              },
+              {
+                solution: { verb: 'push', target: 'blueButton' },
+                successMessage: 'The blue button lights up!',
+                hint: 'Now try the blue one.',
+              },
+              {
+                solution: { verb: 'push', target: 'greenButton' },
+                successMessage: 'All buttons are lit!',
+                reward: { type: 'GIVE_ITEM', itemId: 'magicGem' },
+              },
+            ],
+            points: 100,
+            successMessage: 'The sequence is complete! A magic gem appears!',
+          },
+        ],
+
+        npcs: [
+          {
+            id: 'merchant',
+            name: 'Bob the Merchant',
+            startingRoom: 'demoRoom',
+            inventory: ['sword', 'potion', 'map'],
+            trades: true,
+            initialRelationship: 20,
+            dialogues: [
+              {
+                greeting: 'Welcome to my shop!',
+                root: 'shop',
+                nodes: {
+                  shop: {
+                    text: 'What can I do for you?',
+                    options: [
+                      {
+                        text: 'I want to trade.',
+                        response: 'Let me show you my wares...',
+                        effects: [{ type: 'START_TRADE' }],
+                        endsConversation: true,
+                      },
+                      {
+                        text: 'Tell me about the town.',
+                        response: "It's a peaceful place, mostly.",
+                        nextNode: 'town',
+                      },
+                      {
+                        text: 'Goodbye.',
+                        response: 'Come back anytime!',
+                        endsConversation: true,
+                      },
+                    ],
+                  },
+                  town: {
+                    text: 'Though lately, strange things have been happening...',
+                    options: [
+                      {
+                        text: 'What kind of strange things?',
+                        response:
+                          'People say they hear voices from the old tower.',
+                        effects: [
+                          {
+                            type: 'SET_FLAG',
+                            flag: 'knowsAboutTower',
+                            value: true,
+                          },
+                        ],
+                        endsConversation: true,
+                      },
+                      {
+                        text: 'I see. Let me ask something else.',
+                        response: 'Of course!',
+                        nextNode: 'shop',
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          {
+            id: 'wizard',
+            name: 'Eldrin the Wise',
+            startingRoom: 'demoRoom',
+            initialRelationship: 0,
+            dialogues: [
+              {
+                greeting: 'Ah, a visitor. How unusual.',
+                root: 'greeting',
+                nodes: {
+                  greeting: {
+                    text: 'I sense great potential in you.',
+                    options: [
+                      {
+                        text: 'Can you teach me magic?',
+                        response: 'Magic cannot be taught, only discovered.',
+                        effects: [{ type: 'CHANGE_RELATIONSHIP', amount: 10 }],
+                        nextNode: 'magic',
+                      },
+                      {
+                        text: 'I need your help.',
+                        response: 'Help? That depends on what you seek.',
+                        nextNode: 'help',
+                      },
+                    ],
+                  },
+                  magic: {
+                    text: 'But I can give you this advice: seek the three gems of power.',
+                    options: [
+                      {
+                        text: 'Where can I find them?',
+                        response:
+                          'One lies beyond puzzles, one through friendship, one through courage.',
+                        effects: [
+                          {
+                            type: 'SET_FLAG',
+                            flag: 'knowsAboutGems',
+                            value: true,
+                          },
+                        ],
+                        endsConversation: true,
+                      },
+                    ],
+                  },
+                  help: {
+                    text: 'Many seek my aid. Few deserve it.',
+                    options: [
+                      {
+                        text: "I'll prove myself worthy.",
+                        response: 'We shall see...',
+                        effects: [{ type: 'CHANGE_RELATIONSHIP', amount: 5 }],
+                        endsConversation: true,
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          {
+            id: 'guard',
+            name: 'Castle Guard',
+            startingRoom: 'demoRoom',
+            initialRelationship: -10,
+            dialogues: [
+              {
+                greeting: 'Halt! State your business.',
+                root: 'challenge',
+                nodes: {
+                  challenge: {
+                    text: 'No unauthorized persons beyond this point.',
+                    options: [
+                      {
+                        text: 'I have important business inside.',
+                        response: "That's what they all say. Move along.",
+                        endsConversation: true,
+                      },
+                      {
+                        text: 'The king sent me.',
+                        response:
+                          "You don't look like a royal messenger to me.",
+                        condition: {
+                          type: 'flag',
+                          flag: 'hasRoyalSeal',
+                          value: false,
+                        },
+                        endsConversation: true,
+                      },
+                      {
+                        text: 'I have the royal seal.',
+                        response: 'My apologies! Please, go right in.',
+                        condition: {
+                          type: 'flag',
+                          flag: 'hasRoyalSeal',
+                          value: true,
+                        },
+                        effects: [
+                          {
+                            type: 'SET_FLAG',
+                            flag: 'guardAllowsEntry',
+                            value: true,
+                          },
+                          { type: 'CHANGE_RELATIONSHIP', amount: 50 },
+                        ],
+                        endsConversation: true,
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        ],
+
+        progression: {
+          maxScore: 500,
+          parMoves: 100,
+          totalRooms: 10,
+          winCondition: { type: 'flag', flag: 'allGemsCollected', value: true },
+        },
+
+        endings: [
+          {
+            id: 'perfect',
+            name: 'Perfect Hero',
+            priority: 3,
+            conditions: [
+              { type: 'score', operator: '>=', value: 450 },
+              { type: 'achievement', achievementId: 'no_deaths' },
+              { type: 'path', path: 'hero' },
+            ],
+          },
+          {
+            id: 'good',
+            name: 'Noble Victory',
+            priority: 2,
+            conditions: [{ type: 'score', operator: '>=', value: 300 }],
+          },
+          {
+            id: 'neutral',
+            name: 'Journey Complete',
+            priority: 1,
+            conditions: [],
+          },
+        ],
+
+        achievements: [
+          { id: 'first_points', name: 'First Treasure', points: 5 },
+          { id: 'score_100', name: 'Centurion', points: 10 },
+          { id: 'score_250', name: 'High Scorer', points: 15 },
+          { id: 'puzzle_solver', name: 'Puzzle Solver', points: 10 },
+          { id: 'secret_finder', name: 'Secret Finder', points: 20 },
+          { id: 'collector', name: 'Collector', progressive: true, target: 5 },
+          { id: 'social_butterfly', name: 'Social Butterfly', points: 10 },
+          { id: 'trader', name: 'Master Trader', points: 10 },
+          { id: 'persistent', name: 'Persistent', points: 5 },
+          { id: 'no_deaths', name: 'Untouchable', points: 50 },
+        ],
+      };
+
+      // Initialize with demo data
+      gameState.currentRoomId = 'demoRoom';
+      puzzleSystem.initialize(demoGameData);
+      npcSystem.initialize(demoGameData);
+      gameProgression.initialize(demoGameData);
+
+      // Track active conversation
+      let activeNPC = null;
+      let currentPuzzle = null;
+
+      // Puzzle functions
+      window.attemptSimplePuzzle = () => {
+        currentPuzzle = 'doorPuzzle';
+        const result = puzzleSystem.attemptPuzzle('doorPuzzle', {
+          verb: 'use',
+          item: 'key',
+          target: 'door',
+        });
+
+        document.getElementById('puzzleOutput').textContent = result.message;
+        if (result.success) {
+          gameProgression.updateScore(result.points, 'Solved door puzzle');
+        }
+        updatePuzzleStatus();
+        updateProgressStatus();
+      };
+
+      window.attemptWrongSolution = () => {
+        if (!currentPuzzle) currentPuzzle = 'doorPuzzle';
+
+        const result = puzzleSystem.attemptPuzzle(currentPuzzle, {
+          verb: 'push',
+          target: 'door',
+        });
+
+        let output = result.message;
+        if (result.hint) {
+          output += '\n\nHint: ' + result.hint;
+        }
+
+        document.getElementById('puzzleOutput').textContent = output;
+        updatePuzzleStatus();
+      };
+
+      window.startSequencePuzzle = () => {
+        currentPuzzle = 'sequencePuzzle';
+        const steps = ['redButton', 'blueButton', 'greenButton'];
+        let currentStep = 0;
+
+        const attemptNext = () => {
+          if (currentStep >= steps.length) return;
+
+          const result = puzzleSystem.attemptPuzzle('sequencePuzzle', {
+            verb: 'push',
+            target: steps[currentStep],
+          });
+
+          document.getElementById('puzzleOutput').textContent = result.message;
+
+          if (result.success) {
+            if (result.progress) {
+              document.getElementById('puzzleOutput').textContent +=
+                '\nProgress: ' + result.progress;
+            }
+
+            currentStep++;
+            if (
+              currentStep < steps.length &&
+              !result.message.includes('complete')
+            ) {
+              setTimeout(attemptNext, 1500);
+            } else if (result.points) {
+              gameProgression.updateScore(
+                result.points,
+                'Completed sequence puzzle'
+              );
+              updateProgressStatus();
+            }
+          }
+
+          updatePuzzleStatus();
+        };
+
+        attemptNext();
+      };
+
+      window.getHint = () => {
+        if (!currentPuzzle) {
+          document.getElementById('puzzleOutput').textContent =
+            'Start a puzzle first!';
+          return;
+        }
+
+        const hint = puzzleSystem.getHint(currentPuzzle);
+        if (hint) {
+          document.getElementById('puzzleOutput').textContent = 'Hint: ' + hint;
+          gameProgression.statistics.hintsUsed++;
+        } else {
+          document.getElementById('puzzleOutput').textContent =
+            'No hints available right now. Try again later.';
+        }
+      };
+
+      window.resetPuzzle = () => {
+        if (!currentPuzzle) {
+          document.getElementById('puzzleOutput').textContent =
+            'No puzzle to reset!';
+          return;
+        }
+
+        const success = puzzleSystem.resetPuzzle(currentPuzzle);
+        if (success) {
+          document.getElementById('puzzleOutput').textContent =
+            'Puzzle has been reset. Try again!';
+        } else {
+          document.getElementById('puzzleOutput').textContent =
+            'This puzzle cannot be reset.';
+        }
+
+        updatePuzzleStatus();
+      };
+
+      // NPC functions
+      window.talkToMerchant = () => {
+        activeNPC = 'merchant';
+        const result = npcSystem.startConversation('merchant');
+        displayConversation(result);
+        updateNPCStatus();
+      };
+
+      window.talkToWizard = () => {
+        activeNPC = 'wizard';
+        const result = npcSystem.startConversation('wizard');
+        displayConversation(result);
+        updateNPCStatus();
+      };
+
+      window.talkToGuard = () => {
+        activeNPC = 'guard';
+        const result = npcSystem.startConversation('guard');
+        displayConversation(result);
+        updateNPCStatus();
+      };
+
+      window.startTrade = () => {
+        if (activeNPC !== 'merchant') {
+          document.getElementById('npcOutput').textContent =
+            'Talk to the merchant first!';
+          return;
+        }
+
+        const result = npcSystem.startTrading('merchant');
+        if (result.success) {
+          document.getElementById('npcOutput').textContent =
+            'Trading interface opened!\n' +
+            'Merchant has: ' +
+            result.npcInventory.join(', ') +
+            '\n' +
+            '(Trade system would show full UI here)';
+
+          // Simulate a successful trade
+          setTimeout(() => {
+            const tradeResult = npcSystem.executeTrade(
+              'merchant',
+              ['gold'],
+              ['sword']
+            );
+            document.getElementById('npcOutput').textContent =
+              tradeResult.message;
+
+            if (tradeResult.success) {
+              showAchievement({ id: 'trader', name: 'Master Trader' });
+            }
+
+            updateNPCStatus();
+          }, 2000);
+        } else {
+          document.getElementById('npcOutput').textContent = result.message;
+        }
+      };
+
+      window.insultNPC = () => {
+        if (!activeNPC) {
+          document.getElementById('npcOutput').textContent =
+            'Talk to someone first!';
+          return;
+        }
+
+        npcSystem.modifyRelationship(activeNPC, -20);
+        document.getElementById('npcOutput').textContent =
+          `You insult the ${activeNPC}. They look offended.`;
+
+        updateNPCStatus();
+      };
+
+      window.selectDialogueOption = (index) => {
+        if (!activeNPC) return;
+
+        const result = npcSystem.selectDialogueOption(activeNPC, index);
+
+        if (result.success) {
+          let output = result.message;
+          if (result.npcResponse) {
+            output +=
+              '\n\n' +
+              npcSystem.npcs.get(activeNPC).name +
+              ': "' +
+              result.npcResponse +
+              '"';
+          }
+
+          document.getElementById('npcOutput').textContent = output;
+
+          if (result.conversationEnded) {
+            document.getElementById('dialogueOptions').innerHTML = '';
+            activeNPC = null;
+          } else {
+            displayDialogueOptions(result.options);
+          }
+        }
+
+        updateNPCStatus();
+      };
+
+      function displayConversation(result) {
+        if (!result.success) {
+          document.getElementById('npcOutput').textContent = result.message;
+          document.getElementById('dialogueOptions').innerHTML = '';
+          return;
+        }
+
+        let output = result.message;
+        if (result.npcName) {
+          output = result.npcName + ': "' + output + '"';
+        }
+
+        document.getElementById('npcOutput').textContent = output;
+        displayDialogueOptions(result.options);
+      }
+
+      function displayDialogueOptions(options) {
+        const container = document.getElementById('dialogueOptions');
+        container.innerHTML = '';
+
+        if (!options || options.length === 0) return;
+
+        options.forEach((option, index) => {
+          const button = document.createElement('button');
+          button.className = 'dialogue-option';
+          button.textContent = `${index + 1}. ${option.text}`;
+          button.onclick = () => selectDialogueOption(index);
+          container.appendChild(button);
+        });
+      }
+
+      // Progression functions
+      window.earnPoints = (points) => {
+        gameProgression.updateScore(points, 'Found treasure');
+        gameProgression.incrementMoves();
+
+        document.getElementById('progressOutput').textContent =
+          `You earned ${points} points!`;
+
+        updateProgressStatus();
+      };
+
+      window.visitSecretRoom = () => {
+        gameState.currentRoomId = 'secretRoom';
+        eventManager.triggerEvent('enterRoom', { room: 'secretRoom' });
+
+        // Manually trigger since we're not using the full event system
+        gameProgression.statistics.roomsVisited.add('secretRoom');
+        gameProgression.unlockAchievement('secret_finder');
+
+        document.getElementById('progressOutput').textContent =
+          'You discovered a secret room!';
+
+        updateProgressStatus();
+      };
+
+      window.collectItems = () => {
+        const items = ['sword', 'shield', 'potion', 'gem', 'scroll'];
+        items.forEach((item) => {
+          gameProgression.statistics.itemsCollected.add(item);
+        });
+
+        gameProgression.updateAchievementProgress('collector', 5);
+
+        document.getElementById('progressOutput').textContent =
+          'You collected 5 items!';
+
+        updateProgressStatus();
+      };
+
+      window.die = () => {
+        gameProgression.statistics.deaths++;
+        eventManager.triggerEvent('playerDeath');
+
+        if (gameProgression.statistics.deaths >= 10) {
+          gameProgression.unlockAchievement('persistent');
+        }
+
+        document.getElementById('progressOutput').textContent =
+          `You died! Deaths: ${gameProgression.statistics.deaths}`;
+
+        updateProgressStatus();
+      };
+
+      window.checkEnding = () => {
+        // Simulate different ending conditions
+        const completion = gameProgression.checkGameCompletion();
+
+        if (!completion.completed) {
+          // Force an ending based on current score
+          if (gameProgression.score >= 300) {
+            gameProgression.triggerEnding('good');
+            document.getElementById('progressOutput').textContent =
+              'Ending: Noble Victory!\n' +
+              `Final Score: ${gameProgression.score}/500\n` +
+              `Moves: ${gameProgression.moves}`;
+          } else {
+            gameProgression.triggerEnding('neutral');
+            document.getElementById('progressOutput').textContent =
+              'Ending: Journey Complete\n' +
+              `Final Score: ${gameProgression.score}/500\n` +
+              `Moves: ${gameProgression.moves}`;
+          }
+        }
+      };
+
+      // Update functions
+      function updatePuzzleStatus() {
+        const stats = puzzleSystem.getStatistics();
+        const active = puzzleSystem.getActivePuzzles();
+
+        document.getElementById('activePuzzles').textContent = active.length;
+        document.getElementById('puzzlesSolved').textContent = stats.completed;
+      }
+
+      function updateNPCStatus() {
+        document.getElementById('merchantRel').textContent =
+          npcSystem.relationships.get('merchant') || 0;
+        document.getElementById('wizardRel').textContent =
+          npcSystem.relationships.get('wizard') || 0;
+
+        // Check for social achievement
+        let metNPCs = 0;
+        for (const [npcId, state] of npcSystem.npcStates) {
+          if (state.lastInteraction) metNPCs++;
+        }
+
+        if (metNPCs >= 3) {
+          gameProgression.unlockAchievement('social_butterfly');
+        }
+      }
+
+      function updateProgressStatus() {
+        const status = gameProgression.getProgressionStatus();
+
+        document.getElementById('score').textContent =
+          `${status.score} / ${status.maxScore}`;
+        document.getElementById('moves').textContent = status.moves;
+        document.getElementById('achievements').textContent =
+          `${status.achievementsUnlocked} / ${status.totalAchievements}`;
+        document.getElementById('storyPath').textContent = status.currentPath;
+        document.getElementById('completion').textContent =
+          status.completionPercentage + '%';
+      }
+
+      function showAchievement(achievement) {
+        gameProgression.unlockAchievement(achievement.id);
+
+        const notification = document.createElement('div');
+        notification.className = 'achievement';
+        notification.textContent = `🏆 Achievement Unlocked: ${achievement.name}`;
+
+        document
+          .getElementById('achievementNotifications')
+          .appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+
+        updateProgressStatus();
+      }
+
+      // Listen for achievement events
+      eventManager.on('achievementUnlocked', (data) => {
+        showAchievement(data.achievement);
+      });
+
+      // Initial status update
+      updatePuzzleStatus();
+      updateNPCStatus();
+      updateProgressStatus();
+
+      console.log('Game World Logic Demo initialized!');
+    </script>
+  </body>
+</html>

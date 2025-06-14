@@ -56,15 +56,29 @@ export class GameManager {
     this.soundManager = new SoundManager();
     this.parser = new Parser({}); // TODO: Load vocabulary config
     this.eventManager = new EventManager(this.gameState, this.aiManager);
-    
+
     // Initialize game logic systems
     this.inventory = new Inventory(this.gameState);
-    this.movementSystem = new MovementSystem(this.gameState, this.viewManager, this.eventManager);
-    this.interactionSystem = new InteractionSystem(this.gameState, this.eventManager);
+    this.movementSystem = new MovementSystem(
+      this.gameState,
+      this.viewManager,
+      this.eventManager
+    );
+    this.interactionSystem = new InteractionSystem(
+      this.gameState,
+      this.eventManager
+    );
     this.puzzleSystem = new PuzzleSystem(this.gameState, this.eventManager);
-    this.npcSystem = new NPCSystem(this.gameState, this.movementSystem, this.eventManager);
-    this.gameProgression = new GameProgression(this.gameState, this.eventManager);
-    
+    this.npcSystem = new NPCSystem(
+      this.gameState,
+      this.movementSystem,
+      this.eventManager
+    );
+    this.gameProgression = new GameProgression(
+      this.gameState,
+      this.eventManager
+    );
+
     // Initialize command executor with all systems
     this.commandExecutor = new CommandExecutor(
       this.gameState,
@@ -108,7 +122,7 @@ export class GameManager {
 
       // Load resources into game state
       this.gameState.loadResources(gameJSON);
-      
+
       // Initialize all game systems with game data
       this.interactionSystem.initialize(gameJSON);
       this.puzzleSystem.initialize(gameJSON);
@@ -150,7 +164,7 @@ export class GameManager {
       // Restore game state
       this.gameState.loadResources(saveData.gameJSON);
       this.gameState.deserialize(saveData.state);
-      
+
       // Initialize all game systems with game data
       this.interactionSystem.initialize(saveData.gameJSON);
       this.puzzleSystem.initialize(saveData.gameJSON);
@@ -277,13 +291,13 @@ export class GameManager {
   fixedUpdate(deltaTime) {
     // Update game logic that needs deterministic timing
     this.eventManager.updateScheduledEvents(deltaTime);
-    
+
     // Update movement systems
     this.movementSystem.update(deltaTime);
-    
+
     // Update NPCs
     this.npcSystem.update(deltaTime);
-    
+
     // Check game completion
     const completion = this.gameProgression.checkGameCompletion();
     if (completion.completed) {

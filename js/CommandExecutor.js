@@ -109,7 +109,10 @@ export class CommandExecutor {
     }
 
     const command = parsedCommand.command;
-    const handler = this.handlers[command.verb];
+
+    // Resolve aliases
+    const resolvedVerb = this.resolveAlias(command.verb);
+    const handler = this.handlers[resolvedVerb];
 
     if (!handler) {
       return {
@@ -156,29 +159,16 @@ export class CommandExecutor {
 
   // Movement commands
   async handleGo(command) {
-    const direction = command.directObject;
+    const direction =
+      command.directObject || command.resolvedDirectObject?.value;
 
     // Use MovementSystem for enhanced navigation
     const result = await this.movementSystem.movePlayer(direction);
 
-    if (!result.success) {
-      return {
-        success: false,
-        text: result.message,
-        audio: result.blocked ? 'locked' : 'bump',
-      };
-    }
-
-    // Get the new room
-    const targetRoom = this.gameState.getRoom(result.newRoom);
-
     return {
-      success: true,
-      text: this.describeRoom(targetRoom),
-      audio: 'footsteps',
-      stateChanges: {
-        moves: this.gameState.moves + 1,
-      },
+      success: result.success,
+      text: result.message,
+      audio: result.success ? 'footsteps' : 'bump',
     };
   }
 
@@ -213,6 +203,14 @@ export class CommandExecutor {
 
   // Object manipulation
   async handleTake(command) {
+    if (!command.directObject) {
+      return {
+        success: false,
+        text: 'Take what?',
+        audio: 'error',
+      };
+    }
+
     if (command.modifiers.includes('all')) {
       return this.handleTakeAll(command);
     }
@@ -255,11 +253,11 @@ export class CommandExecutor {
     }
 
     // Take the object
-    const added = this.inventory.addItem(object.id);
-    if (!added) {
+    const result = this.inventory.addItem(object.id);
+    if (!result.success) {
       return {
         success: false,
-        text: 'Something went wrong taking that.',
+        text: result.message || "You can't carry any more.",
         audio: 'error',
       };
     }
@@ -351,8 +349,8 @@ export class CommandExecutor {
     const object = this.gameState.getItem(objectRef.value);
 
     // Drop the item using inventory system
-    const removed = this.inventory.removeItem(objectRef.value);
-    if (removed) {
+    const result = this.inventory.removeItem(objectRef.value);
+    if (result.success) {
       this.gameState.addToRoom(object.id);
 
       return {
@@ -364,7 +362,7 @@ export class CommandExecutor {
 
     return {
       success: false,
-      text: "You can't drop that.",
+      text: result.message || "You can't drop that.",
       audio: 'error',
     };
   }
@@ -422,7 +420,12 @@ export class CommandExecutor {
     }
 
     // Check for hidden details
-    if (object.details && object.examined) {
+    if (object.hiddenDetails) {
+      description += ' ' + object.hiddenDetails;
+    }
+
+    // Add extra details
+    if (object.details) {
       description += '\n' + object.details;
     }
 
@@ -432,102 +435,6 @@ export class CommandExecutor {
     return {
       success: true,
       text: description,
-      audio: null,
-    };
-  }
-
-  // Inventory
-  async handleInventory(_command) {
-    const items = this.inventory.getAllItems();
-
-    if (items.length === 0) {
-      return {
-        success: true,
-        text: "You're not carrying anything.",
-        audio: null,
-      };
-    }
-
-    // Build inventory display
-    let text = 'You are carrying:\n';
-
-    // Regular items
-    const regularItems = this.inventory.items.map((id) => {
-      const item = this.gameState.getItem(id);
-      return item?.name || id;
-    });
-
-    if (regularItems.length > 0) {
-      text += regularItems.map((name) => `  - ${name}`).join('\n');
-    }
-
-    // Worn items
-    const wornItems = [];
-    for (const [slot, itemId] of Object.entries(this.inventory.worn)) {
-      if (itemId) {
-        const item = this.gameState.getItem(itemId);
-        wornItems.push(`${item?.name || itemId} (worn on ${slot})`);
-      }
-    }
-
-    if (wornItems.length > 0) {
-      text +=
-        '\n\nWearing:\n' + wornItems.map((desc) => `  - ${desc}`).join('\n');
-    }
-
-    // Container contents
-    if (this.inventory.containers.size > 0) {
-      for (const [containerId, contents] of this.inventory.containers) {
-        if (contents.length > 0) {
-          const container = this.gameState.getItem(containerId);
-          text += `\n\nIn ${container?.name || containerId}:\n`;
-          const containerItems = contents.map((id) => {
-            const item = this.gameState.getItem(id);
-            return `  - ${item?.name || id}`;
-          });
-          text += containerItems.join('\n');
-        }
-      }
-    }
-
-    // Weight info
-    const totalWeight = this.inventory.getTotalWeight();
-    const maxWeight = this.inventory.maxWeight;
-    text += `\n\nTotal weight: ${totalWeight}/${maxWeight}`;
-
-    return {
-      success: true,
-      text,
-      audio: null,
-    };
-  }
-
-  // Meta commands
-  async handleSave(_command) {
-    return {
-      success: true,
-      text: 'Game saved. (Feature coming soon)',
-      audio: 'success',
-      meta: { action: 'save' },
-    };
-  }
-
-  async handleHelp(_command) {
-    const helpText = `Common commands:
-- LOOK/L - Examine your surroundings
-- EXAMINE/X [object] - Look at something closely  
-- TAKE/GET [object] - Pick up an item
-- DROP [object] - Put down an item
-- INVENTORY/I - Check what you're carrying
-- GO [direction] or N/S/E/W - Move around
-- USE [item] ON [object] - Use an item
-- TALK TO [person] - Speak with someone
-- SAVE/LOAD - Save or restore your game
-- HELP - Show this message`;
-
-    return {
-      success: true,
-      text: helpText,
       audio: null,
     };
   }
@@ -607,6 +514,15 @@ export class CommandExecutor {
       };
     }
 
+    // Check if player has the item
+    if (!this.inventory.hasItem(objectRef.value)) {
+      return {
+        success: false,
+        text: "You don't have that.",
+        audio: 'error',
+      };
+    }
+
     // Handle use with indirect object
     if (command.indirectObject) {
       const targetRef = command.resolvedIndirectObject;
@@ -625,7 +541,7 @@ export class CommandExecutor {
       );
 
       // Play appropriate sound effect
-      if (result.success && result.effects.length > 0) {
+      if (result.success && result.effects && result.effects.length > 0) {
         // Check for specific sound effects in the result
         for (const effect of result.effects) {
           if (effect.type === 'playSound') {
@@ -641,38 +557,19 @@ export class CommandExecutor {
       };
     }
 
-    // Single object use - check if usable
-    const object =
-      this.gameState.getItem(objectRef.value) ||
-      this.gameState.getObject(objectRef.value);
-
-    if (!object) {
-      return {
-        success: false,
-        text: "You can't use that.",
-        audio: 'error',
-      };
-    }
-
-    // Generic use
-    if (object.useMessage) {
-      return {
-        success: true,
-        text: object.useMessage,
-        audio: 'use',
-      };
-    }
+    // Single object use - use interaction system
+    const result = this.interactionSystem.useItemOn(objectRef.value, null);
 
     return {
-      success: false,
-      text: `You need to specify what to use the ${object.name} on.`,
-      audio: 'error',
+      success: result.success,
+      text: result.message,
+      audio: result.success ? 'use' : 'error',
     };
   }
 
   async handleGive(command) {
     const objectRef = command.resolvedDirectObject;
-    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+    if (!objectRef || !this.inventory.hasItem(objectRef.value)) {
       return {
         success: false,
         text: "You don't have that.",
@@ -689,7 +586,7 @@ export class CommandExecutor {
     }
 
     const targetRef = command.resolvedIndirectObject;
-    if (!targetRef || targetRef.type !== 'npc') {
+    if (!targetRef || targetRef.type !== 'NPC') {
       return {
         success: false,
         text: "They're not here.",
@@ -700,31 +597,30 @@ export class CommandExecutor {
     const npc = this.gameState.getNPC(targetRef.value);
     const item = this.gameState.getItem(objectRef.value);
 
-    // Check if NPC accepts this item
-    if (npc.acceptsItems && npc.acceptsItems.includes(item.id)) {
-      this.gameState.removeFromInventory(item.id);
-      this.gameState.setFlag(`gave_${item.id}_to_${npc.id}`, true);
-
+    if (!npc || !item) {
       return {
-        success: true,
-        text: npc.acceptMessage || `${npc.name} takes the ${item.name}.`,
-        audio: 'give',
-        stateChanges: {
-          score: this.gameState.score + (item.givePoints || 0),
-        },
+        success: false,
+        text: 'Something went wrong.',
+        audio: 'error',
       };
     }
 
+    // Simple give action for now
+    this.inventory.removeItem(item.id);
+
     return {
-      success: false,
-      text: npc.refuseMessage || `${npc.name} doesn't want that.`,
-      audio: 'error',
+      success: true,
+      text: `You give the ${item.name} to ${npc.name}.`,
+      audio: 'give',
+      stateChanges: {
+        score: this.gameState.score + (item.givePoints || 0),
+      },
     };
   }
 
   async handlePut(command) {
     const objectRef = command.resolvedDirectObject;
-    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+    if (!objectRef || !this.inventory.hasItem(objectRef.value)) {
       return {
         success: false,
         text: "You don't have that.",
@@ -750,7 +646,7 @@ export class CommandExecutor {
     }
 
     const target = targetRef.object;
-    if (!target || target.type !== 'container') {
+    if (!target || !target.isContainer) {
       return {
         success: false,
         text: "You can't put anything in that.",
@@ -758,25 +654,16 @@ export class CommandExecutor {
       };
     }
 
-    if (!target.open) {
-      return {
-        success: false,
-        text: `The ${target.name} is closed.`,
-        audio: 'error',
-      };
-    }
-
-    const item = this.gameState.getItem(objectRef.value);
-
-    // Move item to container
-    this.gameState.removeFromInventory(item.id);
-    if (!target.contents) target.contents = [];
-    target.contents.push(item.id);
+    // Use inventory system to put item in container
+    const result = this.inventory.putInContainer(
+      objectRef.value,
+      targetRef.value
+    );
 
     return {
-      success: true,
-      text: `You put the ${item.name} in the ${target.name}.`,
-      audio: 'put',
+      success: result.success,
+      text: result.message,
+      audio: result.success ? 'put' : 'error',
     };
   }
 
@@ -910,7 +797,11 @@ export class CommandExecutor {
     }
 
     // Check if openable
-    if (object.type !== 'container' && object.type !== 'door') {
+    if (
+      !object.canOpen &&
+      object.type !== 'container' &&
+      object.type !== 'door'
+    ) {
       return {
         success: false,
         text: "That's not something you can open.",
@@ -919,7 +810,7 @@ export class CommandExecutor {
     }
 
     // Check if already open
-    if (object.open) {
+    if (object.isOpen || object.open) {
       return {
         success: false,
         text: "It's already open.",
@@ -928,7 +819,7 @@ export class CommandExecutor {
     }
 
     // Check if locked
-    if (object.locked) {
+    if (object.isLocked || object.locked) {
       return {
         success: false,
         text: object.lockedMessage || "It's locked.",
@@ -981,7 +872,11 @@ export class CommandExecutor {
     }
 
     // Check if closeable
-    if (object.type !== 'container' && object.type !== 'door') {
+    if (
+      !object.canOpen &&
+      object.type !== 'container' &&
+      object.type !== 'door'
+    ) {
       return {
         success: false,
         text: "That's not something you can close.",
@@ -990,7 +885,7 @@ export class CommandExecutor {
     }
 
     // Check if already closed
-    if (!object.open) {
+    if (!object.isOpen && !object.open) {
       return {
         success: false,
         text: "It's already closed.",
@@ -1018,48 +913,34 @@ export class CommandExecutor {
       };
     }
 
-    const object = objectRef.object;
-    if (!object || !object.locked) {
+    // Check if we have an indirect object (the key)
+    if (command.indirectObject && command.resolvedIndirectObject) {
+      const keyId = command.resolvedIndirectObject.value;
+      const objectId = objectRef.value;
+
+      // Use interaction system
+      const result = this.interactionSystem.unlockObject(objectId, keyId);
       return {
-        success: false,
-        text: "That's not locked.",
-        audio: 'error',
+        success: result.success,
+        text: result.message,
+        audio: result.success ? 'unlock' : 'error',
+        stateChanges:
+          result.success && result.scoreIncrease
+            ? { score: this.gameState.score + result.scoreIncrease }
+            : null,
       };
     }
 
-    // Need a key
-    if (!object.keyId) {
-      return {
-        success: false,
-        text: "You can't unlock that.",
-        audio: 'error',
-      };
-    }
-
-    // Check if player has the key
-    if (!this.gameState.hasItem(object.keyId)) {
-      return {
-        success: false,
-        text: "You don't have the right key.",
-        audio: 'error',
-      };
-    }
-
-    // Unlock it
-    this.gameState.setObjectState(object.id, 'locked', false);
-
+    // No key specified
     return {
-      success: true,
-      text: `You unlock the ${object.name}.`,
-      audio: 'unlock',
-      stateChanges: {
-        score: this.gameState.score + (object.unlockPoints || 0),
-      },
+      success: false,
+      text: 'Unlock it with what?',
+      audio: 'error',
     };
   }
 
   async handleTalk(command) {
-    if (!command.indirectObject) {
+    if (!command.directObject) {
       return {
         success: false,
         text: 'Who do you want to talk to?',
@@ -1067,11 +948,11 @@ export class CommandExecutor {
       };
     }
 
-    const npcRef = command.resolvedIndirectObject;
-    if (!npcRef || npcRef.type !== 'npc') {
+    const npcRef = command.resolvedDirectObject;
+    if (!npcRef || npcRef.type !== 'NPC') {
       return {
         success: false,
-        text: "They're not here.",
+        text: "You can't talk to that.",
         audio: 'error',
       };
     }
@@ -1085,29 +966,22 @@ export class CommandExecutor {
       };
     }
 
-    // Get appropriate dialogue
-    let dialogue = npc.defaultDialogue || `${npc.name} has nothing to say.`;
-
-    // Check for conditional dialogue
-    if (npc.dialogues) {
-      for (const d of npc.dialogues) {
-        if (!d.condition || this.eventManager.checkCondition(d.condition)) {
-          dialogue = d.text;
-
-          // Execute any associated actions
-          if (d.actions) {
-            for (const action of d.actions) {
-              this.eventManager.executeAction(action);
-            }
-          }
-          break;
-        }
-      }
+    // Check if we have an NPC system
+    if (this.npcSystem && this.npcSystem.startConversation) {
+      const result = this.npcSystem.startConversation(npcRef.value);
+      return {
+        success: result.success,
+        text: result.message,
+        audio: result.success ? 'talk' : 'error',
+      };
     }
+
+    // Fallback to simple dialogue
+    const dialogue = npc.defaultDialogue || `${npc.name} has nothing to say.`;
 
     return {
       success: true,
-      text: `${npc.name}: "${dialogue}"`,
+      text: dialogue,
       audio: 'talk',
     };
   }
@@ -1471,6 +1345,11 @@ export class CommandExecutor {
   }
 
   async handleWait(_command) {
+    // Trigger wait event if event manager has this method
+    if (this.eventManager.triggerEvent) {
+      await this.eventManager.triggerEvent('wait');
+    }
+
     return {
       success: true,
       text: 'Time passes...',
@@ -1479,10 +1358,29 @@ export class CommandExecutor {
     };
   }
 
-  async handleLoad(_command) {
+  async handleLoad(command) {
+    if (!command.directObject) {
+      return {
+        success: false,
+        text: 'Load which save?',
+        audio: 'error',
+      };
+    }
+
+    const saveName = command.directObject;
+    const loaded = this.gameState.loadGame(saveName);
+
+    if (loaded) {
+      return {
+        success: true,
+        text: `Game loaded from '${saveName}'.`,
+        audio: 'success',
+      };
+    }
+
     return {
-      success: true,
-      text: 'Loading games is not yet implemented.',
+      success: false,
+      text: 'Failed to load game.',
       audio: 'error',
     };
   }
@@ -1502,10 +1400,25 @@ export class CommandExecutor {
       text: 'Restarting game...',
       audio: 'restart',
       meta: { action: 'restart' },
+      shouldRestart: true,
     };
   }
 
   async handleScore(_command) {
+    // Check if we have a game progression system
+    if (this.gameProgression) {
+      const score = this.gameProgression.getScore();
+      const maxScore = this.gameProgression.getMaxScore();
+      const moves = this.gameState.moves || 0;
+
+      return {
+        success: true,
+        text: `Score: ${score} out of ${maxScore} points in ${moves} moves.`,
+        audio: null,
+      };
+    }
+
+    // Fallback to basic score tracking
     const score = this.gameState.score || 0;
     const maxScore = this.gameState.maxScore || 100;
     const moves = this.gameState.moves || 0;
@@ -1515,5 +1428,182 @@ export class CommandExecutor {
       text: `Score: ${score} of ${maxScore} points in ${moves} moves.`,
       audio: null,
     };
+  }
+
+  async handleInventory(_command) {
+    const items = this.inventory.listItems();
+
+    if (items.length === 0) {
+      return {
+        success: true,
+        text: "You aren't carrying anything.",
+        audio: null,
+      };
+    }
+
+    const weight = this.inventory.getTotalWeight();
+    const maxWeight = this.inventory.getMaxWeight();
+
+    let text = 'You are carrying:\n';
+    for (const itemId of items) {
+      const item = this.gameState.getItem(itemId);
+      if (item) {
+        text += `  - ${item.name}\n`;
+      }
+    }
+    text += `\nWeight: ${weight}/${maxWeight} lbs`;
+
+    return {
+      success: true,
+      text: text.trim(),
+      audio: null,
+    };
+  }
+
+  async handleHelp(command) {
+    if (command.directObject) {
+      // Command-specific help
+      const verb = command.directObject;
+      const helpText = this.getCommandHelp(verb);
+
+      if (helpText) {
+        return {
+          success: true,
+          text: helpText,
+          audio: null,
+        };
+      }
+
+      return {
+        success: false,
+        text: `No help available for '${verb}'.`,
+        audio: 'error',
+      };
+    }
+
+    // General help
+    const commands = [
+      'look',
+      'examine',
+      'take',
+      'drop',
+      'use',
+      'inventory',
+      'go',
+      'enter',
+      'exit',
+      'open',
+      'close',
+      'unlock',
+      'talk',
+      'ask',
+      'tell',
+      'give',
+      'wear',
+      'remove',
+      'eat',
+      'drink',
+      'wait',
+      'save',
+      'load',
+      'quit',
+      'restart',
+      'score',
+      'help',
+    ];
+
+    return {
+      success: true,
+      text: `Available commands:\n${commands.join(', ')}\n\nType 'help <command>' for specific help.`,
+      audio: null,
+    };
+  }
+
+  async handleSave(command) {
+    if (!command.directObject) {
+      // Show available saves
+      const saves = this.gameState.getSaveFiles();
+      if (saves.length === 0) {
+        return {
+          success: true,
+          text: 'No saved games found.\nTo save: save <name>',
+          audio: null,
+        };
+      }
+
+      return {
+        success: true,
+        text: `Available saves:\n${saves.join('\n')}\n\nTo save: save <name>`,
+        audio: null,
+      };
+    }
+
+    // Save the game
+    const saveName = command.directObject;
+    const saved = this.gameState.saveGame(saveName);
+
+    if (saved) {
+      return {
+        success: true,
+        text: `Game saved as '${saveName}'.`,
+        audio: 'success',
+      };
+    }
+
+    return {
+      success: false,
+      text: 'Failed to save game.',
+      audio: 'error',
+    };
+  }
+
+  getCommandHelp(verb) {
+    const helpTexts = {
+      look: 'look [at <object>] - examine your surroundings or a specific object',
+      examine: 'examine <object> - look closely at something',
+      take: 'take <object> - pick up an object',
+      drop: "drop <object> - drop something you're carrying",
+      use: 'use <item> [on <target>] - use an item',
+      inventory: "inventory - list what you're carrying",
+      go: 'go <direction> - move in a direction (north, south, east, west, etc.)',
+      open: 'open <object> - open a door or container',
+      close: 'close <object> - close a door or container',
+      unlock: 'unlock <object> [with <key>] - unlock something',
+      talk: 'talk to <person> - start a conversation',
+      give: 'give <item> to <person> - give something to someone',
+      save: 'save [name] - save your game',
+      load: 'load <name> - load a saved game',
+      quit: 'quit - exit the game',
+      help: 'help [command] - show help',
+    };
+
+    return helpTexts[verb];
+  }
+
+  // Support for command aliases
+  resolveAlias(verb) {
+    const aliases = {
+      i: 'inventory',
+      inv: 'inventory',
+      l: 'look',
+      x: 'examine',
+      get: 'take',
+      grab: 'take',
+      pickup: 'take',
+      n: 'go north',
+      s: 'go south',
+      e: 'go east',
+      w: 'go west',
+      ne: 'go northeast',
+      nw: 'go northwest',
+      se: 'go southeast',
+      sw: 'go southwest',
+      u: 'go up',
+      d: 'go down',
+      in: 'enter',
+      out: 'exit',
+    };
+
+    return aliases[verb] || verb;
   }
 }

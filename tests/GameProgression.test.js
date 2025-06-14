@@ -1,4 +1,4 @@
-import { GameProgression } from './GameProgression.js';
+import { GameProgression } from '../js/GameProgression.js';
 
 describe('GameProgression', () => {
   let gameProgression;
@@ -40,8 +40,16 @@ describe('GameProgression', () => {
           totalRooms: 20,
         },
         endings: [
-          { id: 'good', priority: 2, conditions: [{ type: 'score', operator: '>=', value: 400 }] },
-          { id: 'bad', priority: 1, conditions: [{ type: 'score', operator: '<', value: 200 }] },
+          {
+            id: 'good',
+            priority: 2,
+            conditions: [{ type: 'score', operator: '>=', value: 400 }],
+          },
+          {
+            id: 'bad',
+            priority: 1,
+            conditions: [{ type: 'score', operator: '<', value: 200 }],
+          },
         ],
         achievements: [
           { id: 'explorer', name: 'Explorer', points: 10 },
@@ -60,11 +68,26 @@ describe('GameProgression', () => {
     it('should subscribe to game events', () => {
       gameProgression.initialize({});
 
-      expect(mockEventManager.on).toHaveBeenCalledWith('enterRoom', expect.any(Function));
-      expect(mockEventManager.on).toHaveBeenCalledWith('itemCollected', expect.any(Function));
-      expect(mockEventManager.on).toHaveBeenCalledWith('puzzleCompleted', expect.any(Function));
-      expect(mockEventManager.on).toHaveBeenCalledWith('npcMet', expect.any(Function));
-      expect(mockEventManager.on).toHaveBeenCalledWith('playerDeath', expect.any(Function));
+      expect(mockEventManager.on).toHaveBeenCalledWith(
+        'enterRoom',
+        expect.any(Function)
+      );
+      expect(mockEventManager.on).toHaveBeenCalledWith(
+        'itemCollected',
+        expect.any(Function)
+      );
+      expect(mockEventManager.on).toHaveBeenCalledWith(
+        'puzzleCompleted',
+        expect.any(Function)
+      );
+      expect(mockEventManager.on).toHaveBeenCalledWith(
+        'npcMet',
+        expect.any(Function)
+      );
+      expect(mockEventManager.on).toHaveBeenCalledWith(
+        'playerDeath',
+        expect.any(Function)
+      );
     });
   });
 
@@ -77,12 +100,15 @@ describe('GameProgression', () => {
       gameProgression.updateScore(50, 'Found treasure');
 
       expect(gameProgression.score).toBe(50);
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('scoreChanged', {
-        oldScore: 0,
-        newScore: 50,
-        change: 50,
-        reason: 'Found treasure',
-      });
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'scoreChanged',
+        {
+          oldScore: 0,
+          newScore: 50,
+          change: 50,
+          reason: 'Found treasure',
+        }
+      );
     });
 
     it('should not allow negative scores', () => {
@@ -91,7 +117,10 @@ describe('GameProgression', () => {
     });
 
     it('should check score achievements', () => {
-      gameProgression.achievements.set('score_100', { id: 'score_100', name: '100 Points' });
+      gameProgression.achievements.set('score_100', {
+        id: 'score_100',
+        name: '100 Points',
+      });
 
       gameProgression.updateScore(100);
 
@@ -99,18 +128,25 @@ describe('GameProgression', () => {
     });
 
     it('should unlock perfect score achievement', () => {
-      gameProgression.achievements.set('perfect_score', { id: 'perfect_score' });
+      gameProgression.achievements.set('perfect_score', {
+        id: 'perfect_score',
+      });
 
       gameProgression.updateScore(500);
 
-      expect(gameProgression.unlockedAchievements.has('perfect_score')).toBe(true);
+      expect(gameProgression.unlockedAchievements.has('perfect_score')).toBe(
+        true
+      );
     });
   });
 
   describe('move tracking', () => {
     beforeEach(() => {
       gameProgression.initialize({ progression: { parMoves: 50 } });
-      gameProgression.achievements.set('par_moves', { id: 'par_moves', name: 'Par Score' });
+      gameProgression.achievements.set('par_moves', {
+        id: 'par_moves',
+        name: 'Par Score',
+      });
     });
 
     it('should increment moves', () => {
@@ -134,9 +170,7 @@ describe('GameProgression', () => {
       const gameData = {
         progression: {
           winCondition: { type: 'flag', flag: 'artifactFound', value: true },
-          failureConditions: [
-            { type: 'flag', flag: 'poisoned', value: true },
-          ],
+          failureConditions: [{ type: 'flag', flag: 'poisoned', value: true }],
         },
         endings: [
           {
@@ -163,8 +197,8 @@ describe('GameProgression', () => {
     });
 
     it('should detect game completion', () => {
-      mockEventManager.checkCondition.mockImplementation((condition) => 
-        condition.flag === 'artifactFound'
+      mockEventManager.checkCondition.mockImplementation(
+        (condition) => condition.flag === 'artifactFound'
       );
 
       const result = gameProgression.checkGameCompletion();
@@ -174,8 +208,8 @@ describe('GameProgression', () => {
     });
 
     it('should detect failure conditions', () => {
-      mockEventManager.checkCondition.mockImplementation((condition) => 
-        condition.flag === 'poisoned'
+      mockEventManager.checkCondition.mockImplementation(
+        (condition) => condition.flag === 'poisoned'
       );
 
       const result = gameProgression.checkGameCompletion();
@@ -186,8 +220,8 @@ describe('GameProgression', () => {
     });
 
     it('should determine best ending based on conditions', () => {
-      mockEventManager.checkCondition.mockImplementation((condition) => 
-        condition.flag === 'artifactFound'
+      mockEventManager.checkCondition.mockImplementation(
+        (condition) => condition.flag === 'artifactFound'
       );
       gameProgression.score = 250;
 
@@ -197,8 +231,8 @@ describe('GameProgression', () => {
     });
 
     it('should prioritize higher priority endings', () => {
-      mockEventManager.checkCondition.mockImplementation((condition) => 
-        condition.flag === 'artifactFound'
+      mockEventManager.checkCondition.mockImplementation(
+        (condition) => condition.flag === 'artifactFound'
       );
       gameProgression.score = 450;
       gameProgression.unlockedAchievements.add('no_deaths');
@@ -262,7 +296,9 @@ describe('GameProgression', () => {
         gameProgression.unlockAchievement(`ach_${i}`);
       }
 
-      expect(gameProgression.unlockedAchievements.has('achievement_hunter')).toBe(true);
+      expect(
+        gameProgression.unlockedAchievements.has('achievement_hunter')
+      ).toBe(true);
     });
   });
 
@@ -283,7 +319,7 @@ describe('GameProgression', () => {
 
     it('should restore from save points', () => {
       gameProgression.createSavePoint('checkpoint1');
-      
+
       // Change state
       gameProgression.score = 200;
       gameProgression.moves = 100;
@@ -335,15 +371,15 @@ describe('GameProgression', () => {
   describe('statistics tracking', () => {
     beforeEach(() => {
       gameProgression.initialize({ progression: { totalRooms: 10 } });
-      
+
       // Simulate event handlers
       const handlers = {};
       mockEventManager.on.mockImplementation((event, handler) => {
         handlers[event] = handler;
       });
-      
+
       gameProgression.initialize({});
-      
+
       // Trigger events manually
       handlers.enterRoom({ room: 'room1' });
       handlers.enterRoom({ room: 'room2' });
@@ -367,9 +403,18 @@ describe('GameProgression', () => {
       gameProgression.score = 250;
       gameProgression.maxScore = 500;
       gameProgression.progressionData = { totalRooms: 10 };
-      gameProgression.statistics.roomsVisited = new Set(['r1', 'r2', 'r3', 'r4', 'r5']);
+      gameProgression.statistics.roomsVisited = new Set([
+        'r1',
+        'r2',
+        'r3',
+        'r4',
+        'r5',
+      ]);
       gameProgression.achievements = new Map([
-        ['a1', {}], ['a2', {}], ['a3', {}], ['a4', {}]
+        ['a1', {}],
+        ['a2', {}],
+        ['a3', {}],
+        ['a4', {}],
       ]);
       gameProgression.unlockedAchievements = new Set(['a1', 'a2']);
 
@@ -385,7 +430,10 @@ describe('GameProgression', () => {
       gameProgression.score = 150;
       gameProgression.maxScore = 300;
       gameProgression.moves = 75;
-      gameProgression.achievements = new Map([['a1', {}], ['a2', {}]]);
+      gameProgression.achievements = new Map([
+        ['a1', {}],
+        ['a2', {}],
+      ]);
       gameProgression.unlockedAchievements = new Set(['a1']);
 
       const status = gameProgression.getProgressionStatus();
@@ -435,7 +483,9 @@ describe('GameProgression', () => {
     it('should trigger game ending', () => {
       gameProgression.triggerEnding('golden');
 
-      expect(gameProgression.unlockedAchievements.has('golden_achievement')).toBe(true);
+      expect(
+        gameProgression.unlockedAchievements.has('golden_achievement')
+      ).toBe(true);
       expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
         'gameEnding',
         expect.objectContaining({

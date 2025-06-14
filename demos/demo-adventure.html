@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium - Demo Adventure</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <style>
+      #demo-info {
+        background-color: #1a1a1a;
+        color: #0ff;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 640px;
+        border: 2px solid #0ff;
+        font-family: monospace;
+      }
+
+      #demo-info h2 {
+        color: #ff0;
+        margin-bottom: 10px;
+      }
+
+      #demo-info ul {
+        margin-left: 20px;
+      }
+
+      #demo-info code {
+        background-color: #333;
+        padding: 2px 5px;
+        color: #0f0;
+      }
+
+      .section {
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="demo-info">
+      <h2>🎮 Somnium Demo Adventure - The Enchanted Manor</h2>
+
+      <div class="section">
+        <h3>🏰 Story</h3>
+        <p>
+          You are an adventurer who has discovered an abandoned manor on the
+          edge of the Dark Forest. Legend speaks of a magical artifact hidden
+          within, but the manor is protected by puzzles and enchantments.
+        </p>
+      </div>
+
+      <div class="section">
+        <h3>🎯 Features Demonstrated</h3>
+        <ul>
+          <li>
+            <strong>Parser System:</strong> Natural language commands with
+            synonyms
+          </li>
+          <li>
+            <strong>Inventory:</strong> Weight/size limits, containers, worn
+            items
+          </li>
+          <li><strong>Puzzles:</strong> Multi-step puzzles with hints</li>
+          <li><strong>NPCs:</strong> Dialogue trees, trading, relationships</li>
+          <li>
+            <strong>Graphics:</strong> Vector-based scenes with animations
+          </li>
+          <li><strong>Sound:</strong> Dynamic music and sound effects</li>
+          <li>
+            <strong>Progression:</strong> Scoring, achievements, multiple
+            endings
+          </li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>📝 Try These Commands</h3>
+        <ul>
+          <li>
+            <code>look</code> or <code>l</code> - Examine your surroundings
+          </li>
+          <li>
+            <code>inventory</code> or <code>i</code> - Check what you're
+            carrying
+          </li>
+          <li>
+            <code>examine [object]</code> or <code>x [object]</code> - Look
+            closely at something
+          </li>
+          <li><code>take [item]</code> - Pick up an object</li>
+          <li><code>use [item] on [target]</code> - Interact with objects</li>
+          <li><code>talk to [character]</code> - Start conversations</li>
+          <li>
+            <code>go [direction]</code> or just <code>[direction]</code> - Move
+            around
+          </li>
+          <li><code>save [name]</code> - Save your progress</li>
+          <li><code>help</code> - See all available commands</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h3>🔮 Puzzle Hints</h3>
+        <ul>
+          <li>The front door requires a special key...</li>
+          <li>The ghost might help if you bring the right item</li>
+          <li>Some containers hold important items</li>
+          <li>Pay attention to NPC dialogue for clues</li>
+        </ul>
+      </div>
+
+      <button
+        id="start-demo"
+        style="
+          font-size: 20px;
+          padding: 10px 20px;
+          background: #0f0;
+          color: #000;
+          border: none;
+          cursor: pointer;
+        "
+      >
+        ▶️ Start Demo Adventure
+      </button>
+    </div>
+
+    <div id="game-container" style="display: none">
+      <div id="menu-bar">
+        <div class="menu-item" data-menu="file">File</div>
+        <div class="menu-item" data-menu="game">Game</div>
+        <div class="menu-item" data-menu="options">Options</div>
+        <div class="menu-item" data-menu="help">Help</div>
+      </div>
+
+      <div id="game-screen">
+        <canvas id="game-canvas" width="320" height="200"></canvas>
+        <div id="text-window">
+          <div id="text-content"></div>
+          <div id="input-container">
+            <span id="input-prompt">&gt;</span>
+            <input type="text" id="text-input" autofocus />
+          </div>
+        </div>
+      </div>
+
+      <div id="status-bar">
+        <span id="score">Score: 0</span>
+        <span id="room-name">Loading...</span>
+        <span id="inventory-count">Items: 0</span>
+      </div>
+    </div>
+
+    <script type="module">
+      import { GameManager } from '../js/GameManager.js';
+      import { generateDemoWorld } from '../js/demo-world.js';
+
+      const startButton = document.getElementById('start-demo');
+      const demoInfo = document.getElementById('demo-info');
+      const gameContainer = document.getElementById('game-container');
+      const textContent = document.getElementById('text-content');
+      const textInput = document.getElementById('text-input');
+      const scoreDisplay = document.getElementById('score');
+      const roomDisplay = document.getElementById('room-name');
+      const inventoryDisplay = document.getElementById('inventory-count');
+
+      let gameManager;
+
+      startButton.addEventListener('click', async () => {
+        demoInfo.style.display = 'none';
+        gameContainer.style.display = 'block';
+
+        // Initialize game
+        gameManager = new GameManager();
+
+        // Generate demo world data
+        const demoWorld = generateDemoWorld();
+
+        // Start game with demo data
+        await gameManager.startNewGame('The Enchanted Manor', demoWorld);
+
+        // Display initial room description
+        const initialCommand = gameManager.commandExecutor.executeCommand({
+          verb: 'look',
+        });
+        displayMessage(initialCommand.message);
+
+        updateStatus();
+      });
+
+      // Handle text input
+      textInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.target.value.trim()) {
+          const command = e.target.value.trim();
+          e.target.value = '';
+
+          // Display command
+          displayMessage(`> ${command}`, 'command');
+
+          // Parse and execute command
+          const parsed = gameManager.parser.parse(command);
+          const result = gameManager.commandExecutor.executeCommand(parsed);
+
+          // Display result
+          displayMessage(result.message, result.success ? 'response' : 'error');
+
+          // Handle special results
+          if (result.shouldRestart) {
+            location.reload();
+          }
+
+          // Update status
+          updateStatus();
+
+          // Check for game completion
+          if (gameManager.gameProgression) {
+            const completion =
+              gameManager.gameProgression.checkGameCompletion();
+            if (completion.completed) {
+              displayMessage(
+                `\\n🎉 Congratulations! ${completion.message}`,
+                'success'
+              );
+              displayMessage(
+                `Final Score: ${gameManager.gameProgression.score}`,
+                'success'
+              );
+            }
+          }
+        }
+      });
+
+      function displayMessage(message, className = '') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = className;
+        messageDiv.innerHTML = message.replace(/\\n/g, '<br>');
+        textContent.appendChild(messageDiv);
+
+        // Auto-scroll to bottom
+        textContent.scrollTop = textContent.scrollHeight;
+
+        // Limit message history
+        while (textContent.children.length > 100) {
+          textContent.removeChild(textContent.firstChild);
+        }
+      }
+
+      function updateStatus() {
+        if (gameManager.gameProgression) {
+          scoreDisplay.textContent = `Score: ${gameManager.gameProgression.score}`;
+        }
+
+        const currentRoom = gameManager.gameState.getRoom(
+          gameManager.gameState.currentRoomId
+        );
+        if (currentRoom) {
+          roomDisplay.textContent = currentRoom.name;
+        }
+
+        if (gameManager.inventory) {
+          const itemCount = gameManager.inventory.listItems().length;
+          const weight = gameManager.inventory.getWeight();
+          inventoryDisplay.textContent = `Items: ${itemCount} (${weight}kg)`;
+        }
+      }
+    </script>
+  </body>
+</html>

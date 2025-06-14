@@ -366,16 +366,18 @@ export class EventManager {
     // Build context for AI
     const context = {
       currentRoom: this.gameState.getCurrentRoom(),
-      inventory: this.gameState.getInventory(),
+      inventory: this.gameState.inventory,
       flags: this.gameState.flags,
       recentEvents: [], // TODO: Track recent events
     };
 
     // Get AI response
-    const response = await this.aiManager.getDynamicResponse(context, command);
+    const response = await this.aiManager.processCommand(command, context);
 
     // Display response
-    this.showMessage(response);
+    if (response && response.message) {
+      this.showMessage(response.message);
+    }
   }
 
   /**

@@ -158,7 +158,8 @@ export class PuzzleSystem {
     if (state.completed) {
       return {
         success: false,
-        message: puzzle.completedMessage || "You've already solved this puzzle.",
+        message:
+          puzzle.completedMessage || "You've already solved this puzzle.",
       };
     }
 
@@ -182,7 +183,7 @@ export class PuzzleSystem {
 
       return {
         success: false,
-        message: puzzle.failureMessage || 'That doesn\'t work.',
+        message: puzzle.failureMessage || "That doesn't work.",
         hint: state.attempts >= 3 ? this.getHint(puzzleId) : null,
       };
     }
@@ -229,14 +230,16 @@ export class PuzzleSystem {
       return {
         success: true,
         message:
-          currentStep.successMessage || `Good! ${nextStep.hint || 'Keep going...'}`,
+          currentStep.successMessage ||
+          `Good! ${nextStep.hint || 'Keep going...'}`,
         nextHint: nextStep.hint,
         progress: `${progress.currentStep}/${puzzle.steps.length}`,
       };
     } else {
       return {
         success: false,
-        message: currentStep.failureMessage || "That doesn't work for this step.",
+        message:
+          currentStep.failureMessage || "That doesn't work for this step.",
         hint: this.getStepHint(puzzleId, progress.currentStep),
       };
     }
@@ -385,7 +388,11 @@ export class PuzzleSystem {
         break;
 
       case 'MODIFY_OBJECT':
-        this.gameState.setObjectState(reward.objectId, reward.property, reward.value);
+        this.gameState.setObjectState(
+          reward.objectId,
+          reward.property,
+          reward.value
+        );
         break;
 
       default:

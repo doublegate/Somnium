@@ -1,4 +1,4 @@
-import { PuzzleSystem } from './PuzzleSystem.js';
+import { PuzzleSystem } from '../js/PuzzleSystem.js';
 
 describe('PuzzleSystem', () => {
   let puzzleSystem;
@@ -195,7 +195,11 @@ describe('PuzzleSystem', () => {
               },
               {
                 solution: { verb: 'push', target: 'button3' },
-                reward: { type: 'REVEAL_ITEM', itemId: 'treasure', room: 'room1' },
+                reward: {
+                  type: 'REVEAL_ITEM',
+                  itemId: 'treasure',
+                  room: 'room1',
+                },
               },
             ],
             points: 25,
@@ -295,7 +299,9 @@ describe('PuzzleSystem', () => {
           {
             id: 'resetPuzzle',
             solution: { verb: 'solve' },
-            resetActions: [{ type: 'SET_FLAG', flag: 'puzzleReset', value: true }],
+            resetActions: [
+              { type: 'SET_FLAG', flag: 'puzzleReset', value: true },
+            ],
           },
           {
             id: 'noResetPuzzle',
@@ -394,7 +400,9 @@ describe('PuzzleSystem', () => {
       // Get first hint
       puzzleSystem.attemptPuzzle('hintPuzzle', { verb: 'wrong' });
       puzzleSystem.attemptPuzzle('hintPuzzle', { verb: 'wrong' });
-      const result1 = puzzleSystem.attemptPuzzle('hintPuzzle', { verb: 'wrong' });
+      const result1 = puzzleSystem.attemptPuzzle('hintPuzzle', {
+        verb: 'wrong',
+      });
       expect(result1.hint).toBe('Hint 1');
 
       // Try to get another hint immediately

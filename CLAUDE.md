@@ -13,14 +13,13 @@ The engine follows Sierra's SCI philosophy of complete separation between engine
 - **Engine**: JavaScript modules that interpret game data (analogous to SCI interpreter)
 - **Content**: AI-generated JSON packages containing all game resources (analogous to compiled SCI resources)
 
-### Core Modules (Phase 1 & 2 Complete ✅)
+### Core Modules (Phase 1, 2 & 3 Complete ✅)
 
 **Phase 1 - Core Architecture:**
 
 - **GameManager.js**: Main game loop with fixed timestep, FPS monitoring, pause/resume
 - **AIManager.js**: LLM communication with mock mode for testing, rate limiting, caching
 - **GameState.js**: Event-driven state management with validation, history, and undo
-- **Parser.js**: Natural language parser with vocabulary and synonym support
 - **EventManager.js**: Event system with scripted/dynamic responses and scheduling
 
 **Phase 2 - Graphics and Sound:**
@@ -28,7 +27,17 @@ The engine follows Sierra's SCI philosophy of complete separation between engine
 - **SceneRenderer.js**: Complete vector rendering with EGA palette, 9 dithering patterns, priority buffer
 - **ViewManager.js**: Full sprite animation with VIEW resources, smooth interpolation, effects
 - **SoundManager.js**: Tone.js integration with ADSR envelopes, filters, effects, 16 channels
-- **MusicManager.js**: 128-voice polyphony, GM instruments, dynamic tempo, real-time generation
+
+**Phase 3 - Parser and Game Logic:**
+
+- **Parser.js**: Natural language parser with tokenization, synonyms, abbreviations, pronouns
+- **CommandExecutor.js**: Handles 30+ adventure game verbs with contextual responses
+- **Inventory.js**: Enhanced inventory with weight/size limits, containers, worn items
+- **InteractionSystem.js**: Object interaction matrix for "use X on Y" mechanics
+- **MovementSystem.js**: Advanced movement with pathfinding and animations
+- **PuzzleSystem.js**: Multi-step puzzles with state tracking and hint system
+- **NPCSystem.js**: Dialogue trees, trading, and relationship tracking
+- **GameProgression.js**: Scoring, achievements, and multiple endings
 
 ## Development Commands
 
@@ -110,9 +119,19 @@ The project uses GitHub Actions for continuous integration:
 
 - **Phase 1 (Core Architecture)**: ✅ Complete - All core modules implemented
 - **Phase 2 (Graphics and Sound)**: ✅ Complete - Full rendering and audio systems
-- **Phase 3 (Parser and Game Logic)**: 🚧 Ready to start
-- **Phase 4 (AI Integration)**: Not started
+- **Phase 3 (Parser and Game Logic)**: ✅ Complete - Natural language parser and game mechanics
+- **Phase 4 (AI Integration)**: Ready to start
 - **Phase 5 (Polish and Testing)**: Not started
+
+### Test Coverage
+
+- **Tests**: 305 tests passing ✅
+- **Coverage**: 61.64% overall
+  - Parser: 87.37%
+  - NPCSystem: 81.19%
+  - InteractionSystem: 79.87%
+  - PuzzleSystem: 71.42%
+  - CommandExecutor: 2.57% (needs improvement)
 
 ## Demo Pages
 
@@ -120,6 +139,9 @@ The project uses GitHub Actions for continuous integration:
 - `sprite-demo.html` - Interactive character movement with keyboard controls
 - `sound-demo.html` - Sound effect library and synthesis parameters
 - `music-demo.html` - Real-time music generation and instrument testing
+- `parser-demo.html` - Natural language parser with demo world
+- `game-world-demo.html` - Interactive demo of puzzle and NPC systems
+- `demo-adventure.html` - Complete playable adventure "The Enchanted Manor"
 
 ## Reference Documentation
 

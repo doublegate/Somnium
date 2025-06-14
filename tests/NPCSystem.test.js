@@ -1,4 +1,4 @@
-import { NPCSystem } from './NPCSystem.js';
+import { NPCSystem } from '../js/NPCSystem.js';
 
 describe('NPCSystem', () => {
   let npcSystem;
@@ -30,7 +30,11 @@ describe('NPCSystem', () => {
       triggerEvent: jest.fn(),
     };
 
-    npcSystem = new NPCSystem(mockGameState, mockMovementSystem, mockEventManager);
+    npcSystem = new NPCSystem(
+      mockGameState,
+      mockMovementSystem,
+      mockEventManager
+    );
   });
 
   describe('initialization', () => {
@@ -60,9 +64,12 @@ describe('NPCSystem', () => {
       expect(npcSystem.npcs.size).toBe(2);
       expect(npcSystem.npcStates.size).toBe(2);
       expect(npcSystem.relationships.get('merchant')).toBe(20);
-      expect(mockMovementSystem.setNPCMovement).toHaveBeenCalledWith('merchant', {
-        type: 'stationary',
-      });
+      expect(mockMovementSystem.setNPCMovement).toHaveBeenCalledWith(
+        'merchant',
+        {
+          type: 'stationary',
+        }
+      );
     });
   });
 
@@ -104,7 +111,13 @@ describe('NPCSystem', () => {
                         text: 'Thank you for the information.',
                         response: 'Be careful out there.',
                         endsConversation: true,
-                        effects: [{ type: 'SET_FLAG', flag: 'knowsArtifactLocation', value: true }],
+                        effects: [
+                          {
+                            type: 'SET_FLAG',
+                            flag: 'knowsArtifactLocation',
+                            value: true,
+                          },
+                        ],
                       },
                     ],
                   },
@@ -141,8 +154,12 @@ describe('NPCSystem', () => {
       const result = npcSystem.selectDialogueOption('wizard', 0); // "I seek the ancient artifact"
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe('Ah, the artifact! A dangerous quest indeed.');
-      expect(result.npcResponse).toBe('The artifact lies beyond the dark forest.');
+      expect(result.message).toBe(
+        'Ah, the artifact! A dangerous quest indeed.'
+      );
+      expect(result.npcResponse).toBe(
+        'The artifact lies beyond the dark forest.'
+      );
       expect(result.conversationEnded).toBe(false);
     });
 
@@ -259,7 +276,9 @@ describe('NPCSystem', () => {
       const result = npcSystem.startTrading('merchant');
 
       expect(result.success).toBe(false);
-      expect(result.message).toBe("Trader Joe doesn't trust you enough to trade.");
+      expect(result.message).toBe(
+        "Trader Joe doesn't trust you enough to trade."
+      );
     });
 
     it('should execute valid trades', () => {
@@ -378,18 +397,14 @@ describe('NPCSystem', () => {
                 trigger: 'insult',
                 message: 'How dare you!',
                 emotion: 'angry',
-                effects: [
-                  { type: 'CHANGE_RELATIONSHIP', amount: -20 },
-                ],
+                effects: [{ type: 'CHANGE_RELATIONSHIP', amount: -20 }],
               },
               {
                 trigger: 'gift',
                 message: 'Thank you so much!',
                 emotion: 'happy',
                 condition: { type: 'hasItem', itemId: 'flower' },
-                effects: [
-                  { type: 'CHANGE_RELATIONSHIP', amount: 15 },
-                ],
+                effects: [{ type: 'CHANGE_RELATIONSHIP', amount: 15 }],
               },
             ],
           },

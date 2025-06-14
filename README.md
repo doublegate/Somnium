@@ -81,7 +81,31 @@ npx http-server -c-1 .
 - The parser understands many synonyms (e.g., "get" = "take" = "grab")
 - If stuck, try exploring other areas or talking to characters
 
+## Try the Demos
+
+Explore Somnium's features through interactive demonstrations:
+
+- **Complete Adventure**: Play "The Enchanted Manor" demo - `http://localhost:8000/demos/demo-adventure.html`
+- **Parser Demo**: Test the natural language parser - `http://localhost:8000/demos/parser-demo.html`
+- **Graphics Demo**: See the vector graphics engine - `http://localhost:8000/demos/demo-graphics.html`
+- **Sound Demo**: Experience retro sound synthesis - `http://localhost:8000/demos/sound-demo.html`
+
+See [Running Demos](docs/run-demos.md) for the complete list and instructions.
+
 ## Development
+
+### Testing
+
+Somnium includes a comprehensive test suite with 300+ tests covering all major systems:
+
+- **Unit Tests**: Individual module functionality
+- **Integration Tests**: System interactions
+- **Parser Tests**: Natural language processing
+- **Game Logic Tests**: Puzzles, NPCs, progression
+
+Run tests with: `npm test`
+
+See [Test Documentation](tests/README.md) for details.
 
 ### Project Structure
 
@@ -94,8 +118,10 @@ Somnium/
 │   ├── Parser.js       # Text input processing
 │   └── ...            # Other modules
 ├── css/               # Styles
+├── demos/             # Interactive demonstrations
 ├── docs/              # Documentation
 ├── ref_docs/          # Design documents
+├── tests/             # Test suites
 └── to-dos/            # Project tracking
 ```
 
@@ -103,11 +129,25 @@ Somnium/
 
 Currently, Somnium runs directly from source with no build step required. Simply serve the files from a web server.
 
-Future versions may include:
+### Testing
 
-- TypeScript migration
-- Module bundling with Webpack/Parcel
-- Automated testing with Jest
+The project includes a comprehensive test suite using Jest:
+
+```bash
+# Install dependencies
+npm install
+
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+See [Test Suite Documentation](tests/README.md) for details on writing and running tests.
 
 ### Contributing
 
@@ -126,6 +166,7 @@ Areas where we especially need help:
 - [Architecture Overview](docs/architecture-overview.md) - System design and modules
 - [API Reference](docs/module-api-reference.md) - Detailed module documentation
 - [Implementation Roadmap](docs/implementation-roadmap.md) - Development phases
+- [Running Demos](docs/run-demos.md) - How to run interactive demonstrations
 
 ## License
 
@@ -153,7 +194,7 @@ Somnium is currently in active development with significant progress:
 - **Phase 2 (Graphics and Sound Systems)** - ✅ Complete (100%)
 - **Phase 3 (Parser and Game Logic)** - ✅ Complete (100%)
   - Parser system - ✅ Complete
-  - Command system - ✅ Complete  
+  - Command system - ✅ Complete
   - Game mechanics - ✅ Complete
   - Game world logic - ✅ Complete
   - Testing & polish - ✅ Complete
@@ -162,7 +203,7 @@ Somnium is currently in active development with significant progress:
 
 - **Test Suite**: All 305 tests passing ✅
 - **Code Coverage**: 61.64% overall (parser 87%, NPCs 81%, puzzles 71%)
-- **Working Demos**: 
+- **Working Demos**:
   - Graphics primitives and sprite animation
   - Music synthesis and sound effects
   - Natural language parser interface
