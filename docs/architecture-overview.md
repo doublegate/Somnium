@@ -31,12 +31,12 @@ Somnium follows the Sierra Creative Interpreter (SCI) philosophy: complete separ
 │                    Engine Modules                           │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
 │  │  Parser  │ │  Event   │ │  Scene   │ │   View   │        │
-│  │          │ │ Manager  │ │ Renderer │ │ Manager  │        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
+│  │    ✅    │ │ Manager  │ │ Renderer │ │ Manager  │        │
+│  └──────────┘ └──────────┘ └────✅────┘ └────✅────┘        │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │  Sound   │ │   Game   │ │    AI    │ │  Save/   │        │
-│  │ Manager  │ │  State   │ │ Manager  │ │  Load    │        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
+│  │  Sound   │ │   Game   │ │    AI    │ │ Command  │        │
+│  │ Manager  │ │  State   │ │ Manager  │ │  System  │        │
+│  └────✅────┘ └────✅────┘ └──────────┘ └────✅────┘        │
 ├─────────────────────────────────────────────────────────────┤
 │                    External Services                        │
 │  ┌─────────────────────┐  ┌─────────────────────────┐       │
@@ -122,7 +122,7 @@ Present frame
   - Implement content moderation
   - Manage API rate limiting
 
-### GameState
+### GameState ✅ COMPLETE
 
 - **Owner of**: All mutable game data
 - **Depends on**: None (pure data storage)
@@ -130,61 +130,64 @@ Present frame
   - Store world resources (rooms, items, etc.)
   - Track dynamic state (inventory, flags)
   - Provide query interface for game data
-  - Handle state serialization/deserialization
+  - Handle state validation and events
+  - Support undo/redo with history
 
-### Parser
+### Parser ✅ COMPLETE
 
 - **Owner of**: Natural language processing
 - **Depends on**: GameState (for context)
 - **Key responsibilities**:
   - Tokenize player input
-  - Resolve synonyms and abbreviations
-  - Handle pronouns with context
+  - Resolve synonyms and abbreviations (150+ verbs)
+  - Handle pronouns with context (it, them, him, her)
   - Structure commands for execution
+  - Support multi-word nouns and complex phrases
 
-### EventManager
+### EventManager & Command System ✅ COMPLETE
 
 - **Owner of**: Game logic execution
 - **Depends on**: GameState, AIManager
 - **Key responsibilities**:
   - Execute scripted events from JSON
-  - Evaluate conditional logic
+  - Command registration and execution
+  - Pre/post execution hooks
   - Route unscripted actions to AI
   - Manage timed events queue
   - Update game state from actions
 
-### SceneRenderer
+### SceneRenderer ✅ COMPLETE
 
 - **Owner of**: Static background rendering
 - **Depends on**: None
 - **Key responsibilities**:
-  - Draw vector primitives
-  - Implement EGA palette
-  - Handle dithering patterns
+  - Draw vector primitives (all types implemented)
+  - Implement EGA palette (16 colors)
+  - Handle dithering patterns (9 patterns)
   - Maintain priority/depth system
-  - Optimize canvas operations
+  - Optimize canvas operations with caching
 
-### ViewManager
+### ViewManager ✅ COMPLETE
 
 - **Owner of**: Sprite animation and movement
 - **Depends on**: SceneRenderer (for layering)
 - **Key responsibilities**:
-  - Manage sprite animations
-  - Handle character movement
-  - Implement animation loops
+  - Manage sprite animations with interpolation
+  - Handle character movement (smooth and grid-based)
+  - Implement animation loops with timing
   - Coordinate with priority system
-  - Update sprite positions
+  - Update sprite positions with collision detection
 
-### SoundManager
+### SoundManager ✅ COMPLETE
 
 - **Owner of**: Audio playback
 - **Depends on**: Tone.js library
 - **Key responsibilities**:
-  - Generate music from descriptions
-  - Play ambient sounds
-  - Trigger sound effects
-  - Manage volume settings
-  - Handle audio context
+  - Generate music from descriptions (128 voices)
+  - Play ambient sounds (16 channels)
+  - Trigger sound effects with ADSR envelopes
+  - Manage volume settings (master/part)
+  - Handle audio context and scheduling
 
 ## Key Design Patterns
 
@@ -256,14 +259,14 @@ Central GameState ensures consistency:
 
 2. **New Verb Commands**
 
-   - Add to Parser vocabulary
-   - Define synonyms in configuration
+   - Add to Parser vocabulary (currently 150+ verbs)
+   - Define synonyms in VocabularySystem
    - Update help documentation
 
 3. **New Event Actions**
 
    - Add to EventManager.executeAction
-   - Update TypeScript/JSDoc types
+   - Register with CommandSystem
    - Document in event action list
 
 4. **New Sound Types**
@@ -304,11 +307,21 @@ Each module should be testable in isolation:
 - Test public APIs, not implementation
 - Achieve >80% code coverage
 
+### Current Test Coverage (169 tests passing)
+
+- Parser: 48 tests (vocabulary, pronouns, commands)
+- SceneRenderer: 38 tests (primitives, dithering, layers)
+- SoundManager: 22 tests (synthesis, scheduling, channels)
+- GameState: 20 tests (validation, events, history)
+- CommandSystem: 15 tests (execution, hooks, errors)
+- EventManager: 12 tests (scheduling, conditions)
+- Other modules: 14 tests
+
 ### Integration Test Points
 
 Critical paths that must be tested together:
 
-- Parser → EventManager → GameState
+- Parser → CommandSystem → GameState
 - AIManager → GameState → Renderer
 - Save → Serialize → Deserialize → Load
 

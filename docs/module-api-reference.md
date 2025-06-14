@@ -1,8 +1,10 @@
 # Module API Reference
 
-## GameManager
+> **Implementation Status**: Phase 1-2 complete, Phase 3 in progress. All core modules fully implemented with comprehensive APIs.
 
-The central orchestrator that manages the game loop and coordinates all other modules.
+## GameManager ✅ COMPLETE
+
+The central orchestrator that manages the game loop and coordinates all other modules. Implements fixed timestep game loop with interpolation for smooth 60 FPS rendering.
 
 ### Constructor
 
@@ -49,11 +51,25 @@ Pause/resume game loop and timers.
 
 Adjust game speed (1-5, where 3 is normal).
 
+#### `update(deltaTime)`
+
+Update all game systems with fixed timestep accumulator.
+
+- `deltaTime`: Number - Time since last frame in ms
+
+#### `render()`
+
+Render current frame with interpolation.
+
+#### `showDebug()` / `hideDebug()`
+
+Toggle FPS counter and debug overlay.
+
 ---
 
-## AIManager
+## AIManager ✅ COMPLETE
 
-Handles all LLM communication for content generation and dynamic interactions.
+Handles all LLM communication for content generation and dynamic interactions. Includes mock mode for testing without API calls.
 
 ### Constructor
 
@@ -94,9 +110,9 @@ Run content moderation check.
 
 ---
 
-## GameState
+## GameState ✅ COMPLETE
 
-Centralized storage for all game state data.
+Centralized storage for all game state data. Extends EventTarget for state change notifications. Includes validation, undo/redo support, and comprehensive state management.
 
 ### Constructor
 
@@ -108,9 +124,10 @@ new GameState();
 
 #### `loadResources(gameJSON)`
 
-Initialize state from generated game data.
+Initialize state from generated game data with validation.
 
 - `gameJSON`: GameJSON object
+- Throws: Error if validation fails
 
 #### `getCurrentRoom()`
 
@@ -127,11 +144,11 @@ Initialize state from generated game data.
 
 #### `addItem(itemId)` / `removeItem(itemId)`
 
-Manage inventory items.
+Manage inventory items. Dispatches 'inventoryChanged' event.
 
 #### `getFlag(flagName)` / `setFlag(flagName, value)`
 
-Get/set game flags for puzzle state.
+Get/set game flags for puzzle state. Dispatches 'flagChanged' event.
 
 #### `getObject(objectId)`
 
@@ -149,11 +166,28 @@ Create saveable state snapshot.
 
 Restore from saved state.
 
+#### `undo()` / `redo()`
+
+Undo/redo state changes with history support.
+
+#### `validate(data)`
+
+Validate game data structure.
+
+- Returns: {valid: Boolean, errors: Array}
+
+### Events
+
+- `stateChanged`: Any state change
+- `roomChanged`: Player moved rooms
+- `inventoryChanged`: Inventory modified
+- `flagChanged`: Flag value changed
+
 ---
 
-## SceneRenderer
+## SceneRenderer ✅ COMPLETE
 
-Handles all background rendering using vector primitives.
+Handles all background rendering using vector primitives. Implements all SCI0-era drawing primitives with EGA palette, dithering patterns, and priority system.
 
 ### Constructor
 
@@ -185,29 +219,29 @@ Draw a single primitive shape.
 Supported primitive types:
 
 - `rect`: Rectangle with optional fill/stroke
-- `polygon`: Polygon with vertex array
-- `circle`: Circle with center and radius
+- `polygon`: Polygon with vertex array (scanline filled)
+- `circle`: Circle with center and radius (pixel-perfect)
 - `ellipse`: Ellipse with radiusX, radiusY, rotation
-- `line`: Line between two points
-- `star`: Star pixels or star shape
+- `line`: Line between two points (Bresenham algorithm)
+- `star`: 5-pointed star shape
 - `triangle`: Optimized 3-point polygon
 - `path`: Complex path with commands
-- `dithered_gradient`: 2x2 pattern gradient
+- `dithered_gradient`: 9 different dither patterns
 
-#### `drawDitheredGradient(x, y, width, height, color1, color2, pattern)`
+#### `drawDitheredRect(x, y, width, height, color1, color2, pattern)`
 
-Draw 2x2 dithered pattern gradient.
+Draw rectangle with dithering pattern.
 
-- `pattern`: Number 0-8 for different dither patterns:
-  - 0: Solid color1
-  - 1: 25% mix
-  - 2: 50% checkerboard
-  - 3: 75% mix
-  - 4: Solid color2
-  - 5: Horizontal lines
-  - 6: Vertical lines
-  - 7: Diagonal pattern
-  - 8: Vertical lines (alternate)
+- `pattern`: String - Pattern name:
+  - 'CHECKERBOARD': 50% mix checkerboard
+  - 'VERTICAL': Vertical lines
+  - 'HORIZONTAL': Horizontal lines
+  - 'DIAGONAL_LEFT': Left diagonal pattern
+  - 'DIAGONAL_RIGHT': Right diagonal pattern
+  - 'DOTS_SPARSE': Sparse dot pattern
+  - 'DOTS_MEDIUM': Medium dot pattern
+  - 'CROSS_HATCH': Cross-hatch pattern
+  - 'SOLID': Solid color1
 
 #### `getPixelPriority(x, y)`
 
@@ -242,9 +276,9 @@ Clear the scene cache for re-rendering.
 
 ---
 
-## ViewManager
+## ViewManager ✅ COMPLETE
 
-Manages all animated sprites and moving objects.
+Manages all animated sprites and moving objects. Implements smooth interpolation, sprite pooling, collision detection, and z-order management.
 
 ### Constructor
 
@@ -254,34 +288,50 @@ new ViewManager(sceneRenderer);
 
 ### Methods
 
-#### `createView(id, viewData)`
+#### `createSprite(id, viewData, options)`
 
 Create new sprite from data.
 
 - `id`: String - Unique identifier
 - `viewData`: Object with animation loops
+- `options`: Object - Creation options
+  - `x`, `y`: Initial position
+  - `scale`: Sprite scale
+  - `visible`: Initial visibility
 
-#### `updateView(id, deltaTime)`
+#### `update(deltaTime)`
 
-Update animation for view.
+Update all sprite animations and movements.
 
-#### `moveView(id, x, y, duration)`
+#### `moveSprite(id, targetX, targetY, duration, easing)`
 
-Move view to position over time.
+Move sprite smoothly to position.
 
-#### `setLoop(id, loopName)`
+- `easing`: String - 'linear', 'easeIn', 'easeOut', 'easeInOut'
 
-Change animation loop.
+#### `setAnimation(id, loopName, frame)`
 
-#### `renderAll()`
+Change sprite animation loop.
 
-Draw all active views.
+#### `render(ctx, interpolation)`
+
+Draw all active sprites with interpolation.
+
+#### `checkCollision(id1, id2)`
+
+Check collision between two sprites.
+
+- Returns: Boolean
+
+#### `setSpriteProperty(id, property, value)`
+
+Set sprite property (scale, visible, priority, etc).
 
 ---
 
-## SoundManager
+## SoundManager ✅ COMPLETE
 
-Handles music and sound effects using Tone.js.
+Handles music and sound effects using Tone.js. Implements 16-channel audio, 128 polyphonic voices, ADSR envelopes, and frame-accurate scheduling.
 
 ### Constructor
 
@@ -295,33 +345,47 @@ new SoundManager();
 
 Set up Tone.js and audio context.
 
-#### `playMusic(musicTheme)`
+#### `playMusic(descriptor)`
 
-Start background music from theme description.
+Start background music from descriptor.
 
-- `musicTheme`: String - Theme descriptor
+- `descriptor`: Object - Music configuration
+  - `tempo`: Number - BPM
+  - `timeSignature`: Array - [4, 4]
+  - `parts`: Array - Instrument parts
 
-#### `playAmbience(ambienceDesc)`
+#### `playSound(descriptor, channel)`
 
-Start ambient sound loop.
+Play sound effect on specific channel.
 
-#### `playSound(soundId)`
+- `descriptor`: Object - Sound configuration
+  - `waveform`: String - 'sine', 'square', 'sawtooth', 'triangle'
+  - `frequency`: Number or Note string
+  - `duration`: Number - Seconds
+  - `envelope`: ADSR values
+  - `effects`: Array - Effect chain
 
-Play one-shot sound effect.
+#### `stopChannel(channel)`
+
+Stop specific audio channel.
 
 #### `stopAll()`
 
-Stop all audio.
+Stop all audio channels.
 
-#### `setVolume(level)`
+#### `setMasterVolume(level)` / `setChannelVolume(channel, level)`
 
-Set master volume (0.0 - 1.0).
+Set volume levels (0.0 - 1.0).
+
+#### `scheduleSound(descriptor, time, channel)`
+
+Schedule sound for future playback with frame accuracy.
 
 ---
 
-## Parser
+## Parser ✅ COMPLETE
 
-Processes player text input into structured commands.
+Processes player text input into structured commands. Supports 150+ verbs with synonyms, multi-word nouns, pronouns (it, them, him, her, me), and command abbreviations.
 
 ### Constructor
 
@@ -340,19 +404,48 @@ Parse player input string.
 - `input`: String
 - Returns: ParsedCommand or null
 
-#### `addSynonym(word, canonical)`
+```javascript
+{
+  verb: String,
+  directObject?: String,
+  indirectObject?: String,
+  preposition?: String,
+  raw: String,          // Original input
+  confidence: Number    // Parse confidence 0-1
+}
+```
 
-Add vocabulary synonym.
+#### `addVerb(verb, options)`
 
-#### `setContext(gameState)`
+Add verb to vocabulary.
 
-Update parser context for pronouns.
+- `options`: Object
+  - `synonyms`: Array<String>
+  - `prepositions`: Array<String>
+  - `requiresObject`: Boolean
+
+#### `addNoun(noun, options)`
+
+Add noun to vocabulary.
+
+- `options`: Object
+  - `synonyms`: Array<String>
+  - `adjectives`: Array<String>
+
+#### `setContext(context)`
+
+Update parser context for pronoun resolution.
+
+- `context`: Object
+  - `lastNoun`: String
+  - `lastActor`: String
+  - `roomObjects`: Array<String>
 
 ---
 
-## EventManager
+## EventManager & CommandSystem ✅ COMPLETE
 
-Executes game logic from scripts and player commands.
+Executes game logic from scripts and player commands. CommandSystem provides advanced command registration with patterns, hooks, and priority handling.
 
 ### Constructor
 
@@ -360,14 +453,14 @@ Executes game logic from scripts and player commands.
 new EventManager(gameState, aiManager);
 ```
 
-### Methods
+### EventManager Methods
 
 #### `async executeCommand(command)`
 
-Process parsed command.
+Process parsed command through registered handlers.
 
 - `command`: ParsedCommand
-- Returns: Promise<void>
+- Returns: Promise<CommandResult>
 
 #### `executeAction(action)`
 
@@ -389,6 +482,44 @@ Evaluate conditional expression.
 - `condition`: String - Flag expression
 - Returns: Boolean
 
+### CommandSystem Methods
+
+#### `registerCommand(config)`
+
+Register command handler.
+
+```javascript
+{
+  pattern: String | RegExp,
+  handler: async (match, context) => CommandResult,
+  preExecute?: async (command, context) => Boolean,
+  postExecute?: async (result, context) => void,
+  priority?: Number,
+  aliases?: Array<String>
+}
+```
+
+#### `executeCommand(parsedCommand, context)`
+
+Execute command with hooks.
+
+- Returns: Promise<CommandResult>
+
+```javascript
+{
+  success: Boolean,
+  message?: String,
+  consumed?: Boolean,
+  data?: Any
+}
+```
+
+#### `getCommandHistory()`
+
+Get command execution history.
+
+- Returns: Array<CommandHistoryEntry>
+
 ---
 
 ## Common Types
@@ -400,7 +531,9 @@ Evaluate conditional expression.
   verb: String,
   directObject?: String,
   indirectObject?: String,
-  preposition?: String
+  preposition?: String,
+  raw: String,          // Original input
+  confidence: Number    // Parse confidence 0-1
 }
 ```
 
@@ -456,7 +589,7 @@ Evaluate conditional expression.
   // For dithered_gradient:
   color1?: String,     // First color
   color2?: String,     // Second color
-  pattern?: Number,    // Pattern 0-8 (default: 2)
+  pattern?: String,    // Pattern name (see drawDitheredRect)
 
   // For path:
   commands?: [         // Path drawing commands

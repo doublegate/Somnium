@@ -93,13 +93,17 @@
       <h1 style="color: #ff55ff; text-align: center">Parser & Command Demo</h1>
 
       <div class="game-output" id="gameOutput">
-        Welcome to the Parser Demo! ===================================== You
-        are in a simple test environment to try out the natural language parser.
-        Library A dusty old library with towering bookshelves. Exits: north,
-        east You can see: wooden desk, red book, brass key. Try commands like: -
-        look / l - examine desk / x desk - take key / get brass key - inventory
-        / i - go north / n - put lamp on desk - ask about parser
-        =====================================
+        Welcome to the Enhanced Parser & Game Mechanics Demo!
+        ===================================== You are in a simple test
+        environment to try out the natural language parser and new game
+        mechanics including inventory weight limits, containers, wearable items,
+        object interactions, and enhanced movement. Library A dusty old library
+        with towering bookshelves. Exits: north, east You can see: wooden desk,
+        red book, brass key. Try commands like: - look / l - examine desk / x
+        desk - take key / get brass key - inventory / i - go north / n - unlock
+        desk with brass key - open desk - search portrait - wear gloves - put
+        coin in backpack - use lamp on book - push bookshelf - eat bread - read
+        map =====================================
       </div>
 
       <div class="input-container">
@@ -136,6 +140,9 @@
       import { SceneRenderer } from './js/SceneRenderer.js';
       import { SoundManager } from './js/SoundManager.js';
       import { AIManager } from './js/AIManager.js';
+      import { Inventory } from './js/Inventory.js';
+      import { InteractionSystem } from './js/InteractionSystem.js';
+      import { MovementSystem } from './js/MovementSystem.js';
 
       // Initialize components
       const gameState = new GameState();
@@ -145,12 +152,24 @@
       const sceneRenderer = new SceneRenderer(document.createElement('canvas'));
       const soundManager = new SoundManager();
 
+      // Initialize new game mechanics systems
+      const inventory = new Inventory(gameState);
+      const interactionSystem = new InteractionSystem(gameState, eventManager);
+      const movementSystem = new MovementSystem(
+        gameState,
+        viewManager,
+        eventManager
+      );
+
       const commandExecutor = new CommandExecutor(
         gameState,
         eventManager,
         viewManager,
         sceneRenderer,
-        soundManager
+        soundManager,
+        inventory,
+        interactionSystem,
+        movementSystem
       );
 
       // Set up demo game data
@@ -170,6 +189,11 @@
                 description: 'An old oak desk with many drawers.',
                 fixed: true,
                 examined: false,
+                type: 'container',
+                open: false,
+                locked: true,
+                keyId: 'brass_key',
+                contents: ['old_map'],
               },
             },
           },
@@ -179,32 +203,76 @@
             description: 'A long corridor with portraits on the walls.',
             exits: { south: 'library', north: 'entrance', east: 'kitchen' },
             items: [],
+            objects: {
+              portrait: {
+                id: 'portrait',
+                name: 'ancient portrait',
+                description: 'A portrait of a stern-looking nobleman.',
+                fixed: true,
+                searchable: true,
+                hiddenItems: ['silver_key'],
+              },
+            },
           },
           study: {
             id: 'study',
             name: 'Study',
             description: 'A cozy study with a fireplace.',
-            exits: { west: 'library' },
-            items: ['silver_coin'],
+            exits: { west: 'library', north: 'secret_room' },
+            items: ['silver_coin', 'leather_gloves'],
+            exitStates: {
+              north: {
+                locked: false,
+                hidden: true,
+                condition: 'bookshelf_moved',
+                blockedMessage: 'There is no exit to the north.',
+              },
+            },
+            objects: {
+              bookshelf: {
+                id: 'bookshelf',
+                name: 'heavy bookshelf',
+                description: 'A massive bookshelf filled with ancient tomes.',
+                fixed: true,
+                pushable: true,
+                pushMessage:
+                  'With great effort, you push the bookshelf aside, revealing a hidden door!',
+              },
+            },
           },
           kitchen: {
             id: 'kitchen',
             name: 'Kitchen',
             description: 'A well-equipped kitchen.',
             exits: { west: 'hallway' },
-            items: ['bread'],
+            items: ['bread', 'backpack'],
           },
           entrance: {
             id: 'entrance',
             name: 'Entrance Hall',
             description: 'The grand entrance to the manor.',
-            exits: { south: 'hallway' },
+            exits: { south: 'hallway', north: 'outside' },
             exitStates: {
               north: {
                 locked: true,
-                lockedMessage: 'The front door is locked.',
+                keyId: 'silver_key',
+                lockedMessage:
+                  'The heavy front door is locked with a silver lock.',
               },
             },
+          },
+          secret_room: {
+            id: 'secret_room',
+            name: 'Secret Chamber',
+            description: 'A hidden chamber filled with treasures!',
+            exits: { south: 'study' },
+            items: ['golden_crown'],
+          },
+          outside: {
+            id: 'outside',
+            name: 'Manor Grounds',
+            description: 'You have escaped the manor! Victory!',
+            exits: {},
           },
         },
         items: {
@@ -213,6 +281,7 @@
             name: 'brass key',
             description: 'A small brass key with intricate engravings.',
             weight: 1,
+            size: 1,
             points: 5,
           },
           red_book: {
@@ -220,6 +289,7 @@
             name: 'red book',
             description: 'A leather-bound book with mysterious symbols.',
             weight: 3,
+            size: 4,
             readable: true,
             text: 'The book contains ancient spells and incantations.',
           },
@@ -228,12 +298,16 @@
             name: 'lamp',
             description: 'An oil lamp providing warm light.',
             weight: 2,
+            size: 3,
+            usable: true,
+            useMessage: 'The lamp casts a warm glow.',
           },
           silver_coin: {
             id: 'silver_coin',
             name: 'silver coin',
             description: 'An old silver coin with a dragon emblem.',
             weight: 0.5,
+            size: 1,
             points: 10,
           },
           bread: {
@@ -241,14 +315,104 @@
             name: 'loaf of bread',
             description: 'Fresh-baked bread that smells delicious.',
             weight: 1,
+            size: 2,
             edible: true,
+            eatMessage: 'You eat the bread. It tastes delicious!',
+            healthRestore: 10,
+          },
+          backpack: {
+            id: 'backpack',
+            name: 'leather backpack',
+            description: 'A sturdy leather backpack with multiple pockets.',
+            weight: 2,
+            size: 5,
+            type: 'container',
+            capacity: 30,
+            open: true,
+            contents: [],
+          },
+          silver_key: {
+            id: 'silver_key',
+            name: 'silver key',
+            description: 'A polished silver key that looks important.',
+            weight: 1,
+            size: 1,
+            points: 15,
+            hidden: true,
+          },
+          leather_gloves: {
+            id: 'leather_gloves',
+            name: 'leather gloves',
+            description: 'Soft leather gloves that fit perfectly.',
+            weight: 0.5,
+            size: 2,
+            wearable: true,
+            slot: 'hands',
+            wearPoints: 5,
+          },
+          old_map: {
+            id: 'old_map',
+            name: 'old map',
+            description: 'A yellowed map showing the manor layout.',
+            weight: 0.5,
+            size: 1,
+            readable: true,
+            text: 'The map shows a secret passage behind the bookshelf in the study!',
+            readPoints: 10,
+          },
+          golden_crown: {
+            id: 'golden_crown',
+            name: 'golden crown',
+            description: 'A magnificent golden crown encrusted with jewels!',
+            weight: 5,
+            size: 6,
+            points: 50,
+            wearable: true,
+            slot: 'head',
           },
         },
+
+        // Interaction definitions
+        interactions: [
+          {
+            item1: 'lamp',
+            item2: 'red_book',
+            successMessage:
+              'Using the lamp light, you can read hidden text in the book!',
+            effects: [
+              { type: 'setFlag', flag: 'hidden_text_read', value: true },
+              { type: 'changeScore', points: 20 },
+            ],
+            hint: 'Maybe better lighting would help read the book.',
+          },
+        ],
+
+        unlockables: [
+          {
+            lockId: 'desk',
+            keyId: 'brass_key',
+            message: 'The brass key fits perfectly! The desk drawer opens.',
+            unlocksExit: null,
+          },
+          {
+            lockId: 'entrance',
+            keyId: 'silver_key',
+            message:
+              'The silver key turns smoothly in the lock. Freedom awaits!',
+            unlocksExit: { room: 'entrance', direction: 'north' },
+          },
+        ],
       };
 
       // Load game data
       gameState.loadResources(demoGameData);
-      gameState.addToInventory('lamp');
+
+      // Initialize interaction system with game data
+      interactionSystem.initialize(demoGameData);
+
+      // Add initial item to inventory using the new inventory system
+      inventory.addItem('lamp');
+
       parser.setContext(gameState);
 
       // UI elements
@@ -271,13 +435,32 @@
       // Update UI panels
       function updatePanels() {
         // Update inventory
-        const inventory = gameState.getInventory();
-        inventoryPanel.textContent =
-          inventory.length > 0
-            ? inventory
-                .map((id) => gameState.getItem(id)?.name || id)
-                .join(', ')
-            : '(empty)';
+        const items = inventory.getAllItems();
+        if (items.length === 0) {
+          inventoryPanel.textContent = '(empty)';
+        } else {
+          // Show regular items
+          const regularItems = inventory.items.map(
+            (id) => gameState.getItem(id)?.name || id
+          );
+
+          // Show worn items
+          const wornItems = [];
+          for (const [slot, itemId] of Object.entries(inventory.worn)) {
+            if (itemId) {
+              const item = gameState.getItem(itemId);
+              wornItems.push(`${item?.name || itemId} (worn)`);
+            }
+          }
+
+          const allItemNames = [...regularItems, ...wornItems];
+          inventoryPanel.textContent = allItemNames.join(', ');
+
+          // Show weight
+          const weight = inventory.getTotalWeight();
+          const maxWeight = inventory.maxWeight;
+          inventoryPanel.textContent += ` [${weight}/${maxWeight}kg]`;
+        }
 
         // Update score
         scorePanel.textContent = `${gameState.score} / ${gameState.maxScore}`;

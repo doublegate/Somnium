@@ -12,19 +12,28 @@ export class CommandExecutor {
    * @param {ViewManager} viewManager - Sprite/view system
    * @param {SceneRenderer} sceneRenderer - Graphics system
    * @param {SoundManager} soundManager - Audio system
+   * @param {Inventory} inventory - Inventory management system
+   * @param {InteractionSystem} interactionSystem - Object interaction system
+   * @param {MovementSystem} movementSystem - Movement and navigation system
    */
   constructor(
     gameState,
     eventManager,
     viewManager,
     sceneRenderer,
-    soundManager
+    soundManager,
+    inventory,
+    interactionSystem,
+    movementSystem
   ) {
     this.gameState = gameState;
     this.eventManager = eventManager;
     this.viewManager = viewManager;
     this.sceneRenderer = sceneRenderer;
     this.soundManager = soundManager;
+    this.inventory = inventory;
+    this.interactionSystem = interactionSystem;
+    this.movementSystem = movementSystem;
 
     // Command handlers mapped to verbs
     this.handlers = {
@@ -148,42 +157,20 @@ export class CommandExecutor {
   // Movement commands
   async handleGo(command) {
     const direction = command.directObject;
-    const currentRoom = this.gameState.getCurrentRoom();
 
-    if (!currentRoom.exits || !currentRoom.exits[direction]) {
+    // Use MovementSystem for enhanced navigation
+    const result = await this.movementSystem.movePlayer(direction);
+
+    if (!result.success) {
       return {
         success: false,
-        text: "You can't go that way.",
-        audio: 'bump',
+        text: result.message,
+        audio: result.blocked ? 'locked' : 'bump',
       };
     }
 
-    const targetRoomId = currentRoom.exits[direction];
-    const targetRoom = this.gameState.getRoom(targetRoomId);
-
-    if (!targetRoom) {
-      return {
-        success: false,
-        text: 'That way is blocked.',
-        audio: 'bump',
-      };
-    }
-
-    // Check if exit is locked or blocked
-    const exitState = this.gameState.getExitState(currentRoom.id, direction);
-    if (exitState && exitState.locked) {
-      return {
-        success: false,
-        text: exitState.lockedMessage || 'That way is locked.',
-        audio: 'locked',
-      };
-    }
-
-    // Move to new room
-    this.gameState.setCurrentRoom(targetRoomId);
-
-    // Trigger room entry events
-    await this.eventManager.triggerRoomEntry(targetRoomId);
+    // Get the new room
+    const targetRoom = this.gameState.getRoom(result.newRoom);
 
     return {
       success: true,
@@ -248,15 +235,6 @@ export class CommandExecutor {
       };
     }
 
-    // Check if already in inventory
-    if (this.gameState.hasItem(object.id)) {
-      return {
-        success: false,
-        text: 'You already have that.',
-        audio: 'error',
-      };
-    }
-
     // Check if takeable
     if (object.fixed || object.takeable === false) {
       return {
@@ -266,22 +244,26 @@ export class CommandExecutor {
       };
     }
 
-    // Check weight/size limits
-    if (object.weight) {
-      const currentWeight = this.gameState.getInventoryWeight();
-      const maxWeight = this.gameState.getMaxCarryWeight();
-
-      if (currentWeight + object.weight > maxWeight) {
-        return {
-          success: false,
-          text: "You're carrying too much already.",
-          audio: 'error',
-        };
-      }
+    // Use inventory system to check if can add
+    const canAddCheck = this.inventory.canAddItem(object.id);
+    if (!canAddCheck.canAdd) {
+      return {
+        success: false,
+        text: canAddCheck.reason,
+        audio: 'error',
+      };
     }
 
     // Take the object
-    this.gameState.addToInventory(object.id);
+    const added = this.inventory.addItem(object.id);
+    if (!added) {
+      return {
+        success: false,
+        text: 'Something went wrong taking that.',
+        audio: 'error',
+      };
+    }
+
     this.gameState.removeFromRoom(object.id);
 
     return {
@@ -349,7 +331,16 @@ export class CommandExecutor {
 
   async handleDrop(command) {
     const objectRef = command.resolvedDirectObject;
-    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+    if (!objectRef) {
+      return {
+        success: false,
+        text: 'Drop what?',
+        audio: 'error',
+      };
+    }
+
+    // Check if we have the item
+    if (!this.inventory.getAllItems().includes(objectRef.value)) {
       return {
         success: false,
         text: "You don't have that.",
@@ -359,14 +350,22 @@ export class CommandExecutor {
 
     const object = this.gameState.getItem(objectRef.value);
 
-    // Drop the item
-    this.gameState.removeFromInventory(object.id);
-    this.gameState.addToRoom(object.id);
+    // Drop the item using inventory system
+    const removed = this.inventory.removeItem(objectRef.value);
+    if (removed) {
+      this.gameState.addToRoom(object.id);
+
+      return {
+        success: true,
+        text: 'Dropped.',
+        audio: 'drop',
+      };
+    }
 
     return {
-      success: true,
-      text: 'Dropped.',
-      audio: 'drop',
+      success: false,
+      text: "You can't drop that.",
+      audio: 'error',
     };
   }
 
@@ -439,9 +438,9 @@ export class CommandExecutor {
 
   // Inventory
   async handleInventory(_command) {
-    const inventory = this.gameState.getInventory();
+    const items = this.inventory.getAllItems();
 
-    if (inventory.length === 0) {
+    if (items.length === 0) {
       return {
         success: true,
         text: "You're not carrying anything.",
@@ -449,15 +448,56 @@ export class CommandExecutor {
       };
     }
 
-    const items = inventory.map((id) => {
+    // Build inventory display
+    let text = 'You are carrying:\n';
+
+    // Regular items
+    const regularItems = this.inventory.items.map((id) => {
       const item = this.gameState.getItem(id);
       return item?.name || id;
     });
 
+    if (regularItems.length > 0) {
+      text += regularItems.map((name) => `  - ${name}`).join('\n');
+    }
+
+    // Worn items
+    const wornItems = [];
+    for (const [slot, itemId] of Object.entries(this.inventory.worn)) {
+      if (itemId) {
+        const item = this.gameState.getItem(itemId);
+        wornItems.push(`${item?.name || itemId} (worn on ${slot})`);
+      }
+    }
+
+    if (wornItems.length > 0) {
+      text +=
+        '\n\nWearing:\n' + wornItems.map((desc) => `  - ${desc}`).join('\n');
+    }
+
+    // Container contents
+    if (this.inventory.containers.size > 0) {
+      for (const [containerId, contents] of this.inventory.containers) {
+        if (contents.length > 0) {
+          const container = this.gameState.getItem(containerId);
+          text += `\n\nIn ${container?.name || containerId}:\n`;
+          const containerItems = contents.map((id) => {
+            const item = this.gameState.getItem(id);
+            return `  - ${item?.name || id}`;
+          });
+          text += containerItems.join('\n');
+        }
+      }
+    }
+
+    // Weight info
+    const totalWeight = this.inventory.getTotalWeight();
+    const maxWeight = this.inventory.maxWeight;
+    text += `\n\nTotal weight: ${totalWeight}/${maxWeight}`;
+
     return {
       success: true,
-      text:
-        'You are carrying:\n' + items.map((name) => `  - ${name}`).join('\n'),
+      text,
       audio: null,
     };
   }
@@ -559,21 +599,10 @@ export class CommandExecutor {
   // Stub handlers for remaining commands
   async handleUse(command) {
     const objectRef = command.resolvedDirectObject;
-    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+    if (!objectRef) {
       return {
         success: false,
-        text: "You don't have that.",
-        audio: 'error',
-      };
-    }
-
-    const object = this.gameState.getItem(objectRef.value);
-
-    // Check if object has specific use
-    if (!object.usable) {
-      return {
-        success: false,
-        text: `You can't use the ${object.name} here.`,
+        text: 'Use what?',
         audio: 'error',
       };
     }
@@ -589,15 +618,38 @@ export class CommandExecutor {
         };
       }
 
-      // Check for specific use combinations
-      const useEvent = this.findUseEvent(object.id, targetRef.value);
-      if (useEvent) {
-        return await this.eventManager.executeScriptedEvent(useEvent);
+      // Use InteractionSystem for item interactions
+      const result = this.interactionSystem.useItemOn(
+        objectRef.value,
+        targetRef.value
+      );
+
+      // Play appropriate sound effect
+      if (result.success && result.effects.length > 0) {
+        // Check for specific sound effects in the result
+        for (const effect of result.effects) {
+          if (effect.type === 'playSound') {
+            this.soundManager.playSoundEffect(effect.sound);
+          }
+        }
       }
 
       return {
+        success: result.success,
+        text: result.message,
+        audio: result.success ? 'use' : 'error',
+      };
+    }
+
+    // Single object use - check if usable
+    const object =
+      this.gameState.getItem(objectRef.value) ||
+      this.gameState.getObject(objectRef.value);
+
+    if (!object) {
+      return {
         success: false,
-        text: `You can't use the ${object.name} on that.`,
+        text: "You can't use that.",
         audio: 'error',
       };
     }
@@ -1162,6 +1214,11 @@ export class CommandExecutor {
     }
 
     if (object.pushable) {
+      // Set flag if this reveals something
+      if (object.id === 'bookshelf') {
+        this.gameState.setFlag('bookshelf_moved', true);
+      }
+
       return {
         success: true,
         text: object.pushMessage || `You push the ${object.name}.`,
@@ -1360,47 +1417,36 @@ export class CommandExecutor {
 
   async handleWear(command) {
     const objectRef = command.resolvedDirectObject;
-    if (!objectRef || !this.gameState.hasItem(objectRef.value)) {
+    if (!objectRef) {
       return {
         success: false,
-        text: "You don't have that.",
+        text: 'Wear what?',
         audio: 'error',
       };
     }
 
-    const item = this.gameState.getItem(objectRef.value);
-    if (!item.wearable) {
+    // Use inventory system to wear item
+    const result = this.inventory.wearItem(objectRef.value);
+
+    if (result.success) {
+      const item = this.gameState.getItem(objectRef.value);
+      const scoreChange =
+        item && item.wearPoints
+          ? { score: this.gameState.score + item.wearPoints }
+          : null;
+
       return {
-        success: false,
-        text: "You can't wear that.",
-        audio: 'error',
+        success: true,
+        text: result.message,
+        audio: 'wear',
+        stateChanges: scoreChange,
       };
     }
-
-    // Check if already wearing something in that slot
-    if (item.slot) {
-      const currentWorn = this.gameState.getWornItem(item.slot);
-      if (currentWorn) {
-        return {
-          success: false,
-          text: `You're already wearing ${currentWorn.name}.`,
-          audio: 'error',
-        };
-      }
-    }
-
-    // Wear the item
-    this.gameState.wearItem(item.id);
 
     return {
-      success: true,
-      text: `You put on the ${item.name}.`,
-      audio: 'wear',
-      stateChanges: item.wearPoints
-        ? {
-            score: this.gameState.score + item.wearPoints,
-          }
-        : null,
+      success: false,
+      text: result.message,
+      audio: 'error',
     };
   }
 
@@ -1414,22 +1460,13 @@ export class CommandExecutor {
       };
     }
 
-    const itemId = objectRef.value;
-    if (!this.gameState.isWearing(itemId)) {
-      return {
-        success: false,
-        text: "You're not wearing that.",
-        audio: 'error',
-      };
-    }
-
-    const item = this.gameState.getItem(itemId);
-    this.gameState.removeWornItem(itemId);
+    // Use inventory system to remove worn item
+    const result = this.inventory.removeWornItem(objectRef.value);
 
     return {
-      success: true,
-      text: `You remove the ${item.name}.`,
-      audio: 'remove',
+      success: result.success,
+      text: result.message,
+      audio: result.success ? 'remove' : 'error',
     };
   }
 

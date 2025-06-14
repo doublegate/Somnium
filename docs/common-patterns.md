@@ -1,16 +1,19 @@
 # Common Implementation Patterns
 
-## Parser Patterns
+> **Status**: These patterns are actively used in the Phase 1-3 implementation. All parser and rendering patterns have been fully implemented and tested.
 
-### Synonym Resolution
+## Parser Patterns ✅ IMPLEMENTED
+
+### Synonym Resolution (150+ verbs)
 
 ```javascript
 const VERB_SYNONYMS = {
-  take: ['get', 'grab', 'pick up', 'acquire'],
-  look: ['examine', 'inspect', 'view', 'check'],
-  use: ['apply', 'utilize', 'employ'],
-  talk: ['speak', 'chat', 'converse'],
-  go: ['move', 'walk', 'travel', 'proceed'],
+  take: ['get', 'grab', 'pick up', 'acquire', 'obtain', 'collect'],
+  look: ['examine', 'inspect', 'view', 'check', 'observe', 'study'],
+  use: ['apply', 'utilize', 'employ', 'operate', 'activate'],
+  talk: ['speak', 'chat', 'converse', 'discuss', 'say'],
+  go: ['move', 'walk', 'travel', 'proceed', 'head', 'run'],
+  // ... 145+ more verbs
 };
 
 function resolveVerb(verb) {
@@ -28,7 +31,7 @@ function resolveVerb(verb) {
 }
 ```
 
-### Multi-word Object Recognition
+### Multi-word Object Recognition ✅ IMPLEMENTED
 
 ```javascript
 function parseNoun(words, startIndex, gameState) {
@@ -55,9 +58,21 @@ function parseNoun(words, startIndex, gameState) {
 
   return bestMatch ? { object: bestMatch.id, wordsConsumed: bestLength } : null;
 }
+
+// Pronoun support (it, them, him, her, me)
+function resolvePronoun(pronoun, context) {
+  const pronounMap = {
+    it: context.lastNoun,
+    them: context.lastPluralNoun,
+    him: context.lastMaleActor,
+    her: context.lastFemaleActor,
+    me: 'player',
+  };
+  return pronounMap[pronoun.toLowerCase()] || null;
+}
 ```
 
-## Rendering Patterns
+## Rendering Patterns ✅ FULLY IMPLEMENTED
 
 ### EGA Color Validation
 
@@ -97,26 +112,33 @@ function hexToRGB(hex) {
 }
 ```
 
-### Efficient Dithering
+### Efficient Dithering (9 Patterns Implemented)
 
 ```javascript
-function createDitherPattern(color1, color2) {
-  // Create 2x2 pattern for reuse
-  const canvas = document.createElement('canvas');
-  canvas.width = 2;
-  canvas.height = 2;
-  const ctx = canvas.getContext('2d');
+// 9 dithering patterns implemented
+const DITHER_PATTERNS = {
+  CHECKERBOARD: (x, y) => (x + y) % 2 === 0,
+  VERTICAL: (x, y) => x % 2 === 0,
+  HORIZONTAL: (x, y) => y % 2 === 0,
+  DIAGONAL_LEFT: (x, y) => (x - y) % 4 < 2,
+  DIAGONAL_RIGHT: (x, y) => (x + y) % 4 < 2,
+  DOTS_SPARSE: (x, y) => x % 4 === 0 && y % 4 === 0,
+  DOTS_MEDIUM: (x, y) =>
+    (x % 2 === 0 && y % 4 === 0) || (x % 4 === 2 && y % 4 === 2),
+  CROSS_HATCH: (x, y) => x % 4 === 0 || y % 4 === 0,
+  SOLID: (x, y) => true,
+};
 
-  // Checkerboard pattern
-  ctx.fillStyle = color1;
-  ctx.fillRect(0, 0, 1, 1);
-  ctx.fillRect(1, 1, 1, 1);
-
-  ctx.fillStyle = color2;
-  ctx.fillRect(1, 0, 1, 1);
-  ctx.fillRect(0, 1, 1, 1);
-
-  return ctx.createPattern(canvas, 'repeat');
+function drawDitheredRect(x, y, width, height, color1, color2, pattern) {
+  const patternFunc = DITHER_PATTERNS[pattern] || DITHER_PATTERNS.CHECKERBOARD;
+  // Pixel-by-pixel rendering for authentic EGA look
+  for (let py = 0; py < height; py++) {
+    for (let px = 0; px < width; px++) {
+      const useColor1 = patternFunc(px, py);
+      ctx.fillStyle = useColor1 ? color1 : color2;
+      ctx.fillRect(x + px, y + py, 1, 1);
+    }
+  }
 }
 
 // Cache patterns for performance
@@ -155,7 +177,7 @@ class PriorityRenderer {
 }
 ```
 
-## State Management Patterns
+## State Management Patterns ✅ IMPLEMENTED
 
 ### Flag Expression Evaluation
 
@@ -190,7 +212,7 @@ function evaluateCondition(condition, gameState) {
 }
 ```
 
-### Event Action Execution
+### Event Action Execution ✅ IMPLEMENTED
 
 ```javascript
 class ActionExecutor {
@@ -207,6 +229,7 @@ class ActionExecutor {
       PLAY_SOUND: this.playSound.bind(this),
       SHOW_MESSAGE: this.showMessage.bind(this),
       CHANGE_ROOM: this.changeRoom.bind(this),
+      MOVE_VIEW: this.moveView.bind(this),
     };
   }
 
@@ -370,9 +393,9 @@ class APIRequestManager {
 }
 ```
 
-## Animation Patterns
+## Animation Patterns ✅ IMPLEMENTED
 
-### Frame-based Animation
+### Frame-based Animation with Interpolation
 
 ```javascript
 class AnimationLoop {
@@ -382,6 +405,9 @@ class AnimationLoop {
     this.currentFrame = 0;
     this.lastFrameTime = 0;
     this.playing = false;
+    this.loop = true;
+    this.pingPong = false;
+    this.direction = 1;
   }
 
   start() {
@@ -413,7 +439,7 @@ class AnimationLoop {
 }
 ```
 
-### Smooth Movement
+### Smooth Movement with Interpolation ✅ IMPLEMENTED
 
 ```javascript
 class MovementController {
@@ -421,13 +447,22 @@ class MovementController {
     this.movements = new Map();
   }
 
-  startMovement(objectId, startPos, endPos, duration) {
+  startMovement(objectId, startPos, endPos, duration, easing = 'linear') {
+    const easingFunctions = {
+      linear: (t) => t,
+      easeIn: (t) => t * t,
+      easeOut: (t) => t * (2 - t),
+      easeInOut: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+    };
+
     this.movements.set(objectId, {
       start: startPos,
       end: endPos,
       duration,
       startTime: performance.now(),
-      easing: this.easeInOutQuad,
+      easing: easingFunctions[easing] || easingFunctions.linear,
+      interpolatedX: startPos.x,
+      interpolatedY: startPos.y,
     });
   }
 

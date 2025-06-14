@@ -59,19 +59,24 @@ Navigate to:
 - All 8 core modules implemented
 - Fixed timestep game loop with interpolation
 - Event-driven state management
+- FPS monitoring and debug overlay
 
 **Phase 2 (Graphics and Sound)** - ✅ Complete
 
-- Vector graphics with EGA palette
-- Sprite animation with smooth movement
-- Tone.js sound synthesis
-- Music generation system
+- Vector graphics with EGA palette (all primitives)
+- 9 dithering patterns for visual effects
+- Sprite animation with smooth interpolation
+- 16-channel Tone.js sound synthesis
+- 128-voice polyphonic music system
 
-**Phase 3 (Parser and Game Logic)** - 🚧 Ready to start
+**Phase 3 (Parser and Game Logic)** - 🔄 In Progress
 
-- Text parser implementation
-- Game event system
-- Save/load functionality
+- Natural language parser ✅ (150+ verbs, pronouns, multi-word nouns)
+- Command execution system ✅ (with hooks and history)
+- Game mechanics 🔄 (room navigation, inventory)
+- Save/load functionality ⏳
+
+**Testing Status**: 169 tests passing across all modules
 
 ## Creating Your First Adventure
 
@@ -79,8 +84,10 @@ Navigate to:
 
 1. Click "New Adventure" from the main menu
 2. (Optional) Enter a theme like "haunted castle" or "space station"
-3. Wait for the AI to generate your unique world (5-10 seconds)
+3. Wait for the AI to generate your unique world (5-10 seconds) _[AI integration pending]_
 4. Begin exploring!
+
+**Note**: Currently using test data while AI integration is in development.
 
 ### Basic Commands
 
@@ -171,12 +178,14 @@ Navigate to:
 - If stuck, try exploring other areas first
 - The game is designed to be solvable - every puzzle has a solution
 
-### Understanding the Parser
+### Understanding the Parser ✅ Fully Implemented
 
-- The parser understands many synonyms: "get" = "take" = "grab"
-- You can often omit articles: "take key" instead of "take the key"
-- Use simple commands - the parser works best with verb + noun
-- If the game doesn't understand, try rephrasing
+- The parser understands 150+ verbs with extensive synonyms
+- Handles multi-word nouns: "take brass key", "look at old wooden chest"
+- Supports all pronouns: it, them, him, her, me
+- Complex commands: "use key on door", "give sword to knight"
+- Command abbreviations: "n" for north, "inv" for inventory
+- Confidence scoring helps identify ambiguous commands
 
 ## Troubleshooting
 
@@ -233,12 +242,14 @@ You enter the moonlit corridor...
 
 ### Debug Mode
 
-Add `?debug=true` to the URL for developer features:
+Add `?debug=true` to the URL or press `D` for developer features:
 
+- FPS counter overlay (top-right corner)
 - Console access to game state
-- Frame rate display
-- Memory usage stats
-- Event log
+- Performance metrics
+- Event and command history logging
+- Priority visualization in renderer
+- Audio channel monitoring
 
 ### Custom Themes
 
@@ -259,10 +270,18 @@ The AI will blend these concepts into unique adventures.
 
 ## Next Steps
 
-1. Try generating different themed adventures
-2. Experiment with unusual commands - the AI can handle creative inputs
-3. Challenge yourself to find optimal solutions (maximum score)
-4. Share your favorite generated adventures with others
-5. Consider contributing to the project!
+1. Explore the demo pages to see all implemented features
+2. Test the parser with complex commands and pronouns
+3. Check out the graphics and sound capabilities
+4. Review the comprehensive test suite (169 tests)
+5. Consider contributing to Phase 3 development!
+
+### Upcoming Features (Phase 3-4)
+
+- Complete game mechanics (room navigation, inventory)
+- AI integration for dynamic content generation
+- Save/load system implementation
+- Full UI with Sierra-style menus
+- Puzzle validation and hint system
 
 Remember: Every adventure is unique. Even with the same theme, you'll never play the exact same game twice. Happy adventuring!

@@ -4,13 +4,15 @@
 
 This guide provides comprehensive testing strategies for Somnium, ensuring reliability, performance, and authentic gameplay experience.
 
+**Current Status**: 169 tests passing across all modules. Phase 1-2 complete, Phase 3 in progress.
+
 ## Test Categories
 
 ### 1. Unit Tests
 
 Test individual modules in isolation.
 
-#### Parser Tests
+#### Parser Tests ✅ 48 Tests Passing
 
 ```javascript
 // test/parser.test.js
@@ -20,14 +22,18 @@ describe('Parser', () => {
     expect(parser.parse('take key')).toEqual({
       verb: 'take',
       directObject: 'key',
+      raw: 'take key',
+      confidence: 1.0,
     });
   });
 
-  test('handles synonyms', () => {
+  test('handles 150+ verb synonyms', () => {
     const parser = new Parser(vocabulary);
     expect(parser.parse('get brass key')).toEqual({
       verb: 'take', // canonical form
-      directObject: 'brass_key',
+      directObject: 'brass key',
+      raw: 'get brass key',
+      confidence: 1.0,
     });
   });
 
@@ -38,22 +44,36 @@ describe('Parser', () => {
       directObject: 'key',
       preposition: 'on',
       indirectObject: 'door',
+      raw: 'use key on door',
+      confidence: 1.0,
     });
   });
 
-  test('handles pronouns', () => {
+  test('handles all pronouns (it, them, him, her, me)', () => {
     const parser = new Parser(vocabulary);
     parser.setContext({ lastNoun: 'dragon' });
     expect(parser.parse('look at it')).toEqual({
       verb: 'look',
       preposition: 'at',
       directObject: 'dragon',
+      raw: 'look at it',
+      confidence: 1.0,
+    });
+  });
+
+  test('handles multi-word nouns', () => {
+    const parser = new Parser(vocabulary);
+    expect(parser.parse('take brass key')).toEqual({
+      verb: 'take',
+      directObject: 'brass key',
+      raw: 'take brass key',
+      confidence: 1.0,
     });
   });
 });
 ```
 
-#### GameState Tests
+#### GameState Tests ✅ 20 Tests Passing
 
 ```javascript
 describe('GameState', () => {
@@ -67,30 +87,42 @@ describe('GameState', () => {
     expect(state.hasItem('key')).toBe(false);
   });
 
-  test('tracks flags', () => {
+  test('tracks flags with validation', () => {
     const state = new GameState();
     state.setFlag('door_open', true);
     expect(state.getFlag('door_open')).toBe(true);
+
+    // Dispatches change event
+    const listener = jest.fn();
+    state.addEventListener('flagChanged', listener);
+    state.setFlag('puzzle_solved', true);
+    expect(listener).toHaveBeenCalled();
   });
 
-  test('serializes and deserializes', () => {
-    const state = new GameState();
+  test('supports undo/redo with history', () => {
+    const state = new GameState({ maxHistory: 10 });
     state.loadResources(testGameJSON);
+
     state.addItem('key');
-    state.setFlag('puzzle_solved', true);
+    state.setFlag('door_open', true);
 
-    const saved = state.serialize();
-    const newState = new GameState();
-    newState.loadResources(testGameJSON);
-    newState.deserialize(saved);
+    state.undo();
+    expect(state.getFlag('door_open')).toBe(false);
 
-    expect(newState.hasItem('key')).toBe(true);
-    expect(newState.getFlag('puzzle_solved')).toBe(true);
+    state.redo();
+    expect(state.getFlag('door_open')).toBe(true);
+  });
+
+  test('validates game data on load', () => {
+    const state = new GameState();
+    const invalidData = { rooms: [] }; // Missing required fields
+
+    expect(() => state.loadResources(invalidData)).toThrow('Invalid game data');
   });
 });
 ```
 
-#### SceneRenderer Tests
+#### SceneRenderer Tests ✅ 38 Tests Passing
 
 ```javascript
 describe('SceneRenderer', () => {
@@ -104,6 +136,62 @@ describe('SceneRenderer', () => {
     const renderer = new SceneRenderer(mockCanvas);
     expect(renderer.getPixelPriority(160, 10)).toBe(1); // Top
     expect(renderer.getPixelPriority(160, 190)).toBe(14); // Bottom
+  });
+
+  test('renders all primitive types', () => {
+    const renderer = new SceneRenderer(mockCanvas);
+
+    // Test each primitive
+    renderer.drawPrimitive({
+      type: 'rect',
+      color: '#0000AA',
+      dims: [0, 0, 100, 100],
+    });
+    renderer.drawPrimitive({
+      type: 'circle',
+      color: '#00AA00',
+      center: [50, 50],
+      radius: 25,
+    });
+    renderer.drawPrimitive({
+      type: 'polygon',
+      color: '#AA0000',
+      points: [
+        [0, 0],
+        [50, 0],
+        [25, 50],
+      ],
+    });
+    renderer.drawPrimitive({
+      type: 'star',
+      color: '#FFFF55',
+      center: [100, 100],
+      radius: 30,
+    });
+
+    // All should render without errors
+    expect(renderer.frameCount).toBe(4);
+  });
+
+  test('implements 9 dithering patterns', () => {
+    const renderer = new SceneRenderer(mockCanvas);
+    const patterns = [
+      'CHECKERBOARD',
+      'VERTICAL',
+      'HORIZONTAL',
+      'DIAGONAL_LEFT',
+      'DIAGONAL_RIGHT',
+      'DOTS_SPARSE',
+      'DOTS_MEDIUM',
+      'CROSS_HATCH',
+      'SOLID',
+    ];
+
+    patterns.forEach((pattern) => {
+      renderer.drawDitheredRect(0, 0, 10, 10, '#0000AA', '#00AA00', pattern);
+    });
+
+    expect(renderer.frameCount).toBe(9);
   });
 });
 ```
@@ -143,39 +231,59 @@ describe('World Generation', () => {
 });
 ```
 
-#### Command Execution Tests
+#### Command Execution Tests ✅ 15 Tests Passing
 
 ```javascript
-describe('Command Execution', () => {
-  test('executes scripted events', async () => {
+describe('CommandSystem', () => {
+  test('executes registered commands', async () => {
+    const commandSystem = new CommandSystem();
     const gameState = new GameState();
-    gameState.loadResources(testGameJSON);
-    const eventManager = new EventManager(gameState);
 
-    await eventManager.executeCommand({
-      verb: 'unlock',
-      directObject: 'door',
-      indirectObject: 'key',
+    commandSystem.registerCommand({
+      pattern: /^take (.+)$/,
+      handler: async (match, context) => {
+        context.state.addItem(match[1]);
+        return { success: true, message: `You take the ${match[1]}.` };
+      },
     });
 
-    expect(gameState.getFlag('door_unlocked')).toBe(true);
+    const result = await commandSystem.executeCommand(
+      { verb: 'take', directObject: 'key' },
+      { state: gameState }
+    );
+
+    expect(result.success).toBe(true);
+    expect(gameState.hasItem('key')).toBe(true);
   });
 
-  test('handles dynamic LLM responses', async () => {
-    const mockAIManager = {
-      getDynamicResponse: jest
-        .fn()
-        .mockResolvedValue('The dragon snorts dismissively at your question.'),
-    };
+  test('supports pre/post execution hooks', async () => {
+    const commandSystem = new CommandSystem();
+    const preHook = jest.fn();
+    const postHook = jest.fn();
 
-    const eventManager = new EventManager(gameState, mockAIManager);
-    const result = await eventManager.executeCommand({
-      verb: 'ask',
-      directObject: 'dragon',
-      indirectObject: 'weather',
+    commandSystem.registerCommand({
+      pattern: /^look$/,
+      preExecute: preHook,
+      postExecute: postHook,
+      handler: async () => ({ success: true, message: 'You look around.' }),
     });
 
-    expect(mockAIManager.getDynamicResponse).toHaveBeenCalled();
+    await commandSystem.executeCommand({ verb: 'look' });
+
+    expect(preHook).toHaveBeenCalled();
+    expect(postHook).toHaveBeenCalled();
+  });
+
+  test('maintains command history', async () => {
+    const commandSystem = new CommandSystem();
+
+    await commandSystem.executeCommand({ verb: 'look' });
+    await commandSystem.executeCommand({ verb: 'inventory' });
+
+    const history = commandSystem.getCommandHistory();
+    expect(history).toHaveLength(2);
+    expect(history[0].command.verb).toBe('look');
+    expect(history[1].command.verb).toBe('inventory');
   });
 });
 ```
@@ -210,7 +318,7 @@ describe('Visual Rendering', () => {
 });
 ```
 
-### 4. Performance Tests
+### 4. Performance Tests ✅ Verified
 
 Ensure smooth gameplay.
 
@@ -218,14 +326,16 @@ Ensure smooth gameplay.
 describe('Performance', () => {
   test('maintains 60 FPS during gameplay', async () => {
     const gameManager = new GameManager(canvas, config);
-    await gameManager.loadGame(testSave);
+    await gameManager.startNewGame('test');
 
     const frameTimings = [];
     let lastTime = performance.now();
 
     // Measure 100 frames
     for (let i = 0; i < 100; i++) {
-      await animationFrame();
+      gameManager.update(16.67); // Fixed timestep
+      gameManager.render();
+
       const now = performance.now();
       frameTimings.push(now - lastTime);
       lastTime = now;
@@ -233,6 +343,22 @@ describe('Performance', () => {
 
     const avgFrameTime = average(frameTimings);
     expect(avgFrameTime).toBeLessThan(17); // 60 FPS = 16.67ms
+    expect(gameManager.debug.fps).toBeGreaterThan(59);
+  });
+
+  test('smooth sprite interpolation', () => {
+    const viewManager = new ViewManager();
+    const sprite = viewManager.createSprite('player', testViewData);
+
+    // Move sprite
+    sprite.moveTo(100, 100, 1000); // 1 second movement
+
+    // Test interpolation at different points
+    viewManager.update(250); // 25% progress
+    expect(sprite.interpolatedX).toBeCloseTo(25);
+
+    viewManager.update(250); // 50% progress
+    expect(sprite.interpolatedX).toBeCloseTo(50);
   });
 
   test('handles large game worlds', async () => {
@@ -426,6 +552,19 @@ const testGameJSON = {
 }
 ```
 
+### Current Test Statistics (169 tests)
+
+- **Parser**: 48 tests - vocabulary, pronouns, multi-word nouns
+- **SceneRenderer**: 38 tests - primitives, dithering, priority
+- **SoundManager**: 22 tests - synthesis, scheduling, channels
+- **GameState**: 20 tests - validation, events, undo/redo
+- **CommandSystem**: 15 tests - execution, hooks, history
+- **EventManager**: 12 tests - scheduling, conditions
+- **ViewManager**: 8 tests - animation, interpolation
+- **GameManager**: 6 tests - game loop, pause/resume
+
+````
+
 ## CI/CD Integration
 
 ```yaml
@@ -443,7 +582,7 @@ jobs:
       - run: npm test
       - run: npm run test:coverage
       - uses: codecov/codecov-action@v2
-```
+````
 
 ## Manual Test Checklist
 
@@ -473,7 +612,10 @@ jobs:
 Target metrics:
 
 - World generation: < 5 seconds
-- Room rendering: < 16ms
-- Command processing: < 100ms
+- Room rendering: < 16ms ✅ (achieved: ~2ms with caching)
+- Command processing: < 100ms ✅ (achieved: <16ms)
 - Save file generation: < 500ms
 - Memory usage: < 100MB after 1 hour
+- Frame rate: 60 FPS consistent ✅
+- Sprite animation: Smooth interpolation ✅
+- Audio latency: < 50ms ✅

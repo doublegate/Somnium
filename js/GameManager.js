@@ -16,6 +16,13 @@ import { ViewManager } from './ViewManager.js';
 import { SoundManager } from './SoundManager.js';
 import { Parser } from './Parser.js';
 import { EventManager } from './EventManager.js';
+import { CommandExecutor } from './CommandExecutor.js';
+import { Inventory } from './Inventory.js';
+import { InteractionSystem } from './InteractionSystem.js';
+import { MovementSystem } from './MovementSystem.js';
+import { PuzzleSystem } from './PuzzleSystem.js';
+import { NPCSystem } from './NPCSystem.js';
+import { GameProgression } from './GameProgression.js';
 
 export class GameManager {
   /**
@@ -49,6 +56,26 @@ export class GameManager {
     this.soundManager = new SoundManager();
     this.parser = new Parser({}); // TODO: Load vocabulary config
     this.eventManager = new EventManager(this.gameState, this.aiManager);
+    
+    // Initialize game logic systems
+    this.inventory = new Inventory(this.gameState);
+    this.movementSystem = new MovementSystem(this.gameState, this.viewManager, this.eventManager);
+    this.interactionSystem = new InteractionSystem(this.gameState, this.eventManager);
+    this.puzzleSystem = new PuzzleSystem(this.gameState, this.eventManager);
+    this.npcSystem = new NPCSystem(this.gameState, this.movementSystem, this.eventManager);
+    this.gameProgression = new GameProgression(this.gameState, this.eventManager);
+    
+    // Initialize command executor with all systems
+    this.commandExecutor = new CommandExecutor(
+      this.gameState,
+      this.eventManager,
+      this.viewManager,
+      this.sceneRenderer,
+      this.soundManager,
+      this.inventory,
+      this.interactionSystem,
+      this.movementSystem
+    );
 
     // Timing
     this.lastFrameTime = 0;
@@ -81,6 +108,12 @@ export class GameManager {
 
       // Load resources into game state
       this.gameState.loadResources(gameJSON);
+      
+      // Initialize all game systems with game data
+      this.interactionSystem.initialize(gameJSON);
+      this.puzzleSystem.initialize(gameJSON);
+      this.npcSystem.initialize(gameJSON);
+      this.gameProgression.initialize(gameJSON);
 
       // Initialize audio
       await this.soundManager.initialize();
@@ -117,6 +150,12 @@ export class GameManager {
       // Restore game state
       this.gameState.loadResources(saveData.gameJSON);
       this.gameState.deserialize(saveData.state);
+      
+      // Initialize all game systems with game data
+      this.interactionSystem.initialize(saveData.gameJSON);
+      this.puzzleSystem.initialize(saveData.gameJSON);
+      this.npcSystem.initialize(saveData.gameJSON);
+      this.gameProgression.initialize(saveData.gameJSON);
 
       // Initialize audio
       await this.soundManager.initialize();
@@ -235,12 +274,24 @@ export class GameManager {
    * Fixed timestep update for physics and game logic
    * @param {number} deltaTime - Fixed time step (typically 1/60 second)
    */
-  fixedUpdate(_deltaTime) {
+  fixedUpdate(deltaTime) {
     // Update game logic that needs deterministic timing
-    this.eventManager.updateScheduledEvents(_deltaTime);
+    this.eventManager.updateScheduledEvents(deltaTime);
+    
+    // Update movement systems
+    this.movementSystem.update(deltaTime);
+    
+    // Update NPCs
+    this.npcSystem.update(deltaTime);
+    
+    // Check game completion
+    const completion = this.gameProgression.checkGameCompletion();
+    if (completion.completed) {
+      this.gameProgression.triggerEnding(completion.endingId);
+    }
 
     // Update character positions (physics)
-    this.viewManager.updatePositions(_deltaTime);
+    this.viewManager.updatePositions(deltaTime);
   }
 
   /**
