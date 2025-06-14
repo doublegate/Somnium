@@ -9,6 +9,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 ## Sub-phases
 
 ### Phase 4.1: LLM Integration Setup
+
 - [ ] Configure API authentication and rate limiting
 - [ ] Implement request/response error handling
 - [ ] Create fallback mechanisms for API failures
@@ -17,6 +18,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 - [ ] Create mock responses for development/testing
 
 ### Phase 4.2: World Generation
+
 - [ ] Design JSON schema for complete game worlds
 - [ ] Create master prompt template for world generation
 - [ ] Implement validation for generated content
@@ -26,6 +28,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 - [ ] Implement content moderation filters
 
 ### Phase 4.3: Dynamic Interactions
+
 - [ ] Design context management system
 - [ ] Create prompts for unscripted actions
 - [ ] Implement response parsing and validation
@@ -35,6 +38,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 - [ ] Add contextual NPC responses
 
 ### Phase 4.4: Integration with Game Systems
+
 - [ ] Connect AIManager to GameState
 - [ ] Update Parser for AI-generated vocabulary
 - [ ] Integrate with EventManager for dynamic events
@@ -43,6 +47,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 - [ ] Implement offline mode with cached content
 
 ### Phase 4.5: Testing and Optimization
+
 - [ ] Create test suite for AI integration
 - [ ] Test various themes and genres
 - [ ] Validate generated content quality
@@ -54,17 +59,20 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 ## Key Implementation Files
 
 ### AIManager.js Enhancements
+
 - Remove mock mode limitations
 - Implement real API calls
 - Add response caching
 - Create request queue
 
 ### World Generation
+
 - `generateWorld(theme)` - Main generation function
 - `validateWorld(worldData)` - Validation logic
 - `ensureSolvability(puzzles)` - Puzzle checking
 
 ### Dynamic Responses
+
 - `handleDynamicAction(command, context)` - Unscripted actions
 - `generateHint(puzzle, progress)` - Dynamic hints
 - `generateNPCResponse(npc, topic, context)` - NPC conversations
@@ -72,6 +80,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 ## API Integration Details
 
 ### Request Format
+
 ```javascript
 {
   model: "gpt-3.5-turbo",
@@ -85,6 +94,7 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 ```
 
 ### Response Validation
+
 - Check JSON structure validity
 - Validate all room connections
 - Ensure item references exist
@@ -94,18 +104,21 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 ## Testing Strategy
 
 ### Unit Tests
+
 - Mock API responses
 - Test validation logic
 - Test error handling
 - Test caching system
 
 ### Integration Tests
+
 - Full world generation
 - Dynamic interaction flow
 - Save/load with AI content
 - Performance under rate limits
 
 ### Manual Testing
+
 - Various themes
 - Edge case commands
 - Network failure scenarios
@@ -114,12 +127,14 @@ Phase 4 integrates Large Language Model (LLM) capabilities to generate unique ga
 ## Success Criteria
 
 1. **World Generation**
+
    - Generates complete, playable worlds
    - All puzzles are solvable
    - Content is appropriate and coherent
    - Generation completes in <10 seconds
 
 2. **Dynamic Interactions**
+
    - Handles 90% of unscripted actions reasonably
    - Responses are contextually appropriate
    - Maintains game state consistency

@@ -33,11 +33,13 @@ This document tracks functionality that was commented out, removed, marked as TO
    - Location: `CommandExecutor.js` lines ~509, ~1482
 
 5. **Container state checking in handlePut()**
+
    - Need to check if container is open before putting items
    - Currently missing `target.open` check
    - Location: `CommandExecutor.js` line ~764
 
 6. **Complete command handlers**
+
    - `handleSearch()` - Partial implementation
    - `handleRead()` - Basic implementation needs enhancement
    - `handlePush()`, `handlePull()`, `handleTurn()`, `handleTouch()` - Stub implementations
@@ -63,6 +65,7 @@ This document tracks functionality that was commented out, removed, marked as TO
    - Should evaluate condition objects against game state
 
 3. **Dynamic command execution**
+
    - `executeCommand()` should handle scripted events
    - Currently only passes to AI manager
 
@@ -74,7 +77,7 @@ This document tracks functionality that was commented out, removed, marked as TO
 ### Recently Fixed Issues (Completed)
 
 1. ✅ **CommandExecutor test failures** - All 50 tests now passing
-2. ✅ **EventManager test failures** - All 7 tests now passing  
+2. ✅ **EventManager test failures** - All 7 tests now passing
 3. ✅ **Mock object mismatches** - Fixed property names and method signatures
 4. ✅ **Test organization** - Moved all tests to `tests/` directory
 5. ✅ **Demo organization** - Created `demos/` subdirectory with documentation
@@ -82,18 +85,21 @@ This document tracks functionality that was commented out, removed, marked as TO
 ### Integration Requirements
 
 1. **System Integration in GameManager**
+
    - PuzzleSystem needs to be instantiated and passed to CommandExecutor
-   - NPCSystem needs to be instantiated and passed to CommandExecutor  
+   - NPCSystem needs to be instantiated and passed to CommandExecutor
    - GameProgression needs to be instantiated and passed to CommandExecutor
    - All systems need update() calls in game loop
 
 2. **Save/Load System**
+
    - Implement GameState.saveGame() and loadGame() methods
    - Design save file format (JSON with version)
    - Handle all game systems in save/load
    - Browser localStorage or file download/upload
 
 3. **Main Game UI**
+
    - Connect parser output to command executor
    - Implement text display area with scrolling
    - Add command history (up/down arrows)

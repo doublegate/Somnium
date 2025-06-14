@@ -193,6 +193,7 @@ Somnium is currently in active development with significant progress:
 - **Phase 1 (Core Architecture)** - ✅ Complete (100%)
 - **Phase 2 (Graphics and Sound Systems)** - ✅ Complete (100%)
 - **Phase 3 (Parser and Game Logic)** - ✅ Complete (100%)
+
   - Natural language parser with 100+ verbs
   - Command execution for 30+ adventure game actions
   - Inventory system with containers and worn items

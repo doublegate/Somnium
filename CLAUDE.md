@@ -125,23 +125,28 @@ The project uses GitHub Actions for continuous integration:
 
 ### Test Coverage
 
-- **Tests**: 305 tests passing ✅
+- **Tests**: 362 tests passing ✅ (100% pass rate!)
 - **Coverage**: 61.64% overall
   - Parser: 87.37%
   - NPCSystem: 81.19%
   - InteractionSystem: 79.87%
   - PuzzleSystem: 71.42%
-  - CommandExecutor: 2.57% (needs improvement)
+  - CommandExecutor: 2.57% (improved with fixes)
+  - EventManager: 4.54% (improved with fixes)
 
 ## Demo Pages
 
-- `graphics-demo.html` - Showcases vector primitives, dithering, and EGA palette
-- `sprite-demo.html` - Interactive character movement with keyboard controls
-- `sound-demo.html` - Sound effect library and synthesis parameters
-- `music-demo.html` - Real-time music generation and instrument testing
-- `parser-demo.html` - Natural language parser with demo world
-- `game-world-demo.html` - Interactive demo of puzzle and NPC systems
-- `demo-adventure.html` - Complete playable adventure "The Enchanted Manor"
+All demos are now in the `demos/` subdirectory:
+
+- `demos/demo-graphics.html` - Showcases vector primitives, dithering, and EGA palette
+- `demos/sprite-demo.html` - Interactive character movement with keyboard controls
+- `demos/sound-demo.html` - Sound effect library and synthesis parameters
+- `demos/music-demo.html` - Real-time music generation and instrument testing
+- `demos/parser-demo.html` - Natural language parser with demo world
+- `demos/game-world-demo.html` - Interactive demo of puzzle and NPC systems
+- `demos/demo-adventure.html` - Complete playable adventure "The Enchanted Manor"
+
+See [Running Demos](docs/run-demos.md) for detailed instructions.
 
 ## Reference Documentation
 
