@@ -153,9 +153,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Game world logic (puzzles, NPCs, progression)
   - Comprehensive testing and demo content
 
+### Added - December 14, 2024
+
+- **Project Reorganization**
+  - Created `demos/` subdirectory for all demo files
+  - Created `tests/` directory and moved all test files there
+  - Added comprehensive README.md for both directories
+  - Added `docs/run-demos.md` guide for running demos
+  - Created `docs/deferred-impl.md` tracking remaining work
+
+### Fixed - December 14, 2024
+
+- **All Test Failures Resolved (362 tests passing)**
+  - Fixed all 50 CommandExecutor test failures
+  - Fixed all 7 EventManager test failures  
+  - Updated mock objects to match implementation
+  - Fixed property name mismatches (takeable vs canTake)
+  - Fixed method signatures and return values
+  - Removed duplicate method implementations
+  - All tests now passing with 100% success rate
+
+### Changed - December 14, 2024
+
+- Updated all demo import paths for new directory structure
+- Updated CommandExecutor with complete implementations for:
+  - handleInventory, handleHelp, handleSave
+  - Alias resolution for command shortcuts
+  - Proper error handling and user feedback
+- Updated EventManager to use processCommand instead of getDynamicResponse
+- Updated project documentation with current status
+
 ### Planned
 
-- Phase 4: AI Integration
+- Phase 4: AI Integration (Starting Soon)
 - Phase 5: Polish and Release
 
 ## [0.0.1] - 2025-01-13

@@ -193,24 +193,26 @@ Somnium is currently in active development with significant progress:
 - **Phase 1 (Core Architecture)** - ✅ Complete (100%)
 - **Phase 2 (Graphics and Sound Systems)** - ✅ Complete (100%)
 - **Phase 3 (Parser and Game Logic)** - ✅ Complete (100%)
-  - Parser system - ✅ Complete
-  - Command system - ✅ Complete
-  - Game mechanics - ✅ Complete
-  - Game world logic - ✅ Complete
-  - Testing & polish - ✅ Complete
+  - Natural language parser with 100+ verbs
+  - Command execution for 30+ adventure game actions
+  - Inventory system with containers and worn items
+  - Multi-step puzzle system with hints
+  - NPC dialogue and trading systems
+  - Achievement and scoring system
+  - **All 362 tests passing!**
 
-### Current Statistics
+- **Phase 4 (AI Integration)** - 🔄 Starting Soon
+- **Phase 5 (Polish and Release)** - 📅 Planned
 
-- **Test Suite**: All 305 tests passing ✅
-- **Code Coverage**: 61.64% overall (parser 87%, NPCs 81%, puzzles 71%)
-- **Working Demos**:
-  - Graphics primitives and sprite animation
-  - Music synthesis and sound effects
-  - Natural language parser interface
-  - Complete demo adventure "The Enchanted Manor"
-- **Latest Updates**: Completed Phase 3 with full game mechanics implementation
+### Recent Updates (December 2024)
 
-The core engine, graphics rendering, sprite animation, sound systems, and parser are fully implemented. We're currently working on game mechanics implementation. See [CHANGELOG.md](CHANGELOG.md) for version history and [to-dos/](to-dos/) for detailed progress tracking.
+- ✅ Fixed all test failures - 100% pass rate (362 tests)
+- ✅ Reorganized project structure (tests/, demos/)
+- ✅ Created comprehensive documentation
+- ✅ Implemented complete game logic systems
+- ✅ Built interactive demo: "The Enchanted Manor"
+
+See [Deferred Implementations](docs/deferred-impl.md) for remaining work items and [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ---
 

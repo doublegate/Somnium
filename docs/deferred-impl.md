@@ -37,6 +37,18 @@ This document tracks functionality that was commented out, removed, marked as TO
    - Currently missing `target.open` check
    - Location: `CommandExecutor.js` line ~764
 
+6. **Complete command handlers**
+   - `handleSearch()` - Partial implementation
+   - `handleRead()` - Basic implementation needs enhancement
+   - `handlePush()`, `handlePull()`, `handleTurn()`, `handleTouch()` - Stub implementations
+   - `handleEat()`, `handleDrink()` - Basic implementations need item effects
+   - `handleYell()` - Could trigger area events
+
+7. **Object property standardization**
+   - Some objects use `canTake` while others use `takeable`
+   - Standardize on one property name throughout
+   - Same issue with `isOpen`/`open`, `isLocked`/`locked`
+
 ### EventManager.js
 
 1. **Missing triggerEvent() method**
@@ -54,17 +66,44 @@ This document tracks functionality that was commented out, removed, marked as TO
    - `executeCommand()` should handle scripted events
    - Currently only passes to AI manager
 
-### Test Failures
+4. **Event scheduling and processing**
+   - `scheduledEvents` array exists but no processing loop
+   - Need to implement event queue processing in game loop
+   - Add support for delayed/timed events
 
-1. **CommandExecutor tests expecting different response formats**
+### Recently Fixed Issues (Completed)
 
-   - Help command expects specific text format
-   - Score command expects "out of" instead of "of"
-   - Some tests expect properties that don't exist (takeable vs canTake)
+1. ✅ **CommandExecutor test failures** - All 50 tests now passing
+2. ✅ **EventManager test failures** - All 7 tests now passing  
+3. ✅ **Mock object mismatches** - Fixed property names and method signatures
+4. ✅ **Test organization** - Moved all tests to `tests/` directory
+5. ✅ **Demo organization** - Created `demos/` subdirectory with documentation
 
-2. **Mock object mismatches**
-   - Tests use different property names than implementation
-   - Need to align mock objects with actual game object structure
+### Integration Requirements
+
+1. **System Integration in GameManager**
+   - PuzzleSystem needs to be instantiated and passed to CommandExecutor
+   - NPCSystem needs to be instantiated and passed to CommandExecutor  
+   - GameProgression needs to be instantiated and passed to CommandExecutor
+   - All systems need update() calls in game loop
+
+2. **Save/Load System**
+   - Implement GameState.saveGame() and loadGame() methods
+   - Design save file format (JSON with version)
+   - Handle all game systems in save/load
+   - Browser localStorage or file download/upload
+
+3. **Main Game UI**
+   - Connect parser output to command executor
+   - Implement text display area with scrolling
+   - Add command history (up/down arrows)
+   - Status bar with score, location, moves
+
+4. **Menu System**
+   - Main menu (New Game, Load, Settings, Help)
+   - In-game menu (Save, Load, Settings, Quit)
+   - Settings menu (volume, display options)
+   - Help/About screens
 
 ## Phase 4 - AI Integration (Not Started)
 
