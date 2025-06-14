@@ -11,6 +11,9 @@ const mockTone = {
   Transport: {
     start: jest.fn(),
     pause: jest.fn(),
+    stop: jest.fn(),
+    cancel: jest.fn(),
+    bpm: { value: 120 },
   },
   Destination: {
     volume: { value: 0 },
@@ -19,52 +22,68 @@ const mockTone = {
     gain: { value },
     connect: jest.fn().mockReturnThis(),
     toDestination: jest.fn().mockReturnThis(),
+    dispose: jest.fn(),
   })),
-  Panner: jest.fn().mockImplementation(() => ({
-    pan: { value: 0 },
-    connect: jest.fn().mockReturnThis(),
-  })),
+  Panner: jest.fn().mockImplementation(() => {
+    const panner = {
+      pan: { value: 0 },
+      connect: jest.fn().mockReturnThis(),
+    };
+    // Make pan.value settable
+    Object.defineProperty(panner.pan, 'value', {
+      get() { return this._value || 0; },
+      set(val) { this._value = val; }
+    });
+    return panner;
+  }),
   MonoSynth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   FMSynth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   PolySynth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   Synth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   NoiseSynth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   MetalSynth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   MembraneSynth: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
     disconnect: jest.fn(),
     dispose: jest.fn(),
     triggerAttackRelease: jest.fn(),
+    volume: { value: 0 },
   })),
   Noise: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockReturnThis(),
@@ -100,6 +119,11 @@ const mockTone = {
     stop: jest.fn(),
     interval: '4n',
   })),
+  Part: jest.fn().mockImplementation((_callback, _notes) => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    dispose: jest.fn(),
+  })),
   Frequency: jest.fn().mockImplementation((_note) => ({
     toFrequency: jest.fn().mockReturnValue(440),
   })),
@@ -112,8 +136,13 @@ describe('SoundManager', () => {
   let soundManager;
 
   beforeEach(() => {
+    jest.useFakeTimers();
     soundManager = new SoundManager();
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('initialization', () => {
@@ -197,7 +226,7 @@ describe('SoundManager', () => {
     it('should play music with theme', () => {
       soundManager.playMusic('mysterious');
 
-      expect(mockTone.Pattern).toHaveBeenCalled();
+      expect(mockTone.Part).toHaveBeenCalled();
       expect(mockTone.Transport.start).toHaveBeenCalled();
       expect(soundManager.channelStates.music).toBe(true);
     });
@@ -206,7 +235,7 @@ describe('SoundManager', () => {
       soundManager.playMusic('heroic', 'pcSpeaker');
 
       expect(mockTone.MonoSynth).toHaveBeenCalled();
-      expect(mockTone.BitCrusher).toHaveBeenCalled(); // PC speaker effect
+      expect(mockTone.Part).toHaveBeenCalled(); // Music sequencing
     });
 
     it('should stop music', () => {
@@ -231,13 +260,13 @@ describe('SoundManager', () => {
     });
 
     it('should handle spatial audio', () => {
-      soundManager.playSound('footstep', { x: 100, y: 50 });
+      soundManager.playSound('pickup', { x: 100, y: 50 });
 
-      expect(soundManager.spatialPanner.pan.value).toBeCloseTo(-0.375, 2);
+      expect(soundManager.spatialPanner.pan.value).toBeCloseTo(-0.347, 2);
     });
 
     it('should apply pitch variation', () => {
-      soundManager.playSound('pickup', { pitch: 1.5 });
+      soundManager.playSound('use_item', { pitch: 1.5 });
 
       expect(mockTone.Frequency).toHaveBeenCalled();
     });

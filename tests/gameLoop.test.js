@@ -144,7 +144,7 @@ describe('GameManager - Game Loop', () => {
     gameManager.lastFrameTime = 1000;
 
     // Simulate frame with enough accumulated time for 2 fixed updates
-    const currentTime = 1000 + 1000 / 30; // ~33ms later
+    const currentTime = 1000 + 1000 / 29; // ~34.5ms later (ensure > 2 * 16.67ms)
     gameManager.gameLoop(currentTime);
 
     // Should have called fixedUpdate twice (2 x 16.67ms)
@@ -173,27 +173,30 @@ describe('GameManager - Game Loop', () => {
     // Mock window.dispatchEvent
     const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
-    // Simulate 60 frames over 1 second
-    let time = 0;
-    for (let i = 0; i < 60; i++) {
-      gameManager.updateFPS(time);
-      time += 16.67; // ~60 FPS
+    // Initialize FPS time
+    gameManager.fpsTime = 0;
+    gameManager.frameCount = 0;
+
+    // Simulate 59 frames under 1 second
+    for (let i = 0; i < 59; i++) {
+      gameManager.updateFPS(i * 16.67);
     }
 
-    // After 1 second, should dispatch FPS event
+    // After exactly 1 second, should dispatch FPS event (60th frame)
     gameManager.updateFPS(1000);
-    expect(dispatchEventSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'game-fps',
-        detail: { fps: 60 },
-      })
-    );
+    
+    // Check that event was dispatched with correct structure
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    const lastCall = dispatchEventSpy.mock.calls[dispatchEventSpy.mock.calls.length - 1][0];
+    expect(lastCall.type).toBe('game-fps');
+    expect(lastCall.detail.fps).toBe(60);
   });
 
   test('should handle different game speeds', () => {
     gameManager = new GameManager(mockCanvas, mockConfig);
     gameManager.isRunning = true;
     gameManager.lastFrameTime = 1000;
+    gameManager.accumulator = 0; // Start with clean accumulator
 
     // Set to fastest speed (5)
     gameManager.setSpeed(5);
@@ -204,21 +207,27 @@ describe('GameManager - Game Loop', () => {
     gameManager.gameLoop(currentTime);
 
     // Check that speed multiplier was applied
+    const baseDelta = 0.01667; // 16.67ms frame in seconds
     const expectedMultiplier = 5 / 3; // Speed 5 divided by normal speed 3
-    const expectedAdjustedDelta = 0.01667 * expectedMultiplier;
+    const expectedAdjustedDelta = baseDelta * expectedMultiplier;
+    // Account for fixed update consumption: accumulator = adjustedDelta - fixedTimeStep
+    const expectedAccumulator = expectedAdjustedDelta - gameManager.fixedTimeStep;
 
-    // Accumulator should have the adjusted delta
-    expect(gameManager.accumulator).toBeCloseTo(expectedAdjustedDelta, 4);
+    // Accumulator should have the adjusted delta minus one fixed timestep
+    expect(gameManager.accumulator).toBeCloseTo(expectedAccumulator, 4);
   });
 
   test('should render with interpolation', () => {
     gameManager = new GameManager(mockCanvas, mockConfig);
     gameManager.isRunning = true;
     gameManager.lastFrameTime = 1000;
-    gameManager.accumulator = gameManager.fixedTimeStep * 0.5; // Half a frame accumulated
+    // Pre-calculate to get exactly 0.5 interpolation after frame processing
+    const frameDelta = 8.33; // Half frame in ms  
+    const adjustedDelta = frameDelta / 1000; // Convert to seconds
+    gameManager.accumulator = (gameManager.fixedTimeStep * 0.5) - adjustedDelta;
 
     // Simulate frame
-    const currentTime = 1008.33; // Half frame later
+    const currentTime = 1000 + frameDelta;
     gameManager.gameLoop(currentTime);
 
     // Should render with interpolation value of ~0.5

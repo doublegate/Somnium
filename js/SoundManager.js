@@ -133,7 +133,10 @@ export class SoundManager {
       this.currentTheme = musicTheme;
 
       // Generate complete musical arrangement
-      const arrangement = this.generateArrangement(musicTheme, options);
+      const arrangement = this.generateArrangement(musicTheme, {
+        ...options,
+        preset: preset,
+      });
 
       // Set up sequencer with the arrangement
       this.setupSequencer(arrangement, preset);
@@ -249,15 +252,17 @@ export class SoundManager {
 
       if (!source) return;
 
-      // Apply spatial audio if position provided
+      // Apply spatial audio if position provided (skip for procedural sounds)
       if (
         this.spatialEnabled &&
-        (options.x !== undefined || options.y !== undefined)
+        (options.x !== undefined || options.y !== undefined) &&
+        source.connect // Check if source is a connectable audio node
       ) {
         const panner = this.calculatePanning(options.x, options.y);
         source.connect(this.spatialPanner);
         this.spatialPanner.pan.value = panner;
-      } else {
+      } else if (source.connect) {
+        // Only connect if source is a connectable audio node
         source.connect(this.volumeNodes.sfx);
       }
 
@@ -1253,8 +1258,8 @@ export class SoundManager {
       this.musicTracks.bass = { synth: bassSynth, part: bassPart };
     }
 
-    // Drum track (if present)
-    if (arrangement.tracks.drums) {
+    // Drum track (if present and not PC speaker)
+    if (arrangement.tracks.drums && preset !== 'pcSpeaker') {
       const drumSynths = {
         kick: new this.Tone.MembraneSynth({
           pitchDecay: 0.05,
