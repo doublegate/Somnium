@@ -184,10 +184,11 @@ describe('GameManager - Game Loop', () => {
 
     // After exactly 1 second, should dispatch FPS event (60th frame)
     gameManager.updateFPS(1000);
-    
+
     // Check that event was dispatched with correct structure
     expect(dispatchEventSpy).toHaveBeenCalled();
-    const lastCall = dispatchEventSpy.mock.calls[dispatchEventSpy.mock.calls.length - 1][0];
+    const lastCall =
+      dispatchEventSpy.mock.calls[dispatchEventSpy.mock.calls.length - 1][0];
     expect(lastCall.type).toBe('game-fps');
     expect(lastCall.detail.fps).toBe(60);
   });
@@ -211,7 +212,8 @@ describe('GameManager - Game Loop', () => {
     const expectedMultiplier = 5 / 3; // Speed 5 divided by normal speed 3
     const expectedAdjustedDelta = baseDelta * expectedMultiplier;
     // Account for fixed update consumption: accumulator = adjustedDelta - fixedTimeStep
-    const expectedAccumulator = expectedAdjustedDelta - gameManager.fixedTimeStep;
+    const expectedAccumulator =
+      expectedAdjustedDelta - gameManager.fixedTimeStep;
 
     // Accumulator should have the adjusted delta minus one fixed timestep
     expect(gameManager.accumulator).toBeCloseTo(expectedAccumulator, 4);
@@ -222,9 +224,9 @@ describe('GameManager - Game Loop', () => {
     gameManager.isRunning = true;
     gameManager.lastFrameTime = 1000;
     // Pre-calculate to get exactly 0.5 interpolation after frame processing
-    const frameDelta = 8.33; // Half frame in ms  
+    const frameDelta = 8.33; // Half frame in ms
     const adjustedDelta = frameDelta / 1000; // Convert to seconds
-    gameManager.accumulator = (gameManager.fixedTimeStep * 0.5) - adjustedDelta;
+    gameManager.accumulator = gameManager.fixedTimeStep * 0.5 - adjustedDelta;
 
     // Simulate frame
     const currentTime = 1000 + frameDelta;

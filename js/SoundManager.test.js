@@ -31,8 +31,12 @@ const mockTone = {
     };
     // Make pan.value settable
     Object.defineProperty(panner.pan, 'value', {
-      get() { return this._value || 0; },
-      set(val) { this._value = val; }
+      get() {
+        return this._value || 0;
+      },
+      set(val) {
+        this._value = val;
+      },
     });
     return panner;
   }),

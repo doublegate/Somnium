@@ -18,10 +18,10 @@
 
 // View effect constants
 export const ViewEffects = {
-  GHOST: 1,       // 50% transparency
-  INVERTED: 2,    // Color inversion
-  FLASHING: 4,    // Flashing effect
-  OUTLINED: 8,    // Black outline
+  GHOST: 1, // 50% transparency
+  INVERTED: 2, // Color inversion
+  FLASHING: 4, // Flashing effect
+  OUTLINED: 8, // Black outline
 };
 
 export class ViewManager {
@@ -213,7 +213,8 @@ export class ViewManager {
 
     // Update cell timing
     let currentCell = loop.cells[view.currentCell];
-    view.cellTime += deltaTime * this.animationSpeed * (loop.speed || 1.0) * 1000; // Convert to ms
+    view.cellTime +=
+      deltaTime * this.animationSpeed * (loop.speed || 1.0) * 1000; // Convert to ms
 
     // Check if it's time to advance cell
     while (view.cellTime >= currentCell.duration) {
@@ -238,7 +239,7 @@ export class ViewManager {
           break; // Stop advancing for non-repeating animations
         }
       }
-      
+
       // Update currentCell reference for next iteration
       currentCell = loop.cells[view.currentCell];
     }
@@ -758,4 +759,3 @@ export class ViewManager {
     }
   }
 }
-

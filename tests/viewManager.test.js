@@ -621,12 +621,14 @@ describe('ViewManager', () => {
       const ctx = viewManager.batchCtx;
       jest.spyOn(ctx, 'save');
       jest.spyOn(ctx, 'restore');
-      
+
       // Create a spy to track globalAlpha assignments
       let alphaValue = 1;
       Object.defineProperty(ctx, 'globalAlpha', {
         get: () => alphaValue,
-        set: (value) => { alphaValue = value; }
+        set: (value) => {
+          alphaValue = value;
+        },
       });
 
       viewManager.renderAll();
