@@ -128,7 +128,7 @@ This master TODO tracks all development phases for the Somnium AI-driven adventu
 
 ### Phase 3.5: Testing & Polish ✅ COMPLETE
 
-- [x] Comprehensive test suites (363 tests passing - 100% pass rate!)
+- [x] Comprehensive test suites (394 tests passing - 100% pass rate!)
 - [x] Demo adventure "The Enchanted Manor"
 - [x] Complete demo world generator
 - [x] Interactive demo pages
