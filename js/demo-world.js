@@ -505,7 +505,7 @@ export function generateDemoWorld() {
         weight: 0.1,
         size: 1,
         value: 5,
-        canTake: true,
+        takeable: true,
         canWear: false,
         canOpen: ['front_door'],
       },
@@ -517,7 +517,7 @@ export function generateDemoWorld() {
         weight: 1,
         size: 3,
         value: 10,
-        canTake: true,
+        takeable: true,
         canWear: false,
         canCut: ['thorns', 'vines'],
       },
@@ -530,7 +530,7 @@ export function generateDemoWorld() {
         weight: 0.2,
         size: 1,
         value: 20,
-        canTake: true,
+        takeable: true,
         canWear: false,
         isLight: true,
       },
@@ -543,7 +543,7 @@ export function generateDemoWorld() {
         weight: 2,
         size: 4,
         value: 50,
-        canTake: true,
+        takeable: true,
         canRead: true,
         text: 'The tome speaks of binding spirits and opening paths between worlds. A diagram shows the placement of three artifacts: an amulet, a crystal, and a mushroom.',
       },
@@ -556,7 +556,7 @@ export function generateDemoWorld() {
         weight: 0.3,
         size: 1,
         value: 100,
-        canTake: true,
+        takeable: true,
         canOpen: ['glowing_door'],
       },
 
@@ -568,7 +568,7 @@ export function generateDemoWorld() {
         weight: 0.5,
         size: 2,
         value: 200,
-        canTake: true,
+        takeable: true,
         canWear: true,
         wearSlot: 'neck',
       },
@@ -581,7 +581,7 @@ export function generateDemoWorld() {
         weight: 0.05,
         size: 1,
         value: 25,
-        canTake: true,
+        takeable: true,
       },
 
       {
@@ -592,7 +592,7 @@ export function generateDemoWorld() {
         weight: 0.3,
         size: 2,
         value: 30,
-        canTake: true,
+        takeable: true,
         canUse: true,
       },
 
@@ -603,7 +603,7 @@ export function generateDemoWorld() {
         weight: 0.1,
         size: 1,
         value: 75,
-        canTake: true,
+        takeable: true,
         canRead: true,
         consumable: true,
       },
@@ -615,7 +615,7 @@ export function generateDemoWorld() {
         weight: 0.2,
         size: 1,
         value: 15,
-        canTake: true,
+        takeable: true,
       },
 
       {
@@ -626,7 +626,7 @@ export function generateDemoWorld() {
         weight: 1,
         size: 3,
         value: 20,
-        canTake: true,
+        takeable: true,
         canRead: true,
       },
 
@@ -637,7 +637,7 @@ export function generateDemoWorld() {
         weight: 0.1,
         size: 1,
         value: 10,
-        canTake: true,
+        takeable: true,
       },
     ],
 
@@ -647,7 +647,7 @@ export function generateDemoWorld() {
         name: 'heavy oak door',
         description:
           'A massive door made of ancient oak, reinforced with iron bands. A brass keyhole gleams in the center.',
-        canTake: false,
+        takeable: false,
         canOpen: true,
         isOpen: false,
         isLocked: true,
@@ -668,7 +668,7 @@ export function generateDemoWorld() {
         name: 'doormat',
         description:
           "A worn doormat that says 'Welcome' in faded letters. It looks like it hasn't been moved in years.",
-        canTake: false,
+        takeable: false,
         canMove: true,
         hiddenUnder: 'brass_key',
       },
@@ -678,7 +678,7 @@ export function generateDemoWorld() {
         name: 'bookshelf',
         description:
           'This bookshelf seems slightly out of alignment with the others. Some of the books look fake.',
-        canTake: false,
+        takeable: false,
         canMove: true,
         isSecret: true,
         onMove: {
@@ -696,7 +696,7 @@ export function generateDemoWorld() {
         name: 'jewelry box',
         description:
           'An ornate box with mother-of-pearl inlay. It has a small keyhole.',
-        canTake: false,
+        takeable: false,
         isContainer: true,
         isLocked: false,
         capacity: 5,
@@ -708,7 +708,7 @@ export function generateDemoWorld() {
         name: 'well',
         description:
           'A stone well with a wooden bucket on a rope. You can hear water far below.',
-        canTake: false,
+        takeable: false,
         canUse: true,
         onUse: {
           message: 'You lower the bucket and draw up fresh water.',

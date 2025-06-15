@@ -26,6 +26,7 @@ api-config.js
 .project
 .settings/
 .classpath
+ref_code/
 
 # Save Files
 saves/

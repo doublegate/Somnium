@@ -80,8 +80,57 @@ describe('GameManager - Game Loop', () => {
 
     jest.mock('../js/EventManager.js', () => ({
       EventManager: jest.fn().mockImplementation(() => ({
-        updateScheduledEvents: jest.fn(),
+        processScheduledEvents: jest.fn(),
         executeCommand: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/CommandExecutor.js', () => ({
+      CommandExecutor: jest.fn().mockImplementation(() => ({
+        execute: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/Inventory.js', () => ({
+      Inventory: jest.fn().mockImplementation(() => ({
+        addItem: jest.fn(),
+        removeItem: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/InteractionSystem.js', () => ({
+      InteractionSystem: jest.fn().mockImplementation(() => ({
+        initialize: jest.fn(),
+        update: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/MovementSystem.js', () => ({
+      MovementSystem: jest.fn().mockImplementation(() => ({
+        update: jest.fn(),
+        movePlayer: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/PuzzleSystem.js', () => ({
+      PuzzleSystem: jest.fn().mockImplementation(() => ({
+        initialize: jest.fn(),
+        update: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/NPCSystem.js', () => ({
+      NPCSystem: jest.fn().mockImplementation(() => ({
+        initialize: jest.fn(),
+        update: jest.fn(),
+      })),
+    }));
+
+    jest.mock('../js/GameProgression.js', () => ({
+      GameProgression: jest.fn().mockImplementation(() => ({
+        initialize: jest.fn(),
+        update: jest.fn(),
+        checkGameCompletion: jest.fn().mockReturnValue({ completed: false }),
       })),
     }));
 
@@ -149,7 +198,7 @@ describe('GameManager - Game Loop', () => {
 
     // Should have called fixedUpdate twice (2 x 16.67ms)
     expect(
-      gameManager.eventManager.updateScheduledEvents
+      gameManager.eventManager.processScheduledEvents
     ).toHaveBeenCalledTimes(2);
     expect(gameManager.viewManager.updatePositions).toHaveBeenCalledTimes(2);
   });

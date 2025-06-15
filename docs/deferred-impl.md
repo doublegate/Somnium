@@ -12,11 +12,12 @@ This document tracks functionality that was commented out, removed, marked as TO
    - Need to parse aliases like 'n' -> 'go north' properly
    - Location: `CommandExecutor.js` line ~1650
 
-2. **Complete handleAsk() implementation**
+2. **Complete handleAsk() implementation** ✅ COMPLETE
 
-   - Currently has basic topic handling
-   - Need to integrate with NPCSystem for dynamic responses
-   - Location: `CommandExecutor.js` line ~1090
+   - ~~Currently has basic topic handling~~
+   - ~~Need to integrate with NPCSystem for dynamic responses~~
+   - Fully integrated with NPCSystem.startDialogue()
+   - Handles topic-based conversations, relationship updates, and item giving
 
 3. **Complete handleGive() NPC acceptance logic**
 
@@ -25,26 +26,31 @@ This document tracks functionality that was commented out, removed, marked as TO
    - Need to handle `acceptMessage` and `refuseMessage`
    - Location: `CommandExecutor.js` line ~706
 
-4. **Save/Load implementation**
+4. **Save/Load implementation** ✅ COMPLETE
 
-   - `handleSave()` currently returns "Feature coming soon"
-   - `handleLoad()` returns "not yet implemented"
-   - Need actual save/load functionality with GameState
-   - Location: `CommandExecutor.js` lines ~509, ~1482
+   - ~~`handleSave()` currently returns "Feature coming soon"~~
+   - ~~`handleLoad()` returns "not yet implemented"~~
+   - Full save/load functionality implemented
+   - Supports both file download and browser storage
+   - Multiple save slots with metadata
 
-5. **Container state checking in handlePut()**
+5. **Container state checking in handlePut()** ✅ COMPLETE
 
-   - Need to check if container is open before putting items
-   - Currently missing `target.open` check
-   - Location: `CommandExecutor.js` line ~764
+   - ~~Need to check if container is open before putting items~~
+   - ~~Currently missing `target.open` check~~
+   - Now checks container open state using gameState.getObjectState()
+   - Proper error messages for closed containers
 
-6. **Complete command handlers**
+6. **Complete command handlers** ✅ MOSTLY COMPLETE
 
-   - `handleSearch()` - Partial implementation
-   - `handleRead()` - Basic implementation needs enhancement
-   - `handlePush()`, `handlePull()`, `handleTurn()`, `handleTouch()` - Stub implementations
-   - `handleEat()`, `handleDrink()` - Basic implementations need item effects
-   - `handleYell()` - Could trigger area events
+   - `handleSearch()` - ✅ Full implementation with hidden item discovery
+   - `handleRead()` - Basic implementation (adequate for Phase 3)
+   - `handlePush()` - ✅ Complete with effects and state tracking
+   - `handlePull()` - ✅ Complete with multi-stage effects
+   - `handleTurn()` - ✅ Complete with state cycling and effects
+   - `handleTouch()` - ✅ Complete with sensory feedback
+   - `handleEat()`, `handleDrink()` - Basic implementations (adequate for Phase 3)
+   - `handleYell()` - Basic implementation (adequate for Phase 3)
 
 7. **Object property standardization**
    - Some objects use `canTake` while others use `takeable`
@@ -53,26 +59,32 @@ This document tracks functionality that was commented out, removed, marked as TO
 
 ### EventManager.js
 
-1. **Missing triggerEvent() method**
+1. **Missing triggerEvent() method** ✅ COMPLETE
 
-   - Referenced by tests but not implemented
-   - Needed for wait command and other event triggers
-   - Should dispatch events to registered handlers
+   - ~~Referenced by tests but not implemented~~
+   - ~~Needed for wait command and other event triggers~~
+   - Full implementation added to EventManager
+   - Dispatches events to registered handlers with condition checking
 
 2. **Missing checkCondition() method**
 
    - Referenced in tests but not implemented
    - Should evaluate condition objects against game state
 
-3. **Dynamic command execution**
+3. **Dynamic command execution** ✅ COMPLETE
 
-   - `executeCommand()` should handle scripted events
-   - Currently only passes to AI manager
+   - ~~`executeCommand()` should handle scripted events~~
+   - ~~Currently only passes to AI manager~~
+   - Now properly executes scripted events based on verb
+   - Falls back to dynamic AI responses when no script exists
 
-4. **Event scheduling and processing**
-   - `scheduledEvents` array exists but no processing loop
-   - Need to implement event queue processing in game loop
-   - Add support for delayed/timed events
+4. **Event scheduling and processing** ✅ COMPLETE
+   - ~~`scheduledEvents` array exists but no processing loop~~
+   - ~~Need to implement event queue processing in game loop~~
+   - ~~Add support for delayed/timed events~~
+   - `processScheduledEvents()` method implemented
+   - Called from GameManager's fixedUpdate loop
+   - Full support for delayed and timed events
 
 ### Recently Fixed Issues (Completed)
 

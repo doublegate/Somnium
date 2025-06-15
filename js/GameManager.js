@@ -88,7 +88,10 @@ export class GameManager {
       this.soundManager,
       this.inventory,
       this.interactionSystem,
-      this.movementSystem
+      this.movementSystem,
+      this.puzzleSystem,
+      this.npcSystem,
+      this.gameProgression
     );
 
     // Timing
@@ -290,13 +293,19 @@ export class GameManager {
    */
   fixedUpdate(deltaTime) {
     // Update game logic that needs deterministic timing
-    this.eventManager.updateScheduledEvents(deltaTime);
+    this.eventManager.processScheduledEvents(deltaTime);
 
     // Update movement systems
     this.movementSystem.update(deltaTime);
 
     // Update NPCs
     this.npcSystem.update(deltaTime);
+
+    // Update puzzles
+    this.puzzleSystem.update(deltaTime);
+
+    // Update game progression
+    this.gameProgression.update(deltaTime);
 
     // Check game completion
     const completion = this.gameProgression.checkGameCompletion();

@@ -693,6 +693,254 @@ export class GameState extends EventTarget {
   }
 
   /**
+   * Create a complete save file
+   * @returns {Object} Save file object
+   */
+  createSaveFile() {
+    return {
+      version: 1,
+      resources: {
+        gameJSON: this.gameJSON,
+        rooms: this.rooms,
+        items: this.items,
+        objects: this.objects,
+        puzzles: this.puzzles,
+        vocabulary: this.vocabulary,
+      },
+      state: {
+        currentRoom: this.currentRoomId,
+        inventory: [...this.inventory],
+        worn: { ...this.worn },
+        flags: { ...this.flags },
+        objectStates: JSON.parse(JSON.stringify(this.objectStates)),
+        exitStates: JSON.parse(JSON.stringify(this.exitStates)),
+        score: this.score,
+        maxScore: this.maxScore,
+        moves: this.moves,
+        turns: this.turns,
+        health: this.health,
+        maxHealth: this.maxHealth,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  /**
+   * Save game to file
+   * @param {string} filename - Optional filename
+   * @returns {Promise<boolean>} Success
+   */
+  async saveGame(filename) {
+    try {
+      const saveData = this.createSaveFile();
+      const jsonStr = JSON.stringify(saveData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+
+      // Generate filename if not provided
+      if (!filename) {
+        const title = saveData.resources.gameJSON?.plot?.title || 'Somnium';
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        filename = `${title.replace(/[^a-z0-9]/gi, '_')}_${timestamp}.somnium.json`;
+      }
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Dispatch save event
+      this.dispatchEvent(
+        new CustomEvent('gameSaved', {
+          detail: { filename, timestamp: new Date().toISOString() },
+        })
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Save game error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Load game from save file object
+   * @param {Object} saveData - Save file data
+   * @returns {boolean} Success
+   */
+  loadFromSaveData(saveData) {
+    try {
+      // Validate version
+      if (saveData.version !== 1) {
+        throw new Error(`Unsupported save file version: ${saveData.version}`);
+      }
+
+      // Validate structure
+      if (!saveData.resources || !saveData.state) {
+        throw new Error('Invalid save file structure');
+      }
+
+      // Load resources
+      const { resources, state } = saveData;
+      this.gameJSON = resources.gameJSON || null;
+      this.rooms = resources.rooms || {};
+      this.items = resources.items || {};
+      this.objects = resources.objects || {};
+      this.puzzles = resources.puzzles || [];
+      this.vocabulary = resources.vocabulary || {};
+
+      // Apply state
+      this.currentRoomId = state.currentRoom || null;
+      this.inventory = state.inventory || [];
+      this.worn = state.worn || {};
+      this.flags = state.flags || {};
+      this.objectStates = state.objectStates || {};
+      this.exitStates = state.exitStates || {};
+      this.score = state.score || 0;
+      this.maxScore = state.maxScore || 100;
+      this.moves = state.moves || 0;
+      this.turns = state.turns || 0;
+      this.health = state.health || 100;
+      this.maxHealth = state.maxHealth || 100;
+
+      // Clear history on load
+      this.stateHistory = [];
+      this.saveStateSnapshot();
+
+      // Dispatch load event
+      this.dispatchEvent(
+        new CustomEvent('gameLoaded', {
+          detail: {
+            title: resources.gameJSON?.plot?.title || 'Unknown',
+            timestamp: state.timestamp,
+          },
+        })
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Load game error:', error);
+      this.dispatchEvent(
+        new CustomEvent('loadError', {
+          detail: { error: error.message },
+        })
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Load game from file
+   * @param {File} file - File object from input
+   * @returns {Promise<boolean>} Success
+   */
+  async loadGame(file) {
+    try {
+      const text = await file.text();
+      const saveData = JSON.parse(text);
+      return this.loadFromSaveData(saveData);
+    } catch (error) {
+      console.error('Load game file error:', error);
+      this.dispatchEvent(
+        new CustomEvent('loadError', {
+          detail: { error: 'Failed to read save file' },
+        })
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Get list of saved games (browser storage)
+   * @returns {Array} List of save metadata
+   */
+  getSaveFiles() {
+    const saves = [];
+
+    // Check localStorage for saves
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('somnium_save_')) {
+        try {
+          const saveData = JSON.parse(localStorage.getItem(key));
+          saves.push({
+            key,
+            title: saveData.resources?.gameJSON?.plot?.title || 'Unknown',
+            timestamp: saveData.state?.timestamp,
+            score: saveData.state?.score || 0,
+            moves: saveData.state?.moves || 0,
+          });
+        } catch (error) {
+          console.error(`Invalid save file ${key}:`, error);
+        }
+      }
+    }
+
+    // Sort by timestamp (newest first)
+    saves.sort((a, b) => {
+      const timeA = new Date(a.timestamp).getTime();
+      const timeB = new Date(b.timestamp).getTime();
+      return timeB - timeA;
+    });
+
+    return saves;
+  }
+
+  /**
+   * Save game to browser storage
+   * @param {string} slotName - Save slot name
+   * @returns {boolean} Success
+   */
+  saveToStorage(slotName) {
+    try {
+      const saveData = this.createSaveFile();
+      const key = `somnium_save_${slotName}`;
+      localStorage.setItem(key, JSON.stringify(saveData));
+
+      this.dispatchEvent(
+        new CustomEvent('gameSaved', {
+          detail: { slotName, timestamp: saveData.state.timestamp },
+        })
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Save to storage error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Load game from browser storage
+   * @param {string} slotName - Save slot name
+   * @returns {boolean} Success
+   */
+  loadFromStorage(slotName) {
+    try {
+      const key = `somnium_save_${slotName}`;
+      const saveText = localStorage.getItem(key);
+      if (!saveText) {
+        throw new Error('Save slot not found');
+      }
+
+      const saveData = JSON.parse(saveText);
+      return this.loadFromSaveData(saveData);
+    } catch (error) {
+      console.error('Load from storage error:', error);
+      this.dispatchEvent(
+        new CustomEvent('loadError', {
+          detail: { error: error.message },
+        })
+      );
+      return false;
+    }
+  }
+
+  /**
    * Wear an item
    * @param {string} itemId - Item ID
    */

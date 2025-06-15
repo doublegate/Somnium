@@ -93,9 +93,26 @@ describe('CommandExecutor', () => {
       hasItem: jest.fn((id) => mockGameState.inventory.includes(id)),
       addToRoom: jest.fn(),
       removeFromRoom: jest.fn(),
-      saveGame: jest.fn().mockReturnValue(true),
-      loadGame: jest.fn().mockReturnValue(true),
-      getSaveFiles: jest.fn().mockReturnValue(['save1', 'save2']),
+      saveGame: jest.fn().mockResolvedValue(true),
+      loadGame: jest.fn().mockResolvedValue(true),
+      saveToStorage: jest.fn().mockReturnValue(true),
+      loadFromStorage: jest.fn().mockReturnValue(true),
+      getSaveFiles: jest.fn().mockReturnValue([
+        {
+          key: 'somnium_save_save1',
+          title: 'Test Adventure',
+          timestamp: new Date().toISOString(),
+          score: 10,
+          moves: 5,
+        },
+        {
+          key: 'somnium_save_save2',
+          title: 'Another Game',
+          timestamp: new Date().toISOString(),
+          score: 20,
+          moves: 15,
+        },
+      ]),
       deleteSave: jest.fn().mockReturnValue(true),
       history: [],
       flags: new Map(),
@@ -107,6 +124,10 @@ describe('CommandExecutor', () => {
         mockGameState.rooms.get(mockGameState.currentRoomId)
       ),
       setObjectState: jest.fn(),
+      getObjectState: jest.fn((id, state) => {
+        const obj = mockGameState.objects.get(id);
+        return obj && obj[state];
+      }),
     };
 
     // Mock EventManager
@@ -133,6 +154,7 @@ describe('CommandExecutor', () => {
     mockSoundManager = {
       playSound: jest.fn(),
       playMusic: jest.fn(),
+      playSoundEffect: jest.fn(),
     };
 
     // Mock Inventory
@@ -196,7 +218,24 @@ describe('CommandExecutor', () => {
 
     // Add missing systems to commandExecutor
     commandExecutor.puzzleSystem = null;
-    commandExecutor.npcSystem = null;
+    commandExecutor.npcSystem = {
+      isNPCPresent: jest.fn().mockReturnValue(true),
+      getNPCReaction: jest.fn().mockReturnValue({
+        message: 'Thank you!',
+      }),
+      giveItem: jest.fn().mockReturnValue({
+        success: true,
+        message: 'Thank you for the gift!',
+        accepted: true,
+        relationshipChange: 10,
+      }),
+      updateRelationship: jest.fn(),
+      startConversation: jest.fn().mockReturnValue({
+        success: true,
+        message: 'Hello there!',
+        options: ['Ask about wares', 'Leave'],
+      }),
+    };
     commandExecutor.gameProgression = null;
   });
 
@@ -803,13 +842,11 @@ describe('CommandExecutor', () => {
 
   describe('talk command', () => {
     it('should initiate NPC conversations', async () => {
-      commandExecutor.npcSystem = {
-        startConversation: jest.fn().mockReturnValue({
-          success: true,
-          message: 'Hello there!',
-          options: ['Ask about wares', 'Leave'],
-        }),
-      };
+      commandExecutor.npcSystem.startConversation = jest.fn().mockReturnValue({
+        success: true,
+        message: 'Hello there!',
+        options: ['Ask about wares', 'Leave'],
+      });
 
       const result = await commandExecutor.execute({
         success: true,
@@ -868,7 +905,7 @@ describe('CommandExecutor', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockGameState.saveGame).toHaveBeenCalledWith('mysave');
+      expect(mockGameState.saveToStorage).toHaveBeenCalledWith('mysave');
     });
 
     it('should load game state', async () => {
@@ -887,14 +924,28 @@ describe('CommandExecutor', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockGameState.loadGame).toHaveBeenCalledWith('mysave');
+      expect(mockGameState.loadFromStorage).toHaveBeenCalledWith('mysave');
     });
 
-    it('should list save files', async () => {
+    it('should save to file when no name provided', async () => {
       const result = await commandExecutor.execute({
         success: true,
         command: {
           verb: 'save',
+          modifiers: [],
+        },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.text).toContain('Game saved to file');
+      expect(mockGameState.saveGame).toHaveBeenCalled();
+    });
+
+    it('should list save files with load command', async () => {
+      const result = await commandExecutor.execute({
+        success: true,
+        command: {
+          verb: 'load',
           modifiers: [],
         },
       });
@@ -981,13 +1032,6 @@ describe('CommandExecutor', () => {
 
   describe('give command', () => {
     it('should give items to NPCs', async () => {
-      commandExecutor.npcSystem = {
-        isNPCPresent: jest.fn().mockReturnValue(true),
-        getNPCReaction: jest.fn().mockReturnValue({
-          message: 'Thank you!',
-        }),
-      };
-
       const result = await commandExecutor.execute({
         success: true,
         command: {
@@ -1010,7 +1054,7 @@ describe('CommandExecutor', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.text).toContain('give the brass key to Bob');
+      expect(result.text).toContain('Thank you for the gift!');
     });
   });
 
@@ -1059,6 +1103,7 @@ describe('CommandExecutor', () => {
   describe('put command', () => {
     it('should put items in containers', async () => {
       mockGameState.objects.get('table').isContainer = true;
+      mockGameState.objects.get('table').isOpen = true;
       mockInventory.putInContainer = jest.fn().mockReturnValue({
         success: true,
         message: 'You put the key in the table.',

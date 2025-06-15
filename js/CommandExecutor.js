@@ -15,6 +15,9 @@ export class CommandExecutor {
    * @param {Inventory} inventory - Inventory management system
    * @param {InteractionSystem} interactionSystem - Object interaction system
    * @param {MovementSystem} movementSystem - Movement and navigation system
+   * @param {PuzzleSystem} puzzleSystem - Puzzle management system
+   * @param {NPCSystem} npcSystem - NPC management system
+   * @param {GameProgression} gameProgression - Game progression tracking
    */
   constructor(
     gameState,
@@ -24,7 +27,10 @@ export class CommandExecutor {
     soundManager,
     inventory,
     interactionSystem,
-    movementSystem
+    movementSystem,
+    puzzleSystem,
+    npcSystem,
+    gameProgression
   ) {
     this.gameState = gameState;
     this.eventManager = eventManager;
@@ -34,6 +40,9 @@ export class CommandExecutor {
     this.inventory = inventory;
     this.interactionSystem = interactionSystem;
     this.movementSystem = movementSystem;
+    this.puzzleSystem = puzzleSystem;
+    this.npcSystem = npcSystem;
+    this.gameProgression = gameProgression;
 
     // Command handlers mapped to verbs
     this.handlers = {
@@ -594,7 +603,8 @@ export class CommandExecutor {
       };
     }
 
-    const npc = this.gameState.getNPC(targetRef.value);
+    const npcId = targetRef.value;
+    const npc = this.gameState.getNPC(npcId);
     const item = this.gameState.getItem(objectRef.value);
 
     if (!npc || !item) {
@@ -605,16 +615,40 @@ export class CommandExecutor {
       };
     }
 
-    // Simple give action for now
-    this.inventory.removeItem(item.id);
+    // Use NPCSystem to handle giving
+    const giveResult = this.npcSystem.giveItem(npcId, item.id);
 
+    if (giveResult.success) {
+      // Remove from inventory
+      this.inventory.removeItem(item.id);
+
+      // Update score if applicable
+      if (item.givePoints) {
+        this.gameState.updateScore(item.givePoints);
+      }
+
+      // Update relationship
+      const relationshipChange = giveResult.relationshipChange || 10;
+      this.npcSystem.updateRelationship(npcId, relationshipChange);
+
+      // Play appropriate sound
+      this.soundManager.playSoundEffect(
+        giveResult.accepted ? 'give_accept' : 'give'
+      );
+
+      return {
+        success: true,
+        text: giveResult.message || `You give the ${item.name} to ${npc.name}.`,
+        audio: 'give',
+        stateChanges: giveResult.stateChanges,
+      };
+    }
+
+    // NPC refuses the item
     return {
-      success: true,
-      text: `You give the ${item.name} to ${npc.name}.`,
-      audio: 'give',
-      stateChanges: {
-        score: this.gameState.score + (item.givePoints || 0),
-      },
+      success: false,
+      text: giveResult.message || `${npc.name} doesn't want the ${item.name}.`,
+      audio: 'error',
     };
   }
 
@@ -650,6 +684,20 @@ export class CommandExecutor {
       return {
         success: false,
         text: "You can't put anything in that.",
+        audio: 'error',
+      };
+    }
+
+    // Check if container is open
+    const isOpen =
+      this.gameState.getObjectState(target.id, 'open') ||
+      target.open ||
+      target.isOpen;
+    if (!isOpen && target.openable !== false) {
+      // Some containers might not need to be opened
+      return {
+        success: false,
+        text: `The ${target.name} is closed.`,
         audio: 'error',
       };
     }
@@ -1004,10 +1052,50 @@ export class CommandExecutor {
       };
     }
 
-    const npc = this.gameState.getNPC(npcRef.value);
+    const npcId = npcRef.value;
+    const npc = this.gameState.getNPC(npcId);
+    if (!npc) {
+      return {
+        success: false,
+        text: "They're not here.",
+        audio: 'error',
+      };
+    }
+
     const topic = command.directObject || 'general';
 
-    // Look for topic-specific response
+    // Use NPCSystem for dialogue
+    const dialogueResult = this.npcSystem.startDialogue(npcId, topic);
+
+    if (dialogueResult.success) {
+      // Update relationship based on topic
+      if (topic === 'help' || topic === 'quest') {
+        this.npcSystem.updateRelationship(npcId, 5);
+      }
+
+      // Check if this reveals new information
+      if (dialogueResult.revealsFlag) {
+        this.gameState.setFlag(dialogueResult.revealsFlag, true);
+      }
+
+      // Check if this gives an item
+      if (dialogueResult.givesItem) {
+        this.inventory.addItem(dialogueResult.givesItem);
+      }
+
+      // Play appropriate sound
+      const mood = dialogueResult.mood || 'neutral';
+      this.soundManager.playSoundEffect(`npc_${mood}`);
+
+      return {
+        success: true,
+        text: `${npc.name}: "${dialogueResult.text}"`,
+        audio: 'talk',
+        stateChanges: dialogueResult.stateChanges,
+      };
+    }
+
+    // Fallback to basic topic system if NPCSystem doesn't have dialogue
     if (npc.topics && npc.topics[topic]) {
       return {
         success: true,
@@ -1017,9 +1105,19 @@ export class CommandExecutor {
     }
 
     // Default response
+    const defaultResponses = [
+      "I don't know about that.",
+      "That's not something I can help with.",
+      "I'm not sure what you mean.",
+      'Perhaps you should ask someone else.',
+    ];
+
+    const response =
+      defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+
     return {
       success: true,
-      text: `${npc.name}: "I don't know about that."`,
+      text: `${npc.name}: "${response}"`,
       audio: 'talk',
     };
   }
@@ -1073,7 +1171,7 @@ export class CommandExecutor {
     if (!objectRef) {
       return {
         success: false,
-        text: "I don't see that here.",
+        text: 'Push what?',
         audio: 'error',
       };
     }
@@ -1087,23 +1185,66 @@ export class CommandExecutor {
       };
     }
 
-    if (object.pushable) {
-      // Set flag if this reveals something
-      if (object.id === 'bookshelf') {
-        this.gameState.setFlag('bookshelf_moved', true);
-      }
-
+    // Check if object is pushable
+    if (!object.pushable) {
       return {
-        success: true,
-        text: object.pushMessage || `You push the ${object.name}.`,
-        audio: 'push',
+        success: false,
+        text: object.notPushableMessage || "It won't budge.",
+        audio: 'error',
       };
     }
 
+    // Check if already pushed
+    const alreadyPushed = this.gameState.getObjectState(object.id, 'pushed');
+    if (alreadyPushed && !object.repeatablePush) {
+      return {
+        success: false,
+        text:
+          object.alreadyPushedMessage ||
+          "You've already moved it as far as it will go.",
+        audio: null,
+      };
+    }
+
+    // Push the object
+    this.gameState.setObjectState(object.id, 'pushed', true);
+
+    // Handle any push effects
+    if (object.pushEffects) {
+      for (const effect of object.pushEffects) {
+        if (effect.type === 'revealExit') {
+          this.gameState.setExitState(effect.roomId, effect.direction, {
+            enabled: true,
+          });
+        } else if (effect.type === 'revealObject') {
+          const hiddenObject = this.gameState.getObject(effect.objectId);
+          if (hiddenObject) {
+            hiddenObject.hidden = false;
+          }
+        } else if (effect.type === 'setFlag') {
+          this.gameState.setFlag(
+            effect.flag,
+            effect.value !== undefined ? effect.value : true
+          );
+        }
+      }
+    }
+
+    // Trigger any associated events
+    if (object.pushEvent) {
+      await this.eventManager.triggerEvent(object.pushEvent, {
+        object: object.id,
+      });
+    }
+
+    // Play sound effect
+    this.soundManager.playSoundEffect('furniture_push');
+
     return {
-      success: false,
-      text: "It won't budge.",
-      audio: 'error',
+      success: true,
+      text: object.pushMessage || `You push the ${object.name}.`,
+      audio: 'push',
+      stateChanges: { objectStates: { [object.id]: { pushed: true } } },
     };
   }
 
@@ -1112,7 +1253,7 @@ export class CommandExecutor {
     if (!objectRef) {
       return {
         success: false,
-        text: "I don't see that here.",
+        text: 'Pull what?',
         audio: 'error',
       };
     }
@@ -1126,18 +1267,67 @@ export class CommandExecutor {
       };
     }
 
-    if (object.pullable) {
+    // Check if object is pullable
+    if (!object.pullable) {
       return {
-        success: true,
-        text: object.pullMessage || `You pull the ${object.name}.`,
-        audio: 'pull',
+        success: false,
+        text: object.notPullableMessage || "It won't move.",
+        audio: 'error',
       };
     }
 
+    // Check if already pulled
+    const alreadyPulled = this.gameState.getObjectState(object.id, 'pulled');
+    if (alreadyPulled && !object.repeatablePull) {
+      return {
+        success: false,
+        text:
+          object.alreadyPulledMessage ||
+          "You've already pulled it as far as it will go.",
+        audio: null,
+      };
+    }
+
+    // Pull the object
+    this.gameState.setObjectState(object.id, 'pulled', true);
+
+    // Handle any pull effects
+    if (object.pullEffects) {
+      for (const effect of object.pullEffects) {
+        if (effect.type === 'revealItem') {
+          this.gameState.addToRoom(effect.itemId);
+        } else if (effect.type === 'openExit') {
+          this.gameState.setExitState(effect.roomId, effect.direction, {
+            enabled: true,
+          });
+        } else if (effect.type === 'setFlag') {
+          this.gameState.setFlag(
+            effect.flag,
+            effect.value !== undefined ? effect.value : true
+          );
+        } else if (effect.type === 'breakObject') {
+          // Object breaks when pulled
+          this.gameState.setObjectState(object.id, 'broken', true);
+        }
+      }
+    }
+
+    // Trigger any associated events
+    if (object.pullEvent) {
+      await this.eventManager.triggerEvent(object.pullEvent, {
+        object: object.id,
+      });
+    }
+
+    // Play sound effect
+    const soundEffect = object.pullSound || 'lever_pull';
+    this.soundManager.playSoundEffect(soundEffect);
+
     return {
-      success: false,
-      text: "It won't move.",
-      audio: 'error',
+      success: true,
+      text: object.pullMessage || `You pull the ${object.name}.`,
+      audio: 'pull',
+      stateChanges: { objectStates: { [object.id]: { pulled: true } } },
     };
   }
 
@@ -1146,7 +1336,7 @@ export class CommandExecutor {
     if (!objectRef) {
       return {
         success: false,
-        text: "I don't see that here.",
+        text: 'Turn what?',
         audio: 'error',
       };
     }
@@ -1160,23 +1350,79 @@ export class CommandExecutor {
       };
     }
 
-    if (object.turnable) {
-      // Toggle state
-      const currentState =
-        this.gameState.getObjectState(object.id, 'turned') || false;
-      this.gameState.setObjectState(object.id, 'turned', !currentState);
-
+    // Check if object is turnable
+    if (!object.turnable) {
       return {
-        success: true,
-        text: object.turnMessage || `You turn the ${object.name}.`,
-        audio: 'turn',
+        success: false,
+        text: object.notTurnableMessage || "It doesn't turn.",
+        audio: 'error',
       };
     }
 
+    // Get current state
+    const currentState =
+      this.gameState.getObjectState(object.id, 'turnState') || 0;
+    const maxStates = object.turnStates || 2; // Default to on/off
+    const newState = (currentState + 1) % maxStates;
+
+    // Update state
+    this.gameState.setObjectState(object.id, 'turnState', newState);
+    this.gameState.setObjectState(object.id, 'turned', newState > 0);
+
+    // Handle turn effects based on new state
+    if (object.turnEffects && object.turnEffects[newState]) {
+      const effects = object.turnEffects[newState];
+      for (const effect of effects) {
+        if (effect.type === 'power') {
+          // Turn power on/off for connected objects
+          if (effect.targets) {
+            effect.targets.forEach((targetId) => {
+              this.gameState.setObjectState(targetId, 'powered', effect.value);
+            });
+          }
+        } else if (effect.type === 'openValve') {
+          // Control flow (water, gas, etc)
+          this.gameState.setFlag(effect.flag, effect.value);
+        } else if (effect.type === 'setFlag') {
+          this.gameState.setFlag(effect.flag, effect.value);
+        } else if (effect.type === 'playSound') {
+          this.soundManager.playSoundEffect(effect.sound);
+        }
+      }
+    }
+
+    // Get appropriate message
+    let message = object.turnMessage;
+    if (!message && object.turnMessages && object.turnMessages[newState]) {
+      message = object.turnMessages[newState];
+    } else if (!message) {
+      message = `You turn the ${object.name}.`;
+    }
+
+    // Trigger any associated events
+    if (object.turnEvent) {
+      await this.eventManager.triggerEvent(object.turnEvent, {
+        object: object.id,
+        state: newState,
+      });
+    }
+
+    // Play sound effect
+    const soundEffect = object.turnSound || 'dial_turn';
+    this.soundManager.playSoundEffect(soundEffect);
+
     return {
-      success: false,
-      text: "It doesn't turn.",
-      audio: 'error',
+      success: true,
+      text: message,
+      audio: 'turn',
+      stateChanges: {
+        objectStates: {
+          [object.id]: {
+            turnState: newState,
+            turned: newState > 0,
+          },
+        },
+      },
     };
   }
 
@@ -1185,13 +1431,16 @@ export class CommandExecutor {
     if (!objectRef) {
       return {
         success: false,
-        text: "I don't see that here.",
+        text: 'Touch what?',
         audio: 'error',
       };
     }
 
     const object = objectRef.object;
-    if (!object) {
+    const item = objectRef.item;
+    const target = object || item;
+
+    if (!target) {
       return {
         success: false,
         text: "You can't touch that.",
@@ -1199,13 +1448,72 @@ export class CommandExecutor {
       };
     }
 
+    // Mark as touched
+    this.gameState.setObjectState(target.id, 'touched', true);
+
+    // Handle touch effects
+    if (target.touchEffects) {
+      for (const effect of target.touchEffects) {
+        if (effect.type === 'damage') {
+          // Object causes damage when touched
+          const currentHealth = this.gameState.health;
+          this.gameState.health = Math.max(0, currentHealth - effect.amount);
+          if (this.gameState.health === 0) {
+            // Player dies
+            await this.eventManager.triggerEvent('player_death', {
+              cause: 'touch',
+            });
+          }
+        } else if (effect.type === 'sticky') {
+          // Object sticks to player
+          if (object) {
+            this.gameState.setObjectState(object.id, 'stuckToPlayer', true);
+          }
+        } else if (effect.type === 'electric') {
+          // Electric shock
+          this.soundManager.playSoundEffect('electric_shock');
+        } else if (effect.type === 'temperature') {
+          // Hot or cold
+          if (effect.value === 'hot') {
+            this.soundManager.playSoundEffect('sizzle');
+          } else if (effect.value === 'cold') {
+            this.soundManager.playSoundEffect('freeze');
+          }
+        } else if (effect.type === 'setFlag') {
+          this.gameState.setFlag(effect.flag, effect.value);
+        }
+      }
+    }
+
+    // Trigger any touch events
+    if (target.touchEvent) {
+      await this.eventManager.triggerEvent(target.touchEvent, {
+        object: target.id,
+      });
+    }
+
+    // Get appropriate message
+    let message = target.touchMessage;
+    if (!message) {
+      // Generate contextual message
+      if (target.texture) {
+        message = `It feels ${target.texture}.`;
+      } else if (target.temperature) {
+        message = `It feels ${target.temperature}.`;
+      } else {
+        message = `You touch the ${target.name}.`;
+      }
+    }
+
     return {
       success: true,
-      text:
-        object.touchMessage ||
-        object.description ||
-        `You touch the ${object.name}.`,
-      audio: null,
+      text: message,
+      audio: target.touchSound || null,
+      stateChanges: {
+        objectStates: {
+          [target.id]: { touched: true },
+        },
+      },
     };
   }
 
@@ -1360,27 +1668,53 @@ export class CommandExecutor {
 
   async handleLoad(command) {
     if (!command.directObject) {
+      // Show available saves from browser storage
+      const saves = this.gameState.getSaveFiles();
+      if (saves.length === 0) {
+        return {
+          success: true,
+          text: 'No saved games found.\nTo load: load <name>\nTo load from file: Use the menu.',
+          audio: null,
+        };
+      }
+
+      const saveList = saves
+        .map((save) => {
+          const date = new Date(save.timestamp).toLocaleString();
+          return `${save.key.replace('somnium_save_', '')} - ${save.title} (${date}, Score: ${save.score})`;
+        })
+        .join('\n');
+
       return {
-        success: false,
-        text: 'Load which save?',
-        audio: 'error',
+        success: true,
+        text: `Available saves:\n${saveList}\n\nTo load: load <name>`,
+        audio: null,
       };
     }
 
+    // Load from browser storage
     const saveName = command.directObject;
-    const loaded = this.gameState.loadGame(saveName);
+    const loaded = this.gameState.loadFromStorage(saveName);
 
     if (loaded) {
+      // Need to re-render the current room after loading
+      window.dispatchEvent(
+        new CustomEvent('roomChanged', {
+          detail: { roomId: this.gameState.currentRoomId },
+        })
+      );
+
       return {
         success: true,
         text: `Game loaded from '${saveName}'.`,
         audio: 'success',
+        meta: { action: 'load' },
       };
     }
 
     return {
       success: false,
-      text: 'Failed to load game.',
+      text: `Failed to load save '${saveName}'.`,
       audio: 'error',
     };
   }
@@ -1520,27 +1854,28 @@ export class CommandExecutor {
   }
 
   async handleSave(command) {
+    // If no name provided, save to file
     if (!command.directObject) {
-      // Show available saves
-      const saves = this.gameState.getSaveFiles();
-      if (saves.length === 0) {
+      const saved = await this.gameState.saveGame();
+
+      if (saved) {
         return {
           success: true,
-          text: 'No saved games found.\nTo save: save <name>',
-          audio: null,
+          text: 'Game saved to file.\nTo save with a name: save <name>',
+          audio: 'success',
         };
       }
 
       return {
-        success: true,
-        text: `Available saves:\n${saves.join('\n')}\n\nTo save: save <name>`,
-        audio: null,
+        success: false,
+        text: 'Failed to save game.',
+        audio: 'error',
       };
     }
 
-    // Save the game
+    // Save to browser storage with name
     const saveName = command.directObject;
-    const saved = this.gameState.saveGame(saveName);
+    const saved = this.gameState.saveToStorage(saveName);
 
     if (saved) {
       return {

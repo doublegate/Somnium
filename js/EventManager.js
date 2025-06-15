@@ -477,6 +477,95 @@ export class EventManager {
   }
 
   /**
+   * Trigger a named event
+   * @param {string} eventName - Name of event to trigger
+   * @param {Object} context - Event context data
+   * @returns {Promise<boolean>} Whether event was triggered
+   */
+  async triggerEvent(eventName, context = {}) {
+    // Find events by name
+    const events = this.findEventsByName(eventName);
+
+    let triggered = false;
+    for (const event of events) {
+      if (this.checkCondition(event.condition)) {
+        await this.executeScriptedEvent(event);
+        triggered = true;
+      }
+    }
+
+    // Also check for custom event handlers
+    if (this.customHandlers.has(eventName)) {
+      const handler = this.customHandlers.get(eventName);
+      await handler(context);
+      triggered = true;
+    }
+
+    return triggered;
+  }
+
+  /**
+   * Find events by name
+   * @private
+   * @param {string} eventName - Event name to find
+   * @returns {Array} Matching events
+   */
+  findEventsByName(eventName) {
+    const events = [];
+
+    // Check room events
+    const room = this.gameState.getCurrentRoom();
+    if (room && room.events) {
+      room.events.forEach((event) => {
+        if (event.name === eventName) {
+          events.push(event);
+        }
+      });
+    }
+
+    // Check global events
+    if (this.gameState.gameJSON && this.gameState.gameJSON.events) {
+      this.gameState.gameJSON.events.forEach((event) => {
+        if (event.name === eventName) {
+          events.push(event);
+        }
+      });
+    }
+
+    return events;
+  }
+
+  /**
+   * Process scheduled events
+   * Should be called from game loop
+   * @param {number} deltaTime - Time since last update in ms
+   */
+  processScheduledEvents(_deltaTime) {
+    const now = Date.now();
+    const eventsToProcess = [];
+
+    // Find events ready to execute
+    this.scheduledEvents = this.scheduledEvents.filter((scheduledEvent) => {
+      if (scheduledEvent.time <= now) {
+        eventsToProcess.push(scheduledEvent);
+        return false; // Remove from queue
+      }
+      return true; // Keep in queue
+    });
+
+    // Execute ready events
+    eventsToProcess.forEach((scheduledEvent) => {
+      if (scheduledEvent.event) {
+        this.executeScriptedEvent(scheduledEvent.event);
+      } else if (scheduledEvent.action) {
+        this.executeAction(scheduledEvent.action);
+      } else if (scheduledEvent.callback) {
+        scheduledEvent.callback();
+      }
+    });
+  }
+
+  /**
    * Register custom action handler
    * @param {string} actionType - Action type name
    * @param {Function} handler - Handler function
