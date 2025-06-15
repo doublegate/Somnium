@@ -27,7 +27,7 @@ jobs:
       run: npm run format:check
       
     - name: Run ESLint (check for errors only)
-      run: npx eslint js/**/*.js --max-warnings Infinity
+      run: npx eslint js/**/*.js --max-warnings 9999
     
     - name: Run tests
       run: npm test
