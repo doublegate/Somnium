@@ -329,9 +329,18 @@ describe('EventManager - Extended Tests', () => {
       const now = Date.now();
       jest.spyOn(Date, 'now').mockReturnValue(now);
 
-      eventManager.scheduleEvent(500, { type: 'SHOW_MESSAGE', text: 'Event 1' });
-      eventManager.scheduleEvent(100, { type: 'SHOW_MESSAGE', text: 'Event 2' });
-      eventManager.scheduleEvent(300, { type: 'SHOW_MESSAGE', text: 'Event 3' });
+      eventManager.scheduleEvent(500, {
+        type: 'SHOW_MESSAGE',
+        text: 'Event 1',
+      });
+      eventManager.scheduleEvent(100, {
+        type: 'SHOW_MESSAGE',
+        text: 'Event 2',
+      });
+      eventManager.scheduleEvent(300, {
+        type: 'SHOW_MESSAGE',
+        text: 'Event 3',
+      });
 
       expect(eventManager.scheduledEvents).toHaveLength(3);
       expect(eventManager.scheduledEvents[0].time).toBe(now + 100);
@@ -389,9 +398,15 @@ describe('EventManager - Extended Tests', () => {
     });
 
     it('should evaluate complex conditions with operators', () => {
-      expect(eventManager.checkCondition('leverReady && doorLocked')).toBe(true);
-      expect(eventManager.checkCondition('leverReady && !alarmActive')).toBe(true);
-      expect(eventManager.checkCondition('alarmActive || doorLocked')).toBe(true);
+      expect(eventManager.checkCondition('leverReady && doorLocked')).toBe(
+        true
+      );
+      expect(eventManager.checkCondition('leverReady && !alarmActive')).toBe(
+        true
+      );
+      expect(eventManager.checkCondition('alarmActive || doorLocked')).toBe(
+        true
+      );
       expect(eventManager.checkCondition('!leverReady')).toBe(false);
     });
 
@@ -429,7 +444,9 @@ describe('EventManager - Extended Tests', () => {
         type: 'UNKNOWN_ACTION',
       });
 
-      expect(consoleWarn).toHaveBeenCalledWith('Unknown action type: UNKNOWN_ACTION');
+      expect(consoleWarn).toHaveBeenCalledWith(
+        'Unknown action type: UNKNOWN_ACTION'
+      );
       consoleWarn.mockRestore();
     });
   });

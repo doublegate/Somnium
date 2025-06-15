@@ -9,6 +9,8 @@
  * - Manage API rate limiting
  */
 
+import logger from './logger.js';
+
 export class AIManager {
   /**
    * @param {Object} config - Configuration object
@@ -40,7 +42,7 @@ export class AIManager {
    * @throws {Error} with details if generation fails
    */
   async generateWorld(theme) {
-    console.log(`Generating world with theme: ${theme || 'random'}`);
+    logger.ai(`Generating world with theme: ${theme || 'random'}`);
 
     try {
       // Check rate limit
@@ -57,7 +59,7 @@ export class AIManager {
 
       return gameJSON;
     } catch (error) {
-      console.error('World generation failed:', error);
+      logger.error('World generation failed:', error);
       throw new Error(`Failed to generate world: ${error.message}`);
     }
   }
@@ -69,7 +71,7 @@ export class AIManager {
    * @returns {Promise<string>} Narrative response
    */
   async getDynamicResponse(context, action) {
-    console.log('Getting dynamic response for action:', action);
+    logger.ai('Getting dynamic response for action:', action);
 
     try {
       // Check cache first
@@ -92,7 +94,7 @@ export class AIManager {
 
       return response;
     } catch (error) {
-      console.error('Dynamic response failed:', error);
+      logger.error('Dynamic response failed:', error);
       // Return generic fallback
       return "You can't do that here.";
     }
@@ -130,7 +132,7 @@ export class AIManager {
         reason: result.reason || undefined,
       };
     } catch (error) {
-      console.error('Moderation check failed:', error);
+      logger.error('Moderation check failed:', error);
       // Default to safe on error
       return { safe: true };
     }
@@ -170,7 +172,7 @@ export class AIManager {
   async makeAPIRequest(prompt, textOnly = false) {
     // TODO: Implement actual API call
     // For now, return mock data
-    console.log(
+    logger.ai(
       'Mock API request with prompt:',
       prompt.substring(0, 100) + '...'
     );

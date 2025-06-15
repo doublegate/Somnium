@@ -9,6 +9,8 @@
  * - Update game state from actions
  */
 
+import logger from './logger.js';
+
 export class EventManager {
   /**
    * @param {GameState} gameState - Reference to game state
@@ -34,7 +36,7 @@ export class EventManager {
    * @returns {Promise<void>}
    */
   async executeCommand(command) {
-    console.log('Executing command:', command);
+    logger.event('Executing command:', command);
 
     try {
       // Check for scripted response first
@@ -110,11 +112,11 @@ export class EventManager {
    */
   executeAction(action) {
     if (!action || !action.type) {
-      console.warn('Invalid action:', action);
+      logger.warn('Invalid action:', action);
       return;
     }
 
-    console.log('Executing action:', action.type);
+    logger.event('Executing action:', action.type);
 
     switch (action.type) {
       case 'SET_FLAG':
@@ -137,7 +139,7 @@ export class EventManager {
 
       case 'PLAY_SOUND':
         // TODO: Get sound manager reference
-        console.log(`Playing sound: ${action.soundId}`);
+        logger.sound(`Playing sound: ${action.soundId}`);
         break;
 
       case 'SHOW_MESSAGE':
@@ -159,7 +161,9 @@ export class EventManager {
 
       case 'MOVE_VIEW':
         // TODO: Get view manager reference
-        console.log(`Moving view ${action.viewId} to ${action.x}, ${action.y}`);
+        logger.debug(
+          `Moving view ${action.viewId} to ${action.x}, ${action.y}`
+        );
         break;
 
       case 'UPDATE_SCORE':
@@ -179,7 +183,7 @@ export class EventManager {
           const handler = this.customHandlers.get(action.type);
           handler(action);
         } else {
-          console.warn(`Unknown action type: ${action.type}`);
+          logger.warn(`Unknown action type: ${action.type}`);
         }
     }
   }
@@ -200,7 +204,7 @@ export class EventManager {
     // Sort by time
     this.scheduledEvents.sort((a, b) => a.time - b.time);
 
-    console.log(`Scheduled event for ${delay}ms from now`);
+    logger.event(`Scheduled event for ${delay}ms from now`);
   }
 
   /**
@@ -387,7 +391,7 @@ export class EventManager {
    */
   showMessage(message) {
     // TODO: Integrate with UI
-    console.log(`[Game] ${message}`);
+    logger.game(message);
 
     // Dispatch custom event for UI
     window.dispatchEvent(
@@ -429,7 +433,7 @@ export class EventManager {
    * @param {Object} action - End game action
    */
   handleEndGame(action) {
-    console.log('Game ended:', action.ending);
+    logger.info('Game ended:', action.ending);
 
     if (action.message) {
       this.showMessage(action.message);

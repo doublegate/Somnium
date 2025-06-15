@@ -16,6 +16,8 @@
  * - Each cell contains pixel data and metadata (dimensions, anchor point)
  */
 
+import logger from './logger.js';
+
 // View effect constants
 export const ViewEffects = {
   GHOST: 1, // 50% transparency
@@ -77,7 +79,7 @@ export class ViewManager {
    */
   createView(id, viewData) {
     if (this.views.has(id)) {
-      console.warn(`View with id ${id} already exists`);
+      logger.warn(`View with id ${id} already exists`);
       return this.views.get(id);
     }
 
@@ -119,7 +121,7 @@ export class ViewManager {
     this.updateBoundingBox(view);
 
     this.views.set(id, view);
-    console.log(`Created view: ${id} with ${view.data.loops.length} loops`);
+    logger.debug(`Created view: ${id} with ${view.data.loops.length} loops`);
     return view;
   }
 
@@ -342,7 +344,7 @@ export class ViewManager {
       view.loopCallback = callback;
       this.updateBoundingBox(view);
     } else {
-      console.warn(`Loop ${loop} not found for view ${id}`);
+      logger.warn(`Loop ${loop} not found for view ${id}`);
     }
   }
 

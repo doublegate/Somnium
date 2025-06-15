@@ -55,7 +55,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
             pullStages: [
               { state: 1, message: 'The lever moves slightly.' },
               { state: 2, message: 'The lever is halfway down.' },
-              { state: 3, message: 'The lever clicks into place.' }
+              { state: 3, message: 'The lever clicks into place.' },
             ],
             takeable: false,
           },
@@ -72,7 +72,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
               north: 'The dial points north. A faint humming begins.',
               east: 'The dial points east. The humming grows louder.',
               south: 'The dial points south. Something clicks.',
-              west: 'The dial points west. Silence falls.'
+              west: 'The dial points west. Silence falls.',
             },
             turnEvent: 'dial_turned',
             takeable: false,
@@ -93,7 +93,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
             temperature: 'burning hot',
             touchEffects: [
               { type: 'damage', amount: 10 },
-              { type: 'temperature', value: 'hot' }
+              { type: 'temperature', value: 'hot' },
             ],
             takeable: false,
           },
@@ -120,7 +120,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
             description: 'A solid stone wall',
             texture: 'smooth and cold',
             touchEffects: [
-              { type: 'setFlag', flag: 'wall_touched', value: true }
+              { type: 'setFlag', flag: 'wall_touched', value: true },
             ],
             touchEvent: 'wall_touched',
             takeable: false,
@@ -130,19 +130,19 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       npcs: new Map([
         [
           'wizard',
-          { 
-            id: 'wizard', 
-            name: 'Merlin', 
+          {
+            id: 'wizard',
+            name: 'Merlin',
             description: 'A wise wizard',
             topics: {
-              magic: "Magic is everywhere, if you know where to look.",
-              lever: "That lever controls an ancient mechanism.",
-              dial: "The dial must be turned to the correct position."
+              magic: 'Magic is everywhere, if you know where to look.',
+              lever: 'That lever controls an ancient mechanism.',
+              dial: 'The dial must be turned to the correct position.',
             },
             giveItemResponse: {
-              key: "I have no use for keys in my magical realm.",
-              torch: "Light is always welcome in dark times."
-            }
+              key: 'I have no use for keys in my magical realm.',
+              torch: 'Light is always welcome in dark times.',
+            },
           },
         ],
       ]),
@@ -304,8 +304,14 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('With great effort, you push the stone aside.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('stone', 'pushed', true);
-      expect(mockSoundManager.playSoundEffect).toHaveBeenCalledWith('push_stone');
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'stone',
+        'pushed',
+        true
+      );
+      expect(mockSoundManager.playSoundEffect).toHaveBeenCalledWith(
+        'push_stone'
+      );
     });
 
     it('should fail to push non-pushable objects', async () => {
@@ -367,9 +373,12 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('You press the button. A door opens somewhere.');
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('button_pressed', {
-        object: 'button',
-      });
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'button_pressed',
+        {
+          object: 'button',
+        }
+      );
     });
 
     it('should handle push without direct object', async () => {
@@ -413,7 +422,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
         pushMessage: 'You push the boulder into the next room.',
       };
       mockGameState.objects.set('boulder', boulder);
-      
+
       const result = await commandExecutor.execute({
         success: true,
         command: {
@@ -429,7 +438,10 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockGameState.removeFromRoom).toHaveBeenCalledWith('room1', 'boulder');
+      expect(mockGameState.removeFromRoom).toHaveBeenCalledWith(
+        'room1',
+        'boulder'
+      );
       expect(mockGameState.addToRoom).toHaveBeenCalledWith('room2', 'boulder');
     });
   });
@@ -452,15 +464,22 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('You pull the lever and hear gears grinding.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('lever', 'pulled', true);
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('lever_pulled', {
-        object: 'lever',
-      });
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'lever',
+        'pulled',
+        true
+      );
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'lever_pulled',
+        {
+          object: 'lever',
+        }
+      );
     });
 
     it('should handle multi-stage pull', async () => {
       const lever = mockGameState.objects.get('lever');
-      
+
       // First pull
       mockGameState.getObjectState.mockReturnValue(0);
       let result = await commandExecutor.execute({
@@ -479,7 +498,11 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('The lever moves slightly.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('lever', 'pullStage', 1);
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'lever',
+        'pullStage',
+        1
+      );
 
       // Second pull
       mockGameState.getObjectState.mockReturnValue(1);
@@ -498,7 +521,11 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.text).toBe('The lever is halfway down.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('lever', 'pullStage', 2);
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'lever',
+        'pullStage',
+        2
+      );
     });
 
     it('should fail to pull non-pullable objects', async () => {
@@ -540,7 +567,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
         pullable: true,
         pullStages: [
           { state: 1, message: 'The chain rattles.', event: 'chain_rattle' },
-          { state: 2, message: 'A secret door opens!', event: 'door_open' }
+          { state: 2, message: 'A secret door opens!', event: 'door_open' },
         ],
       };
       mockGameState.objects.set('chain', chain);
@@ -572,7 +599,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
   describe('handleTurn command', () => {
     it('should turn a turnable object', async () => {
       mockGameState.getObjectState.mockReturnValue(0); // Current position
-      
+
       const result = await commandExecutor.execute({
         success: true,
         command: {
@@ -588,18 +615,27 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.text).toBe('The dial points east. The humming grows louder.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('dial', 'turnState', 1);
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('dial_turned', {
-        object: 'dial',
-        state: 1,
-      });
+      expect(result.text).toBe(
+        'The dial points east. The humming grows louder.'
+      );
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'dial',
+        'turnState',
+        1
+      );
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'dial_turned',
+        {
+          object: 'dial',
+          state: 1,
+        }
+      );
     });
 
     it('should cycle through turn positions', async () => {
       const dial = mockGameState.objects.get('dial');
       mockGameState.getObjectState.mockReturnValue(3); // Last position
-      
+
       const result = await commandExecutor.execute({
         success: true,
         command: {
@@ -615,8 +651,14 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.text).toBe('The dial points north. A faint humming begins.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('dial', 'turnState', 0);
+      expect(result.text).toBe(
+        'The dial points north. A faint humming begins.'
+      );
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'dial',
+        'turnState',
+        0
+      );
     });
 
     it('should fail to turn non-turnable objects', async () => {
@@ -698,7 +740,11 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('The stone feels ancient and weathered.');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('stone', 'touched', true);
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'stone',
+        'touched',
+        true
+      );
     });
 
     it('should feel temperature when specified', async () => {
@@ -739,9 +785,12 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(mockGameState.setFlag).toHaveBeenCalledWith('wall_touched', true);
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('wall_touched', {
-        object: 'wall',
-      });
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'wall_touched',
+        {
+          object: 'wall',
+        }
+      );
     });
 
     it('should handle electric shock effect', async () => {
@@ -769,7 +818,9 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('ZAP! You get shocked!');
-      expect(mockSoundManager.playSoundEffect).toHaveBeenCalledWith('electric_shock');
+      expect(mockSoundManager.playSoundEffect).toHaveBeenCalledWith(
+        'electric_shock'
+      );
     });
 
     it('should handle sticky effect', async () => {
@@ -796,7 +847,11 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('tar', 'stuckToPlayer', true);
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'tar',
+        'stuckToPlayer',
+        true
+      );
     });
 
     it('should handle cold temperature effect', async () => {
@@ -852,9 +907,12 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
       expect(result.success).toBe(true);
       expect(mockGameState.health).toBe(0);
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('player_death', {
-        cause: 'touch',
-      });
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'player_death',
+        {
+          cause: 'touch',
+        }
+      );
     });
 
     it('should handle touch without direct object', async () => {
@@ -920,7 +978,9 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
         'wizard',
         'magic'
       );
-      expect(result.text).toBe('Magic is everywhere, if you know where to look.');
+      expect(result.text).toBe(
+        'Magic is everywhere, if you know where to look.'
+      );
     });
 
     it('should handle unknown topics gracefully', async () => {

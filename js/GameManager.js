@@ -9,6 +9,7 @@
  * - Handle pause/resume states
  */
 
+import logger from './logger.js';
 import { AIManager } from './AIManager.js';
 import { GameState } from './GameState.js';
 import { SceneRenderer } from './SceneRenderer.js';
@@ -118,7 +119,7 @@ export class GameManager {
    */
   async startNewGame(theme) {
     try {
-      console.log(`Starting new game with theme: ${theme || 'random'}`);
+      logger.info(`Starting new game with theme: ${theme || 'random'}`);
 
       // Generate world via AI
       const gameJSON = await this.aiManager.generateWorld(theme);
@@ -144,7 +145,7 @@ export class GameManager {
       this.isPaused = false;
       requestAnimationFrame(this.gameLoop);
     } catch (error) {
-      console.error('Failed to start new game:', error);
+      logger.error('Failed to start new game:', error);
       throw error;
     }
   }
@@ -157,7 +158,7 @@ export class GameManager {
    */
   async loadGame(saveData) {
     try {
-      console.log('Loading saved game...');
+      logger.info('Loading saved game...');
 
       // Validate save data
       if (!saveData || !saveData.state || !saveData.gameJSON) {
@@ -186,7 +187,7 @@ export class GameManager {
       this.isPaused = false;
       requestAnimationFrame(this.gameLoop);
     } catch (error) {
-      console.error('Failed to load game:', error);
+      logger.error('Failed to load game:', error);
       throw error;
     }
   }
@@ -196,7 +197,7 @@ export class GameManager {
    * @returns {Object} SaveFile object
    */
   saveGame() {
-    console.log('Saving game...');
+    logger.info('Saving game...');
 
     return {
       version: '1.0.0',
@@ -210,7 +211,7 @@ export class GameManager {
    * Pause game loop and timers
    */
   pauseGame() {
-    console.log('Game paused');
+    logger.info('Game paused');
     this.isPaused = true;
     this.soundManager.pauseAll();
   }
@@ -219,7 +220,7 @@ export class GameManager {
    * Resume game loop and timers
    */
   resumeGame() {
-    console.log('Game resumed');
+    logger.info('Game resumed');
     this.isPaused = false;
     this.soundManager.resumeAll();
 
@@ -235,7 +236,7 @@ export class GameManager {
   setSpeed(speed) {
     if (speed >= 1 && speed <= 5) {
       this.gameSpeed = speed;
-      console.log(`Game speed set to ${speed}`);
+      logger.info(`Game speed set to ${speed}`);
     }
   }
 
@@ -374,7 +375,7 @@ export class GameManager {
    * Stop game loop and cleanup
    */
   stopGame() {
-    console.log('Stopping game...');
+    logger.info('Stopping game...');
     this.isRunning = false;
     this.isPaused = false;
     this.soundManager.stopAll();
@@ -398,7 +399,7 @@ export class GameManager {
         this.displayMessage("I don't understand that command.");
       }
     } catch (error) {
-      console.error('Error handling player input:', error);
+      logger.error('Error handling player input:', error);
       this.displayMessage('Something went wrong. Please try again.');
     }
   }
@@ -409,7 +410,7 @@ export class GameManager {
    */
   displayMessage(message) {
     // TODO: Integrate with actual UI text window
-    console.log(`[Game Message] ${message}`);
+    logger.game(message);
   }
 
   /**

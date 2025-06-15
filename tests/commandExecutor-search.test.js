@@ -30,7 +30,7 @@ describe('CommandExecutor - Search and Additional Commands', () => {
               desk: ['letter', 'coin'],
               bookshelf: ['secret_book'],
               rug: [],
-              painting: ['safe']
+              painting: ['safe'],
             },
           },
         ],
@@ -38,15 +38,30 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       items: new Map([
         [
           'letter',
-          { id: 'letter', name: 'old letter', description: 'A faded letter', hidden: true },
+          {
+            id: 'letter',
+            name: 'old letter',
+            description: 'A faded letter',
+            hidden: true,
+          },
         ],
         [
           'coin',
-          { id: 'coin', name: 'gold coin', description: 'A shiny gold coin', hidden: true },
+          {
+            id: 'coin',
+            name: 'gold coin',
+            description: 'A shiny gold coin',
+            hidden: true,
+          },
         ],
         [
           'secret_book',
-          { id: 'secret_book', name: 'secret book', description: 'A hidden tome', hidden: true },
+          {
+            id: 'secret_book',
+            name: 'secret book',
+            description: 'A hidden tome',
+            hidden: true,
+          },
         ],
       ]),
       objects: new Map([
@@ -92,7 +107,8 @@ describe('CommandExecutor - Search and Additional Commands', () => {
             description: 'A scenic landscape painting',
             searchable: true,
             requiresItem: 'magnifying_glass',
-            searchFailMessage: 'You need something to examine the painting more closely.',
+            searchFailMessage:
+              'You need something to examine the painting more closely.',
             takeable: false,
           },
         ],
@@ -199,11 +215,17 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.text).toContain('You carefully search through the desk drawers');
+      expect(result.text).toContain(
+        'You carefully search through the desk drawers'
+      );
       expect(result.text).toContain('You find: an old letter, a gold coin');
       expect(mockInventory.addItem).toHaveBeenCalledWith('letter');
       expect(mockInventory.addItem).toHaveBeenCalledWith('coin');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('desk', 'searched', true);
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'desk',
+        'searched',
+        true
+      );
     });
 
     it('should not find items when searching again', async () => {
@@ -268,10 +290,13 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith('bookshelf_searched', {
-        object: 'bookshelf',
-        itemsFound: ['secret_book'],
-      });
+      expect(mockEventManager.triggerEvent).toHaveBeenCalledWith(
+        'bookshelf_searched',
+        {
+          object: 'bookshelf',
+          itemsFound: ['secret_book'],
+        }
+      );
     });
 
     it('should require specific item for some searches', async () => {
@@ -292,7 +317,9 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.text).toBe('You need something to examine the painting more closely.');
+      expect(result.text).toBe(
+        'You need something to examine the painting more closely.'
+      );
       expect(mockInventory.addItem).not.toHaveBeenCalled();
     });
 
@@ -316,7 +343,11 @@ describe('CommandExecutor - Search and Additional Commands', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toContain('You find: a wall safe');
-      expect(mockGameState.setObjectState).toHaveBeenCalledWith('safe', 'hidden', false);
+      expect(mockGameState.setObjectState).toHaveBeenCalledWith(
+        'safe',
+        'hidden',
+        false
+      );
     });
 
     it('should fail to search non-searchable objects', async () => {
@@ -408,7 +439,9 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.text).toBe('The book contains ancient wisdom about the quest.');
+      expect(result.text).toBe(
+        'The book contains ancient wisdom about the quest.'
+      );
     });
 
     it('should read readable objects in room', async () => {
@@ -578,7 +611,7 @@ describe('CommandExecutor - Search and Additional Commands', () => {
 
     it('should require item in inventory to eat', async () => {
       mockGameState.hasItem.mockReturnValue(false);
-      
+
       const result = await commandExecutor.execute({
         success: true,
         command: {

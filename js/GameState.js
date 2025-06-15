@@ -8,6 +8,8 @@
  * - Handle state serialization/deserialization
  */
 
+import logger from './logger.js';
+
 export class GameState extends EventTarget {
   constructor() {
     super();
@@ -54,7 +56,7 @@ export class GameState extends EventTarget {
    * @throws {Error} If validation fails
    */
   loadResources(gameJSON) {
-    console.log('Loading game resources...');
+    logger.info('Loading game resources...');
 
     this.gameJSON = gameJSON;
     this.rooms = gameJSON.rooms || {};

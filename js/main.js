@@ -6,6 +6,7 @@
  */
 
 // Import game modules
+import logger from './logger.js';
 import { GameManager } from './GameManager.js';
 
 // Global game manager instance
@@ -13,11 +14,11 @@ let gameManager = null;
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Somnium v0.0.1 - Initializing...');
+  logger.info('Somnium v0.0.1 - Initializing...');
 
   // Check for API configuration
   if (!window.API_CONFIG) {
-    console.error('API configuration not found. Please create js/config.js');
+    logger.error('API configuration not found. Please create js/config.js');
     return;
   }
 
@@ -119,7 +120,7 @@ function initializeMenuBar() {
     item.addEventListener('click', (e) => {
       const menuName = e.target.getAttribute('data-menu');
       // TODO: Implement dropdown menus
-      console.log(`Menu clicked: ${menuName}`);
+      logger.debug(`Menu clicked: ${menuName}`);
     });
   });
 }
@@ -129,7 +130,7 @@ function initializeMenuBar() {
  * @param {string|null} theme - The theme for the adventure
  */
 async function startNewGame(theme) {
-  console.log('Starting new game with theme:', theme || 'random');
+  logger.info('Starting new game with theme:', theme || 'random');
 
   // Hide main menu
   document.getElementById('main-menu').classList.add('hidden');
@@ -168,7 +169,7 @@ async function startNewGame(theme) {
     // Set up input handler
     setupGameInput();
   } catch (error) {
-    console.error('Failed to start game:', error);
+    logger.error('Failed to start game:', error);
     loadingScreen.classList.add('hidden');
     showError('Failed to start game. Please check your API configuration.');
   }

@@ -68,6 +68,12 @@ export default [
     },
   },
   {
+    files: ['js/logger.js'],
+    rules: {
+      'no-console': 'off', // Logger needs direct console access
+    },
+  },
+  {
     ignores: ['node_modules/**', 'coverage/**', 'dist/**', '*.min.js'],
   },
 ];

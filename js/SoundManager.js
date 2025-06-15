@@ -9,6 +9,8 @@
  * - Handle audio context
  */
 
+import logger from './logger.js';
+
 export class SoundManager {
   constructor() {
     this.isInitialized = false;
@@ -78,7 +80,7 @@ export class SoundManager {
 
       // Start audio context (required for browser autoplay policies)
       await this.Tone.start();
-      console.log('Audio context started');
+      logger.sound('Audio context started');
 
       // Initialize volume nodes for each category
       this.volumeNodes = {
@@ -107,7 +109,7 @@ export class SoundManager {
 
       this.isInitialized = true;
     } catch (error) {
-      console.error('Failed to initialize audio:', error);
+      logger.error('Failed to initialize audio:', error);
     }
   }
 
@@ -119,14 +121,14 @@ export class SoundManager {
    */
   playMusic(musicTheme, preset = 'adlib', options = {}) {
     if (!this.isInitialized) {
-      console.warn('Audio not initialized');
+      logger.warn('Audio not initialized');
       return;
     }
 
     // Stop current music
     this.stopMusic();
 
-    console.log(`Playing music theme: ${musicTheme} with ${preset} preset`);
+    logger.sound(`Playing music theme: ${musicTheme} with ${preset} preset`);
 
     try {
       // Store current theme
@@ -145,7 +147,7 @@ export class SoundManager {
       this.startSequencer();
       this.channelStates.music = true;
     } catch (error) {
-      console.error('Failed to play music:', error);
+      logger.error('Failed to play music:', error);
     }
   }
 
@@ -156,14 +158,14 @@ export class SoundManager {
    */
   playAmbience(ambienceDesc, _options = {}) {
     if (!this.isInitialized) {
-      console.warn('Audio not initialized');
+      logger.warn('Audio not initialized');
       return;
     }
 
     // Stop current ambience
     this.stopAmbience();
 
-    console.log(`Playing ambience: ${ambienceDesc}`);
+    logger.sound(`Playing ambience: ${ambienceDesc}`);
 
     try {
       // Generate ambience based on description
@@ -204,7 +206,7 @@ export class SoundManager {
       this.channels.ambient = { noise, filter, gain, reverb };
       this.channelStates.ambient = true;
     } catch (error) {
-      console.error('Failed to play ambience:', error);
+      logger.error('Failed to play ambience:', error);
     }
   }
 
@@ -219,11 +221,11 @@ export class SoundManager {
    */
   playSound(soundId, options = {}) {
     if (!this.isInitialized) {
-      console.warn('Audio not initialized');
+      logger.warn('Audio not initialized');
       return;
     }
 
-    console.log(`Playing sound: ${soundId}`, options);
+    logger.sound(`Playing sound: ${soundId}`, options);
 
     try {
       // Check sound pool for available instance
@@ -284,7 +286,7 @@ export class SoundManager {
         soundParams.duration * 1000 + 100
       );
     } catch (error) {
-      console.error('Failed to play sound:', error);
+      logger.error('Failed to play sound:', error);
     }
   }
 
