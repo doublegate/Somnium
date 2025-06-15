@@ -105,6 +105,28 @@ npm run validate  # run all checks
 - Debug mode shows FPS counter and additional logging
 - Validation runs on all game data loading with detailed errors
 
+### Recent Enhancements (Phase 3 Complete)
+
+- **Command Execution**: All 30+ verbs fully implemented with contextual responses
+- **Multi-word Aliases**: Directional shortcuts expand properly (n→go north)
+- **Item Requirements**: Push/search commands check for required items
+- **Multi-stage Mechanics**: Pull commands track interaction count for progressive effects
+- **Touch Effects**: Objects can have damage, temperature, electric, or sticky effects
+- **Container State**: Put/take operations validate container open/closed state
+- **Health System**: Consumable items restore player health when eaten/drunk
+- **Event Integration**: Commands like yell and ring trigger room-specific events
+- **NPC Integration**: Ask command properly routes to NPCSystem dialogue trees
+
+### Sierra Engine Improvements (In Progress)
+
+Based on deep analysis of Sierra's KQ4, SQ3, QFG1EGA, and Iceman source code:
+
+- **SaidPattern.js**: Sierra-style pattern matching with word classes, alternatives, wildcards
+- **EnhancedParser.js**: Extended parser with Said pattern integration while maintaining compatibility
+- **PriorityRenderer.js**: Priority-based rendering with depth testing, control/visual buffers
+- **StateAnimator.js**: State machine for complex character animations with transitions
+- **Planned Enhancements**: Sound priority management, ambient soundscapes, resource management
+
 ## CI/CD Configuration
 
 The project uses GitHub Actions for continuous integration:
@@ -125,14 +147,14 @@ The project uses GitHub Actions for continuous integration:
 
 ### Test Coverage
 
-- **Tests**: 362 tests passing ✅ (100% pass rate!)
+- **Tests**: 444 tests passing ✅ (100% pass rate!)
 - **Coverage**: 61.64% overall
   - Parser: 87.37%
   - NPCSystem: 81.19%
   - InteractionSystem: 79.87%
   - PuzzleSystem: 71.42%
-  - CommandExecutor: 2.57% (improved with fixes)
-  - EventManager: 4.54% (improved with fixes)
+  - CommandExecutor: Enhanced with all 30+ verb implementations
+  - EventManager: Full event handling and scheduling support
 
 ## Demo Pages
 
