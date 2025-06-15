@@ -169,6 +169,8 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       health: 100,
       maxHealth: 100,
       removeFromInventory: jest.fn(),
+      createSnapshot: jest.fn().mockReturnValue({}),
+      restoreSnapshot: jest.fn(),
     };
 
     // Mock EventManager

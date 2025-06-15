@@ -140,6 +140,8 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       getObjectState: jest.fn(),
       setFlag: jest.fn(),
       getFlag: jest.fn(),
+      createSnapshot: jest.fn().mockReturnValue({}),
+      restoreSnapshot: jest.fn(),
     };
 
     // Mock EventManager

@@ -5,6 +5,8 @@
  * executing commands and returning appropriate responses.
  */
 
+import logger from './logger.js';
+
 export class CommandExecutor {
   /**
    * @param {GameState} gameState - Game state manager
@@ -157,7 +159,7 @@ export class CommandExecutor {
 
       return result;
     } catch (error) {
-      console.error('Command execution error:', error);
+      logger.error('Command execution error:', error);
       return {
         success: false,
         text: 'Something went wrong. Please try again.',
