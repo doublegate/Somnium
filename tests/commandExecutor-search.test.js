@@ -37,6 +37,24 @@ describe('CommandExecutor - Search and Additional Commands', () => {
       ]),
       items: new Map([
         [
+          'key',
+          {
+            id: 'key',
+            name: 'brass key',
+            description: 'A small brass key',
+            readable: false,
+          },
+        ],
+        [
+          'torch',
+          {
+            id: 'torch',
+            name: 'torch',
+            description: 'A burning torch',
+            readable: false,
+          },
+        ],
+        [
           'letter',
           {
             id: 'letter',
@@ -516,6 +534,7 @@ describe('CommandExecutor - Search and Additional Commands', () => {
         healthRestore: 10,
       };
       mockGameState.items.set('apple', apple);
+      mockGameState.inventory.push('apple'); // Add apple to inventory
       mockGameState.health = 90;
       mockGameState.maxHealth = 100;
       mockGameState.removeFromInventory = jest.fn();
@@ -549,6 +568,7 @@ describe('CommandExecutor - Search and Additional Commands', () => {
         healthRestore: 25,
       };
       mockGameState.items.set('potion', potion);
+      mockGameState.inventory.push('potion'); // Add potion to inventory
       mockGameState.health = 50;
       mockGameState.maxHealth = 100;
       mockGameState.removeFromInventory = jest.fn();

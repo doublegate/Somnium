@@ -122,7 +122,25 @@ export class CommandExecutor {
     const command = parsedCommand.command;
 
     // Resolve aliases
-    const resolvedVerb = this.resolveAlias(command.verb);
+    const resolvedAlias = this.resolveAlias(command.verb);
+    let resolvedVerb = resolvedAlias;
+    let modifiedCommand = command;
+
+    // Handle multi-word aliases (e.g., "n" -> "go north")
+    if (resolvedAlias.includes(' ')) {
+      const parts = resolvedAlias.split(' ');
+      resolvedVerb = parts[0];
+      modifiedCommand = {
+        ...command,
+        verb: parts[0],
+        directObject: parts[1],
+        resolvedDirectObject: {
+          type: 'DIRECTION',
+          value: parts[1],
+        },
+      };
+    }
+
     const handler = this.handlers[resolvedVerb];
 
     if (!handler) {
@@ -136,20 +154,20 @@ export class CommandExecutor {
     try {
       // Check if command should trigger any events first
       const preEventResult =
-        await this.eventManager.checkPreCommandEvents(command);
+        await this.eventManager.checkPreCommandEvents(modifiedCommand);
       if (preEventResult && preEventResult.preventDefault) {
         return preEventResult.response;
       }
 
       // Execute the command
-      const result = await handler(command);
+      const result = await handler(modifiedCommand);
 
       // Trigger post-command events
-      await this.eventManager.checkPostCommandEvents(command, result);
+      await this.eventManager.checkPostCommandEvents(modifiedCommand, result);
 
       // Add to history if successful
       if (result.success) {
-        this.addToHistory(command);
+        this.addToHistory(modifiedCommand);
 
         // Update game state
         if (result.stateChanges) {
@@ -720,28 +738,10 @@ export class CommandExecutor {
   async handleSearch(command) {
     const objectRef = command.resolvedDirectObject;
     if (!objectRef) {
-      // Search the room
-      const room = this.gameState.getCurrentRoom();
-      if (room.searchable) {
-        const searched = this.gameState.getFlag(`searched_${room.id}`);
-        if (!searched && room.hiddenItems) {
-          // Reveal hidden items
-          room.hiddenItems.forEach((itemId) => {
-            this.gameState.addToRoom(itemId);
-          });
-          this.gameState.setFlag(`searched_${room.id}`, true);
-
-          return {
-            success: true,
-            text: room.searchMessage || 'You find something!',
-            audio: 'discover',
-          };
-        }
-      }
       return {
-        success: true,
-        text: "You don't find anything special.",
-        audio: null,
+        success: false,
+        text: 'Search what?',
+        audio: 'error',
       };
     }
 
@@ -754,34 +754,124 @@ export class CommandExecutor {
       };
     }
 
-    // Search specific object
-    if (object.searchable) {
-      const searched = this.gameState.getObjectState(object.id, 'searched');
-      if (!searched && object.hiddenItems) {
-        // Reveal hidden items
-        object.hiddenItems.forEach((itemId) => {
-          if (object.type === 'container') {
-            if (!object.contents) object.contents = [];
-            object.contents.push(itemId);
-          } else {
-            this.gameState.addToRoom(itemId);
-          }
-        });
-        this.gameState.setObjectState(object.id, 'searched', true);
-
-        return {
-          success: true,
-          text:
-            object.searchMessage ||
-            `You search the ${object.name} and find something!`,
-          audio: 'discover',
-        };
-      }
+    // Check if object is searchable
+    if (!object.searchable) {
+      return {
+        success: false,
+        text: "There's nothing to search there.",
+        audio: 'error',
+      };
     }
+
+    // Check if requires specific item
+    if (object.requiresItem && !this.gameState.hasItem(object.requiresItem)) {
+      return {
+        success: false,
+        text:
+          object.searchFailMessage ||
+          `You need something to search the ${object.name} properly.`,
+        audio: 'error',
+      };
+    }
+
+    // Check if already searched
+    const searched = this.gameState.getObjectState(object.id, 'searched');
+    if (searched) {
+      return {
+        success: true,
+        text:
+          object.searchedMessage ||
+          `You already searched the ${object.name} thoroughly.`,
+        audio: null,
+      };
+    }
+
+    // Get hidden items from room data
+    const room = this.gameState.getCurrentRoom();
+    const hiddenItems = (room.hiddenItems && room.hiddenItems[object.id]) || [];
+
+    if (hiddenItems.length > 0) {
+      // Process hidden items
+      const foundItemNames = [];
+      const droppedItemNames = [];
+      const revealedObjectNames = [];
+
+      for (const itemId of hiddenItems) {
+        // First check if it's an object
+        const hiddenObject = this.gameState.getObject(itemId);
+        if (hiddenObject) {
+          // Reveal hidden object
+          this.gameState.setObjectState(itemId, 'hidden', false);
+          revealedObjectNames.push(hiddenObject.name);
+          continue;
+        }
+
+        // Otherwise check if it's an item
+        const item = this.gameState.getItem(itemId);
+        if (item) {
+          // Make item visible
+          item.hidden = false;
+
+          // Try to add to inventory
+          if (this.inventory.canCarry(itemId)) {
+            this.inventory.addItem(itemId);
+            foundItemNames.push(item.name);
+          } else {
+            // Drop it in the room if can't carry
+            this.gameState.addToRoom(this.gameState.currentRoomId, itemId);
+            droppedItemNames.push(item.name);
+          }
+        }
+      }
+
+      // Mark as searched
+      this.gameState.setObjectState(object.id, 'searched', true);
+
+      // Build response text
+      let responseText =
+        object.searchMessage || `You search the ${object.name}.`;
+
+      const allFoundNames = [...foundItemNames, ...revealedObjectNames];
+      if (allFoundNames.length > 0) {
+        const itemList = allFoundNames
+          .map((name) => {
+            const article = /^[aeiou]/i.test(name) ? 'an' : 'a';
+            return `${article} ${name}`;
+          })
+          .join(', ');
+        responseText += ` You find: ${itemList}.`;
+      }
+
+      if (droppedItemNames.length > 0) {
+        responseText += ` You can't carry everything, so you leave some items here.`;
+      }
+
+      // Trigger search event if specified
+      if (object.searchEvent) {
+        await this.eventManager.triggerEvent(object.searchEvent, {
+          object: object.id,
+          itemsFound: hiddenItems,
+        });
+      }
+
+      // Play sound effect
+      this.soundManager.playSoundEffect('discover');
+
+      return {
+        success: true,
+        text: responseText,
+        audio: 'discover',
+      };
+    }
+
+    // No items found
+    this.gameState.setObjectState(object.id, 'searched', true);
 
     return {
       success: true,
-      text: `You search the ${object.name} but find nothing special.`,
+      text:
+        object.searchMessage ||
+        `You search the ${object.name} but find nothing special.`,
       audio: null,
     };
   }
@@ -791,12 +881,15 @@ export class CommandExecutor {
     if (!objectRef) {
       return {
         success: false,
-        text: "I don't see that here.",
+        text: 'Read what?',
         audio: 'error',
       };
     }
 
-    const object = objectRef.object || this.gameState.getItem(objectRef.value);
+    const object =
+      objectRef.object ||
+      objectRef.item ||
+      this.gameState.getItem(objectRef.value);
     if (!object) {
       return {
         success: false,
@@ -809,7 +902,7 @@ export class CommandExecutor {
     if (!object.readable) {
       return {
         success: false,
-        text: "There's nothing to read on that.",
+        text: `There's nothing to read on the ${object.name}.`,
         audio: 'error',
       };
     }
@@ -1037,7 +1130,7 @@ export class CommandExecutor {
   }
 
   async handleAsk(command) {
-    if (!command.indirectObject) {
+    if (!command.directObject) {
       return {
         success: false,
         text: 'Who do you want to ask?',
@@ -1045,8 +1138,8 @@ export class CommandExecutor {
       };
     }
 
-    const npcRef = command.resolvedIndirectObject;
-    if (!npcRef || npcRef.type !== 'npc') {
+    const npcRef = command.resolvedDirectObject;
+    if (!npcRef || npcRef.type !== 'NPC') {
       return {
         success: false,
         text: "They're not here.",
@@ -1064,37 +1157,66 @@ export class CommandExecutor {
       };
     }
 
-    const topic = command.directObject || 'general';
-
-    // Use NPCSystem for dialogue
-    const dialogueResult = this.npcSystem.startDialogue(npcId, topic);
-
-    if (dialogueResult.success) {
-      // Update relationship based on topic
-      if (topic === 'help' || topic === 'quest') {
-        this.npcSystem.updateRelationship(npcId, 5);
-      }
-
-      // Check if this reveals new information
-      if (dialogueResult.revealsFlag) {
-        this.gameState.setFlag(dialogueResult.revealsFlag, true);
-      }
-
-      // Check if this gives an item
-      if (dialogueResult.givesItem) {
-        this.inventory.addItem(dialogueResult.givesItem);
-      }
-
-      // Play appropriate sound
-      const mood = dialogueResult.mood || 'neutral';
-      this.soundManager.playSoundEffect(`npc_${mood}`);
-
+    // Check if NPC is present in the current room
+    if (this.npcSystem && !this.npcSystem.isNPCPresent(npcId)) {
       return {
-        success: true,
-        text: `${npc.name}: "${dialogueResult.text}"`,
-        audio: 'talk',
-        stateChanges: dialogueResult.stateChanges,
+        success: false,
+        text: "They're not here.",
+        audio: 'error',
       };
+    }
+
+    // Get the topic from indirect object
+    if (!command.indirectObject) {
+      return {
+        success: false,
+        text: 'Ask about what?',
+        audio: 'error',
+      };
+    }
+
+    const topic = command.indirectObject;
+
+    // Use NPCSystem for dialogue if available
+    if (this.npcSystem && this.npcSystem.startDialogue) {
+      const dialogueResult = this.npcSystem.startDialogue(npcId, topic);
+
+      if (dialogueResult.success) {
+        // Update relationship if specified
+        if (dialogueResult.relationshipChange) {
+          this.npcSystem.updateRelationship(
+            npcId,
+            dialogueResult.relationshipChange
+          );
+        }
+
+        // Check if this reveals new information
+        if (dialogueResult.revealsFlag) {
+          this.gameState.setFlag(dialogueResult.revealsFlag, true);
+        }
+
+        // Check if this gives an item
+        if (dialogueResult.itemGiven) {
+          this.inventory.addItem(dialogueResult.itemGiven);
+        }
+
+        // Play appropriate sound
+        const mood = dialogueResult.mood || 'neutral';
+        this.soundManager.playSoundEffect(`npc_${mood}`);
+
+        return {
+          success: true,
+          text: dialogueResult.message || dialogueResult.text,
+          audio: 'talk',
+          stateChanges: dialogueResult.stateChanges,
+        };
+      } else {
+        return {
+          success: false,
+          text: dialogueResult.message || "I don't know anything about that.",
+          audio: 'error',
+        };
+      }
     }
 
     // Fallback to basic topic system if NPCSystem doesn't have dialogue
@@ -1160,10 +1282,27 @@ export class CommandExecutor {
     };
   }
 
-  async handleYell(_command) {
+  async handleYell(command) {
+    let message = 'You yell loudly. Your voice echoes.';
+
+    if (command.directObject) {
+      // Convert to uppercase for yelling
+      const yelledText = command.directObject.toUpperCase();
+      message = `You yell "${yelledText}!" Your voice echoes.`;
+    }
+
+    // Play sound effect
+    this.soundManager.playSoundEffect('yell');
+
+    // Trigger yell event
+    const currentRoom = this.gameState.getCurrentRoom();
+    await this.eventManager.triggerEvent('yell', {
+      room: currentRoom ? currentRoom.id : null,
+    });
+
     return {
       success: true,
-      text: 'You yell loudly. Your voice echoes in the distance.',
+      text: message,
       audio: 'yell',
     };
   }
@@ -1196,6 +1335,16 @@ export class CommandExecutor {
       };
     }
 
+    // Check if requires specific item
+    if (object.requiresItem && !this.gameState.hasItem(object.requiresItem)) {
+      return {
+        success: false,
+        text:
+          object.pushFailMessage || `You need something to push this safely.`,
+        audio: 'error',
+      };
+    }
+
     // Check if already pushed
     const alreadyPushed = this.gameState.getObjectState(object.id, 'pushed');
     if (alreadyPushed && !object.repeatablePush) {
@@ -1210,6 +1359,15 @@ export class CommandExecutor {
 
     // Push the object
     this.gameState.setObjectState(object.id, 'pushed', true);
+
+    // Handle moving object to another room
+    if (object.moveToRoom) {
+      const currentRoom = this.gameState.getCurrentRoom();
+      if (currentRoom) {
+        this.gameState.removeFromRoom(currentRoom.id, object.id);
+        this.gameState.addToRoom(object.moveToRoom, object.id);
+      }
+    }
 
     // Handle any push effects
     if (object.pushEffects) {
@@ -1276,6 +1434,40 @@ export class CommandExecutor {
         text: object.notPullableMessage || "It won't move.",
         audio: 'error',
       };
+    }
+
+    // Handle multi-stage pulls
+    if (object.pullStages) {
+      const currentStage =
+        this.gameState.getObjectState(object.id, 'pullStage') || 0;
+      const nextStage = currentStage + 1;
+
+      if (nextStage <= object.pullStages.length) {
+        this.gameState.setObjectState(object.id, 'pullStage', nextStage);
+        const stageInfo = object.pullStages[nextStage - 1];
+
+        // Trigger stage event if specified
+        if (stageInfo.event) {
+          await this.eventManager.triggerEvent(stageInfo.event, {
+            object: object.id,
+            stage: nextStage,
+          });
+        }
+
+        return {
+          success: true,
+          text: stageInfo.message || `You pull the ${object.name}.`,
+          audio: 'pull',
+          stateChanges: {
+            objectStates: {
+              [object.id]: {
+                pullStage: nextStage,
+                pulled: nextStage === object.pullStages.length,
+              },
+            },
+          },
+        };
+      }
     }
 
     // Check if already pulled
@@ -1364,7 +1556,57 @@ export class CommandExecutor {
     // Get current state
     const currentState =
       this.gameState.getObjectState(object.id, 'turnState') || 0;
-    const maxStates = object.turnStates || 2; // Default to on/off
+
+    // Determine max states from turnPositions or turnStates
+    let maxStates;
+    let positionName;
+
+    if (object.turnPositions) {
+      maxStates = object.turnPositions.length;
+      const newState = (currentState + 1) % maxStates;
+      positionName = object.turnPositions[newState];
+
+      // Update state
+      this.gameState.setObjectState(object.id, 'turnState', newState);
+      this.gameState.setObjectState(object.id, 'turned', newState > 0);
+
+      // Get message for this position
+      let message;
+      if (object.turnMessages && object.turnMessages[positionName]) {
+        message = object.turnMessages[positionName];
+      } else {
+        message = `You turn the ${object.name} to position: ${positionName}.`;
+      }
+
+      // Trigger event if specified
+      if (object.turnEvent) {
+        await this.eventManager.triggerEvent(object.turnEvent, {
+          object: object.id,
+          state: newState,
+        });
+      }
+
+      // Play sound effect
+      const soundEffect = object.turnSound || 'dial_turn';
+      this.soundManager.playSoundEffect(soundEffect);
+
+      return {
+        success: true,
+        text: message,
+        audio: 'turn',
+        stateChanges: {
+          objectStates: {
+            [object.id]: {
+              turnState: newState,
+              turned: newState > 0,
+            },
+          },
+        },
+      };
+    }
+
+    // Original logic for objects without turnPositions
+    maxStates = object.turnStates || 2; // Default to on/off
     const newState = (currentState + 1) % maxStates;
 
     // Update state
@@ -1530,7 +1772,7 @@ export class CommandExecutor {
     }
 
     const item = this.gameState.getItem(objectRef.value);
-    if (!item.edible) {
+    if (!item || !item.edible) {
       return {
         success: false,
         text: "That's not edible.",
@@ -1548,6 +1790,7 @@ export class CommandExecutor {
         this.gameState.health + item.healthRestore,
         this.gameState.maxHealth
       );
+      this.gameState.health = newHealth;
       changes.health = newHealth;
     }
 
@@ -1570,7 +1813,7 @@ export class CommandExecutor {
     }
 
     const item = this.gameState.getItem(objectRef.value);
-    if (!item.drinkable) {
+    if (!item || !item.drinkable) {
       return {
         success: false,
         text: "You can't drink that.",
@@ -1588,6 +1831,7 @@ export class CommandExecutor {
         this.gameState.health + item.healthRestore,
         this.gameState.maxHealth
       );
+      this.gameState.health = newHealth;
       changes.health = newHealth;
     }
 

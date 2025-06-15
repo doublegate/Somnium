@@ -2,57 +2,54 @@
 
 This document tracks functionality that was commented out, removed, marked as TODO, or needs to be implemented to complete the Somnium project. Items are organized by phase and priority.
 
-## Phase 3 - Current Phase (Parser and Game Logic)
+## Phase 3 - Completed Features
 
-### CommandExecutor.js
+### CommandExecutor.js - All Major Features Complete ✅
 
-1. **Alias resolution for multi-word commands**
+1. **Alias resolution for multi-word commands** ✅ COMPLETE
 
-   - Currently `resolveAlias()` only handles single-word aliases
-   - Need to parse aliases like 'n' -> 'go north' properly
-   - Location: `CommandExecutor.js` line ~1650
+   - Implemented full multi-word alias parsing
+   - Handles directional shortcuts (n→go north, s→go south, etc.)
+   - Properly modifies command structure with resolvedDirectObject
 
 2. **Complete handleAsk() implementation** ✅ COMPLETE
 
-   - ~~Currently has basic topic handling~~
-   - ~~Need to integrate with NPCSystem for dynamic responses~~
    - Fully integrated with NPCSystem.startDialogue()
-   - Handles topic-based conversations, relationship updates, and item giving
+   - Fixed parameter order (NPC in directObject, topic in indirectObject)
+   - Handles relationship updates and item giving
+   - Proper type checking ('NPC' uppercase)
 
-3. **Complete handleGive() NPC acceptance logic**
+3. **Save/Load implementation** ✅ COMPLETE
+
+   - Full save/load functionality implemented
+   - Supports both file download and browser storage
+   - Multiple save slots with metadata
+
+4. **Container state checking in handlePut()** ✅ COMPLETE
+
+   - Checks container open state using gameState.getObjectState()
+   - Proper error messages for closed containers
+
+5. **All command handlers** ✅ COMPLETE
+   - `handleSearch()` - ✅ Full implementation with requiresItem, hidden objects
+   - `handleRead()` - ✅ Complete with proper error messages
+   - `handlePush()` - ✅ Complete with requiresItem, moveToRoom, effects
+   - `handlePull()` - ✅ Complete with multi-stage mechanics
+   - `handleTurn()` - ✅ Complete with turnPositions support
+   - `handleTouch()` - ✅ Complete with multiple effect types
+   - `handleEat/Drink()` - ✅ Complete with health restoration
+   - `handleYell()` - ✅ Complete with event triggering
+
+### Remaining Minor Items
+
+1. **Complete handleGive() NPC acceptance logic**
 
    - Currently simplified to always accept items
    - Need to check `npc.acceptsItems` array
    - Need to handle `acceptMessage` and `refuseMessage`
    - Location: `CommandExecutor.js` line ~706
 
-4. **Save/Load implementation** ✅ COMPLETE
-
-   - ~~`handleSave()` currently returns "Feature coming soon"~~
-   - ~~`handleLoad()` returns "not yet implemented"~~
-   - Full save/load functionality implemented
-   - Supports both file download and browser storage
-   - Multiple save slots with metadata
-
-5. **Container state checking in handlePut()** ✅ COMPLETE
-
-   - ~~Need to check if container is open before putting items~~
-   - ~~Currently missing `target.open` check~~
-   - Now checks container open state using gameState.getObjectState()
-   - Proper error messages for closed containers
-
-6. **Complete command handlers** ✅ MOSTLY COMPLETE
-
-   - `handleSearch()` - ✅ Full implementation with hidden item discovery
-   - `handleRead()` - Basic implementation (adequate for Phase 3)
-   - `handlePush()` - ✅ Complete with effects and state tracking
-   - `handlePull()` - ✅ Complete with multi-stage effects
-   - `handleTurn()` - ✅ Complete with state cycling and effects
-   - `handleTouch()` - ✅ Complete with sensory feedback
-   - `handleEat()`, `handleDrink()` - Basic implementations (adequate for Phase 3)
-   - `handleYell()` - Basic implementation (adequate for Phase 3)
-
-7. **Object property standardization**
+2. **Object property standardization**
    - Some objects use `canTake` while others use `takeable`
    - Standardize on one property name throughout
    - Same issue with `isOpen`/`open`, `isLocked`/`locked`

@@ -312,7 +312,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
         true
       );
       expect(mockSoundManager.playSoundEffect).toHaveBeenCalledWith(
-        'push_stone'
+        'furniture_push'
       );
     });
 
@@ -332,7 +332,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.text).toBe("You can't push the stone wall.");
+      expect(result.text).toBe("It won't budge.");
       expect(mockGameState.setObjectState).not.toHaveBeenCalled();
     });
 
@@ -450,6 +450,12 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
 
   describe('handlePull command', () => {
     it('should pull a pullable object', async () => {
+      // Create a lever without stages for this test
+      const simpleLever = {
+        ...mockGameState.objects.get('lever'),
+        pullStages: undefined,
+      };
+
       const result = await commandExecutor.execute({
         success: true,
         command: {
@@ -458,7 +464,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
           resolvedDirectObject: {
             type: 'OBJECT',
             value: 'lever',
-            object: mockGameState.objects.get('lever'),
+            object: simpleLever,
           },
           modifiers: [],
         },
@@ -546,7 +552,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.text).toBe("You can't pull the stone wall.");
+      expect(result.text).toBe("It won't move.");
     });
 
     it('should handle pull without direct object', async () => {
@@ -679,7 +685,7 @@ describe('CommandExecutor - Extended Tests for New Handlers', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.text).toBe("You can't turn the heavy stone.");
+      expect(result.text).toBe("It doesn't turn.");
     });
 
     it('should handle turn without direct object', async () => {

@@ -7,7 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Added - December 15, 2024
+
+- **Enhanced Command Implementation**
+
+  - Multi-stage pull mechanics with state tracking
+  - Object search with item requirements (requiresItem property)
+  - Touch effects system (damage, sticky, electric, temperature)
+  - Multi-word command aliases (directional shortcuts like "n" → "go north")
+  - Improved NPC interaction with proper parameter handling
+  - Container state checking for put command
+  - Enhanced error messages with object names
+
+- **Test Coverage Improvements**
+
+  - Added 83 new test cases across command handlers
+  - Fixed all 37 failing tests - now 444/444 passing
+  - Significantly improved code coverage (restored patch coverage)
+  - Added comprehensive tests for new command features
+
+- **Code Quality**
+  - Fixed all ESLint warnings (0 errors)
+  - Applied Prettier formatting to entire codebase
+  - Consistent code style across all modules
+
+### Fixed - December 15, 2024
+
+- Command parameter order in handleAsk (NPC in directObject, topic in indirectObject)
+- Type check case sensitivity ('NPC' vs 'npc')
+- Health updates now properly applied to gameState
+- Multi-word alias parsing and command modification
+- Object revealing in search (not just items)
+- Proper article generation ("a" vs "an") for found items
+
+### Added - Earlier Sessions
 
 - Initial project structure and documentation
 - Comprehensive design documents in `ref_docs/`

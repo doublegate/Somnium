@@ -445,6 +445,7 @@ describe('EventManager - Extended Tests', () => {
       });
 
       expect(consoleWarn).toHaveBeenCalledWith(
+        '[WARN]',
         'Unknown action type: UNKNOWN_ACTION'
       );
       consoleWarn.mockRestore();

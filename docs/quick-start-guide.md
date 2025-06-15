@@ -47,10 +47,13 @@ npm run dev  # starts http-server on port 8000
 Navigate to:
 
 - `http://localhost:8080` - Main game interface
-- `http://localhost:8080/graphics-demo.html` - Vector graphics showcase
-- `http://localhost:8080/sprite-demo.html` - Interactive sprite animation
-- `http://localhost:8080/sound-demo.html` - Sound synthesis library
-- `http://localhost:8080/music-demo.html` - Music generation system
+- `http://localhost:8080/demos/demo-adventure.html` - Complete playable adventure
+- `http://localhost:8080/demos/demo-graphics.html` - Vector graphics showcase
+- `http://localhost:8080/demos/sprite-demo.html` - Interactive sprite animation
+- `http://localhost:8080/demos/sound-demo.html` - Sound synthesis library
+- `http://localhost:8080/demos/music-demo.html` - Music generation system
+- `http://localhost:8080/demos/parser-demo.html` - Natural language parser
+- `http://localhost:8080/demos/game-world-demo.html` - Puzzle and NPC systems
 
 ## Current Development Status
 
@@ -69,14 +72,14 @@ Navigate to:
 - 16-channel Tone.js sound synthesis
 - 128-voice polyphonic music system
 
-**Phase 3 (Parser and Game Logic)** - 🔄 In Progress
+**Phase 3 (Parser and Game Logic)** - ✅ Complete
 
 - Natural language parser ✅ (150+ verbs, pronouns, multi-word nouns)
-- Command execution system ✅ (with hooks and history)
-- Game mechanics 🔄 (room navigation, inventory)
-- Save/load functionality ⏳
+- Command execution system ✅ (30+ adventure game verbs)
+- Game mechanics ✅ (inventory, interactions, movement, puzzles, NPCs)
+- Save/load functionality ✅ (multiple slots with metadata)
 
-**Testing Status**: 169 tests passing across all modules
+**Testing Status**: 444 tests passing across all modules (100% pass rate)
 
 ## Creating Your First Adventure
 
@@ -273,15 +276,15 @@ The AI will blend these concepts into unique adventures.
 1. Explore the demo pages to see all implemented features
 2. Test the parser with complex commands and pronouns
 3. Check out the graphics and sound capabilities
-4. Review the comprehensive test suite (169 tests)
-5. Consider contributing to Phase 3 development!
+4. Review the comprehensive test suite (444 tests)
+5. Consider contributing to Phase 4 AI integration!
 
-### Upcoming Features (Phase 3-4)
+### Upcoming Features (Phase 4-5)
 
-- Complete game mechanics (room navigation, inventory)
 - AI integration for dynamic content generation
-- Save/load system implementation
-- Full UI with Sierra-style menus
-- Puzzle validation and hint system
+- LLM-powered world generation with themes
+- Dynamic NPC conversations
+- Content moderation and safety filters
+- Final UI polish and optimization
 
 Remember: Every adventure is unique. Even with the same theme, you'll never play the exact same game twice. Happy adventuring!

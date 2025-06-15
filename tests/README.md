@@ -148,11 +148,16 @@ it('should throw error for invalid input', () => {
 
 ## Test Coverage
 
-Current test coverage targets:
+Current test statistics:
 
-- **Overall**: 70%+ coverage
-- **Core modules**: 80%+ coverage
-- **Critical paths**: 90%+ coverage
+- **Total Tests**: 444 tests (100% passing rate)
+- **Overall Coverage**: 61.64%
+- **Core Module Coverage**:
+  - Parser: 87.37%
+  - NPCSystem: 81.19%
+  - InteractionSystem: 79.87%
+  - PuzzleSystem: 71.42%
+  - Other modules: Varying coverage levels
 
 To view detailed coverage report:
 

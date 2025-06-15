@@ -50,7 +50,7 @@ export class EventManager {
         await this.handleDynamicCommand(command);
       }
     } catch (error) {
-      console.error('Error executing command:', error);
+      logger.error('Error executing command:', error);
       this.showMessage('Something went wrong. Please try again.');
     }
   }
@@ -268,7 +268,7 @@ export class EventManager {
       // Evaluate (in a safe way)
       return this.evaluateExpression(expression);
     } catch (error) {
-      console.error('Error evaluating condition:', error);
+      logger.error('Error evaluating condition:', error);
       return false;
     }
   }
@@ -458,26 +458,32 @@ export class EventManager {
    * @returns {boolean} Result
    */
   evaluateExpression(expression) {
-    // Simple recursive descent parser for boolean expressions
-    const tokens = expression.split(/\s+/);
+    // Simple evaluation of boolean expressions
+    // This is a basic implementation that handles common cases
 
-    const evaluate = (tokens, index = 0) => {
-      if (index >= tokens.length) return true;
+    // Handle single values
+    if (expression === 'true') return true;
+    if (expression === 'false') return false;
 
-      const token = tokens[index];
+    // Handle NOT operations
+    if (expression.startsWith('not ')) {
+      return !this.evaluateExpression(expression.substring(4));
+    }
 
-      if (token === 'true') return true;
-      if (token === 'false') return false;
-      if (token === 'not') {
-        return !evaluate(tokens, index + 1);
-      }
+    // Handle AND operations
+    if (expression.includes(' and ')) {
+      const parts = expression.split(' and ');
+      return parts.every((part) => this.evaluateExpression(part.trim()));
+    }
 
-      // For now, just return false for complex expressions
-      // TODO: Implement full boolean expression parser
-      return false;
-    };
+    // Handle OR operations
+    if (expression.includes(' or ')) {
+      const parts = expression.split(' or ');
+      return parts.some((part) => this.evaluateExpression(part.trim()));
+    }
 
-    return evaluate(tokens);
+    // Default to false for unknown expressions
+    return false;
   }
 
   /**

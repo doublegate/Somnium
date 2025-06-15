@@ -196,22 +196,27 @@ Somnium is currently in active development with significant progress:
 
   - Natural language parser with 100+ verbs
   - Command execution for 30+ adventure game actions
-  - Inventory system with containers and worn items
+  - Enhanced inventory system with containers and worn items
   - Multi-step puzzle system with hints
   - NPC dialogue and trading systems
   - Achievement and scoring system
-  - **All 362 tests passing!**
+  - **All 444 tests passing!** (100% pass rate)
 
-- **Phase 4 (AI Integration)** - 🔄 Starting Soon
+- **Phase 4 (AI Integration)** - 🔄 Ready to Start
 - **Phase 5 (Polish and Release)** - 📅 Planned
 
-### Recent Updates (December 2024)
+### Recent Updates (December 15, 2024)
 
-- ✅ Fixed all test failures - 100% pass rate (362 tests)
-- ✅ Reorganized project structure (tests/, demos/)
-- ✅ Created comprehensive documentation
-- ✅ Implemented complete game logic systems
-- ✅ Built interactive demo: "The Enchanted Manor"
+- ✅ Enhanced command handlers with full test coverage
+- ✅ Fixed all 37 failing tests - now 444/444 passing
+- ✅ Improved code coverage significantly (patch coverage restored)
+- ✅ All lint and formatting issues resolved
+- ✅ Implemented missing features:
+  - Multi-stage pull mechanics
+  - Object search with item requirements
+  - NPC interaction improvements
+  - Touch effects and damage system
+  - Multi-word command aliases (e.g., "n" → "go north")
 
 See [Deferred Implementations](docs/deferred-impl.md) for remaining work items and [CHANGELOG.md](CHANGELOG.md) for version history.
 
