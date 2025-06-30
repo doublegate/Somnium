@@ -56,7 +56,7 @@
     "jest": "^30.0.0",
     "jest-canvas-mock": "^2.5.0",
     "jest-environment-jsdom": "^30.0.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.6.2"
   },
   "dependencies": {
     "tone": "^15.1.22"
