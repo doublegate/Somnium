@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/doublegate/Somnium#readme",
   "devDependencies": {
-    "@babel/core": "^7.23.0",
+    "@babel/core": "^7.28.3",
     "@babel/preset-env": "^7.23.0",
     "@eslint/js": "^9.28.0",
     "babel-jest": "^30.0.0",
