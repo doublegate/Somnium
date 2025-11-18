@@ -117,6 +117,78 @@
       </div>
     </div>
 
+    <!-- Save Game Modal -->
+    <div id="save-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Save Game</h2>
+        <div id="save-slots" class="save-slots"></div>
+        <div class="modal-buttons">
+          <button id="close-save-btn" class="button-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load Game Modal -->
+    <div id="load-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Load Game</h2>
+        <div id="load-slots" class="save-slots"></div>
+        <div class="modal-buttons">
+          <button id="close-load-btn" class="button-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Volume Control Modal -->
+    <div id="volume-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Volume Settings</h2>
+        <div class="volume-controls">
+          <div class="volume-control">
+            <label for="master-volume">Master Volume</label>
+            <input
+              type="range"
+              id="master-volume"
+              min="0"
+              max="100"
+              value="70"
+            />
+            <span id="master-volume-value">70%</span>
+          </div>
+          <div class="volume-control">
+            <label for="music-volume">Music</label>
+            <input
+              type="range"
+              id="music-volume"
+              min="0"
+              max="100"
+              value="60"
+            />
+            <span id="music-volume-value">60%</span>
+          </div>
+          <div class="volume-control">
+            <label for="sfx-volume">Sound Effects</label>
+            <input type="range" id="sfx-volume" min="0" max="100" value="80" />
+            <span id="sfx-volume-value">80%</span>
+          </div>
+          <div class="volume-control">
+            <label for="ambient-volume">Ambient</label>
+            <input
+              type="range"
+              id="ambient-volume"
+              min="0"
+              max="100"
+              value="50"
+            />
+            <span id="ambient-volume-value">50%</span>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button id="close-volume-btn" class="button-primary">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script type="module">
       // Check for config file

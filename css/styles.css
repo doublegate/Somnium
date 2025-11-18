@@ -346,6 +346,130 @@ body {
   color: var(--ega-light-red);
 }
 
+/* Save/Load Slots */
+.save-slots {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.save-slot {
+  background-color: var(--ega-dark-gray);
+  border: 2px solid var(--ega-light-gray);
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.1s;
+}
+
+.save-slot:hover {
+  background-color: var(--ega-light-gray);
+  border-color: var(--ega-white);
+  transform: translateX(4px);
+}
+
+.save-slot.empty {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.save-slot-info {
+  flex: 1;
+}
+
+.save-slot-name {
+  color: var(--ega-light-cyan);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.save-slot-meta {
+  color: var(--ega-light-gray);
+  font-size: 12px;
+}
+
+.save-slot-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.save-slot-btn {
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid;
+  background-color: var(--ega-blue);
+  color: var(--ega-white);
+  border-color: var(--ega-light-blue);
+}
+
+.save-slot-btn:hover {
+  background-color: var(--ega-light-blue);
+}
+
+.save-slot-btn.danger {
+  background-color: var(--ega-red);
+  border-color: var(--ega-light-red);
+}
+
+.save-slot-btn.danger:hover {
+  background-color: var(--ega-light-red);
+}
+
+/* Volume Controls */
+.volume-controls {
+  padding: 16px 0;
+}
+
+.volume-control {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.volume-control label {
+  flex: 0 0 120px;
+  color: var(--ega-light-cyan);
+}
+
+.volume-control input[type='range'] {
+  flex: 1;
+  height: 6px;
+  background: var(--ega-dark-gray);
+  outline: none;
+  border: 1px solid var(--ega-light-gray);
+}
+
+.volume-control input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--ega-light-cyan);
+  cursor: pointer;
+  border: 1px solid var(--ega-white);
+}
+
+.volume-control input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--ega-light-cyan);
+  cursor: pointer;
+  border: 1px solid var(--ega-white);
+}
+
+.volume-control span {
+  flex: 0 0 50px;
+  text-align: right;
+  color: var(--ega-white);
+  font-weight: bold;
+}
+
 /* Dropdown Menus */
 .dropdown-container {
   position: absolute;

@@ -215,13 +215,256 @@ export class UIManager {
   }
 
   /**
-   * Show load game modal (TODO: Implement)
+   * Show save game modal with slot selector
+   * @param {Object} saveGameManager - SaveGameManager instance
+   * @param {Function} onSave - Callback when save is selected
    */
-  showLoadGameModal() {
-    // TODO: Create dedicated load game modal with save slot list
-    this.showError(
-      'Load game UI not yet implemented. Use console: saveGameManager().loadFromSlot(0)'
+  showSaveGameModal(saveGameManager, onSave) {
+    const modal = document.getElementById('save-modal');
+    const container = document.getElementById('save-slots');
+
+    // Clear existing slots
+    container.innerHTML = '';
+
+    // Get all save slots
+    const slots = saveGameManager.getSaveSlots();
+
+    // Create slot elements (exclude auto-save slot -1)
+    slots
+      .filter((slot) => slot.slot !== -1)
+      .forEach((slot) => {
+        const slotDiv = document.createElement('div');
+        slotDiv.className = slot.empty ? 'save-slot empty' : 'save-slot';
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'save-slot-info';
+
+        if (slot.empty) {
+          const nameDiv = document.createElement('div');
+          nameDiv.className = 'save-slot-name';
+          nameDiv.textContent = `Slot ${slot.slot + 1} - Empty`;
+          infoDiv.appendChild(nameDiv);
+        } else {
+          const nameDiv = document.createElement('div');
+          nameDiv.className = 'save-slot-name';
+          nameDiv.textContent = slot.saveName;
+          infoDiv.appendChild(nameDiv);
+
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'save-slot-meta';
+          const date = new Date(slot.timestamp);
+          metaDiv.textContent = `${date.toLocaleDateString()} ${date.toLocaleTimeString()} | ${slot.metadata?.title || 'Unknown'} | Score: ${slot.metadata?.score || 0}`;
+          infoDiv.appendChild(metaDiv);
+        }
+
+        slotDiv.appendChild(infoDiv);
+
+        // Add save button
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'save-slot-actions';
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'save-slot-btn';
+        saveBtn.textContent = slot.empty ? 'Save Here' : 'Overwrite';
+        saveBtn.onclick = () => {
+          const saveName = this.prompt(
+            'Enter a name for this save:',
+            slot.empty ? 'New Save' : slot.saveName
+          );
+          if (saveName) {
+            onSave(slot.slot, saveName);
+            this.hideSaveGameModal();
+          }
+        };
+        actionsDiv.appendChild(saveBtn);
+
+        // Add delete button if slot is not empty
+        if (!slot.empty) {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'save-slot-btn danger';
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.onclick = () => {
+            if (this.confirm(`Delete save "${slot.saveName}"?`)) {
+              saveGameManager.deleteSlot(slot.slot);
+              this.showSaveGameModal(saveGameManager, onSave); // Refresh
+            }
+          };
+          actionsDiv.appendChild(deleteBtn);
+        }
+
+        slotDiv.appendChild(actionsDiv);
+        container.appendChild(slotDiv);
+      });
+
+    modal.classList.remove('hidden');
+    this.logger.debug('Save game modal shown');
+  }
+
+  /**
+   * Hide save game modal
+   */
+  hideSaveGameModal() {
+    const modal = document.getElementById('save-modal');
+    modal.classList.add('hidden');
+    this.logger.debug('Save game modal hidden');
+  }
+
+  /**
+   * Show load game modal with slot selector
+   * @param {Object} saveGameManager - SaveGameManager instance
+   * @param {Function} onLoad - Callback when load is selected
+   */
+  showLoadGameModal(saveGameManager, onLoad) {
+    const modal = document.getElementById('load-modal');
+    const container = document.getElementById('load-slots');
+
+    // Clear existing slots
+    container.innerHTML = '';
+
+    // Get all save slots
+    const slots = saveGameManager.getSaveSlots();
+
+    // Filter only non-empty slots (including auto-save)
+    const nonEmptySlots = slots.filter((slot) => !slot.empty);
+
+    if (nonEmptySlots.length === 0) {
+      container.innerHTML =
+        '<p style="text-align: center; color: var(--ega-light-gray);">No saved games found.</p>';
+    } else {
+      nonEmptySlots.forEach((slot) => {
+        const slotDiv = document.createElement('div');
+        slotDiv.className = 'save-slot';
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'save-slot-info';
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'save-slot-name';
+        nameDiv.textContent = slot.saveName;
+        infoDiv.appendChild(nameDiv);
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'save-slot-meta';
+        const date = new Date(slot.timestamp);
+        metaDiv.textContent = `${date.toLocaleDateString()} ${date.toLocaleTimeString()} | ${slot.metadata?.title || 'Unknown'} | Score: ${slot.metadata?.score || 0}`;
+        infoDiv.appendChild(metaDiv);
+
+        slotDiv.appendChild(infoDiv);
+
+        // Add load button
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'save-slot-actions';
+
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'save-slot-btn';
+        loadBtn.textContent = 'Load';
+        loadBtn.onclick = () => {
+          onLoad(slot.slot);
+          this.hideLoadGameModal();
+        };
+        actionsDiv.appendChild(loadBtn);
+
+        // Add delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'save-slot-btn danger';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => {
+          if (this.confirm(`Delete save "${slot.saveName}"?`)) {
+            saveGameManager.deleteSlot(slot.slot);
+            this.showLoadGameModal(saveGameManager, onLoad); // Refresh
+          }
+        };
+        actionsDiv.appendChild(deleteBtn);
+
+        slotDiv.appendChild(actionsDiv);
+        container.appendChild(slotDiv);
+      });
+    }
+
+    modal.classList.remove('hidden');
+    this.logger.debug('Load game modal shown');
+  }
+
+  /**
+   * Hide load game modal
+   */
+  hideLoadGameModal() {
+    const modal = document.getElementById('load-modal');
+    modal.classList.add('hidden');
+    this.logger.debug('Load game modal hidden');
+  }
+
+  /**
+   * Show volume control modal
+   * @param {Object} soundManager - SoundManager instance
+   */
+  showVolumeModal(soundManager) {
+    const modal = document.getElementById('volume-modal');
+
+    // Set current values
+    const masterSlider = document.getElementById('master-volume');
+    const musicSlider = document.getElementById('music-volume');
+    const sfxSlider = document.getElementById('sfx-volume');
+    const ambientSlider = document.getElementById('ambient-volume');
+
+    masterSlider.value = Math.round(soundManager.masterVolume * 100);
+    musicSlider.value = Math.round(
+      soundManager.getCategoryVolume('music') * 100
     );
+    sfxSlider.value = Math.round(soundManager.getCategoryVolume('sfx') * 100);
+    ambientSlider.value = Math.round(
+      soundManager.getCategoryVolume('ambient') * 100
+    );
+
+    // Update value displays
+    document.getElementById('master-volume-value').textContent =
+      `${masterSlider.value}%`;
+    document.getElementById('music-volume-value').textContent =
+      `${musicSlider.value}%`;
+    document.getElementById('sfx-volume-value').textContent =
+      `${sfxSlider.value}%`;
+    document.getElementById('ambient-volume-value').textContent =
+      `${ambientSlider.value}%`;
+
+    // Add event listeners for real-time updates
+    const updateVolume = (slider, valueSpan, callback) => {
+      slider.oninput = () => {
+        const value = parseInt(slider.value);
+        valueSpan.textContent = `${value}%`;
+        callback(value / 100);
+      };
+    };
+
+    updateVolume(
+      masterSlider,
+      document.getElementById('master-volume-value'),
+      (v) => soundManager.setMasterVolume(v)
+    );
+    updateVolume(
+      musicSlider,
+      document.getElementById('music-volume-value'),
+      (v) => soundManager.setCategoryVolume('music', v)
+    );
+    updateVolume(sfxSlider, document.getElementById('sfx-volume-value'), (v) =>
+      soundManager.setCategoryVolume('sfx', v)
+    );
+    updateVolume(
+      ambientSlider,
+      document.getElementById('ambient-volume-value'),
+      (v) => soundManager.setCategoryVolume('ambient', v)
+    );
+
+    modal.classList.remove('hidden');
+    this.logger.debug('Volume control modal shown');
+  }
+
+  /**
+   * Hide volume control modal
+   */
+  hideVolumeModal() {
+    const modal = document.getElementById('volume-modal');
+    modal.classList.add('hidden');
+    this.logger.debug('Volume control modal hidden');
   }
 
   // ===== Dropdown Menus =====

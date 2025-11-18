@@ -65,7 +65,68 @@ function initializeUI() {
   });
 
   document.getElementById('load-game-btn').addEventListener('click', () => {
-    uiManager.showLoadGameModal();
+    // Create a temporary SaveGameManager to show available saves
+    const tempSaveManager = new SaveGameManager(null);
+    uiManager.showLoadGameModal(tempSaveManager, async (slot) => {
+      try {
+        // Hide main menu
+        uiManager.hideMainMenu();
+        uiManager.showLoadingScreen('Loading game...');
+
+        // Create minimal game manager for loading
+        const canvas = document.getElementById('game-canvas');
+        const config = {
+          apiKey: window.API_CONFIG.apiKey,
+          apiEndpoint: window.API_CONFIG.apiEndpoint,
+          model: window.API_CONFIG.model || 'gpt-3.5-turbo',
+          debugMode: window.API_CONFIG.debugMode || false,
+        };
+
+        gameManager = new GameManager(canvas, config);
+        gameManager.displayMessage = (message) => {
+          uiManager.addOutputText(message, 'game');
+        };
+
+        saveGameManager = new SaveGameManager(gameManager);
+
+        // Load the game
+        await saveGameManager.loadFromSlot(slot);
+
+        // Hide loading screen
+        uiManager.hideLoadingScreen();
+
+        // Show game UI
+        uiManager.showGameUI();
+
+        // Display loaded game info
+        const currentRoom = gameManager.gameState.getCurrentRoom();
+        const metadata = gameManager.gameState.gameJSON?.metadata || {};
+
+        uiManager.addOutputText('Game loaded successfully!', 'system');
+        uiManager.addOutputText('');
+        uiManager.addOutputText(currentRoom.description, 'description');
+        uiManager.addOutputText('');
+        uiManager.updateTitle(metadata.title || 'Somnium');
+
+        // Enable auto-save if configured
+        if (window.API_CONFIG.autoSave !== false) {
+          saveGameManager.enableAutoSave();
+        }
+
+        // Enable debug mode if configured
+        if (config.debugMode) {
+          document.getElementById('debug-info').classList.remove('hidden');
+        }
+
+        // Focus input
+        uiManager.focusInput();
+      } catch (error) {
+        logger.error('Failed to load game:', error);
+        uiManager.hideLoadingScreen();
+        uiManager.showError(`Failed to load game: ${error.message}`);
+        uiManager.showMainMenu();
+      }
+    });
   });
 
   document.getElementById('about-btn').addEventListener('click', () => {
@@ -99,6 +160,20 @@ function initializeUI() {
   // Error modal
   document.getElementById('close-error-btn').addEventListener('click', () => {
     uiManager.hideErrorModal();
+  });
+
+  // Save/Load modals
+  document.getElementById('close-save-btn').addEventListener('click', () => {
+    uiManager.hideSaveGameModal();
+  });
+
+  document.getElementById('close-load-btn').addEventListener('click', () => {
+    uiManager.hideLoadGameModal();
+  });
+
+  // Volume modal
+  document.getElementById('close-volume-btn').addEventListener('click', () => {
+    uiManager.hideVolumeModal();
   });
 
   // Menu bar items
@@ -325,6 +400,7 @@ function showSpeedMenu() {
  */
 function showSoundMenu() {
   const menu = [
+    { label: 'Volume Control', action: () => showVolumeControl() },
     { label: 'Sound On/Off', action: () => toggleSound() },
     { label: 'About', action: () => uiManager.showAboutModal() },
   ];
@@ -350,17 +426,16 @@ function saveGame() {
   if (!saveGameManager) return;
 
   try {
-    const slot = 0; // TODO: Show save slot selector
-    const saveName = uiManager.prompt(
-      'Enter a name for this save:',
-      'Save Game'
-    );
-    if (saveName) {
-      saveGameManager.saveToSlot(slot, saveName);
-      uiManager.addOutputText('Game saved successfully.', 'system');
-    }
+    uiManager.showSaveGameModal(saveGameManager, (slot, saveName) => {
+      try {
+        saveGameManager.saveToSlot(slot, saveName);
+        uiManager.addOutputText('Game saved successfully.', 'system');
+      } catch (error) {
+        uiManager.showError(`Failed to save game: ${error.message}`);
+      }
+    });
   } catch (error) {
-    uiManager.showError(`Failed to save game: ${error.message}`);
+    uiManager.showError(`Failed to show save menu: ${error.message}`);
   }
 }
 
@@ -371,16 +446,21 @@ async function loadGame() {
   if (!saveGameManager) return;
 
   try {
-    const slot = 0; // TODO: Show load slot selector
-    await saveGameManager.loadFromSlot(slot);
-    uiManager.addOutputText('Game loaded successfully.', 'system');
+    uiManager.showLoadGameModal(saveGameManager, async (slot) => {
+      try {
+        await saveGameManager.loadFromSlot(slot);
+        uiManager.addOutputText('Game loaded successfully.', 'system');
 
-    // Refresh display
-    const currentRoom = gameManager.gameState.getCurrentRoom();
-    uiManager.addOutputText('');
-    uiManager.addOutputText(currentRoom.description, 'description');
+        // Refresh display
+        const currentRoom = gameManager.gameState.getCurrentRoom();
+        uiManager.addOutputText('');
+        uiManager.addOutputText(currentRoom.description, 'description');
+      } catch (error) {
+        uiManager.showError(`Failed to load game: ${error.message}`);
+      }
+    });
   } catch (error) {
-    uiManager.showError(`Failed to load game: ${error.message}`);
+    uiManager.showError(`Failed to show load menu: ${error.message}`);
   }
 }
 
@@ -409,16 +489,46 @@ function quitToMenu() {
 /**
  * Restart current game
  */
-function restartGame() {
+async function restartGame() {
   if (
-    uiManager.confirm(
+    !uiManager.confirm(
       'Are you sure you want to restart? All progress will be lost.'
     )
   ) {
-    uiManager.addOutputText(
-      'Restart not yet implemented. Use "Quit" and start a new game.',
-      'system'
-    );
+    return;
+  }
+
+  try {
+    // Save the current theme and world type
+    const currentTheme =
+      gameManager.gameState.gameJSON?.metadata?.theme || null;
+    const useStatic =
+      gameManager.gameState.gameJSON?.metadata?.mockData || false;
+
+    // Stop the current game
+    if (gameManager) {
+      gameManager.stopGame();
+    }
+
+    // Disable auto-save
+    if (saveGameManager) {
+      saveGameManager.disableAutoSave();
+    }
+
+    // Clear the output
+    uiManager.clearOutput();
+
+    // Show loading screen
+    uiManager.showLoadingScreen('Restarting adventure...');
+
+    // Wait a moment for cleanup
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Start new game with same theme
+    await startNewGame(currentTheme);
+  } catch (error) {
+    logger.error('Failed to restart game:', error);
+    uiManager.showError(`Failed to restart: ${error.message}`);
   }
 }
 
@@ -437,6 +547,18 @@ function showInventory() {
       uiManager.addOutputText(`  - ${item.name}`, 'game');
     });
   }
+}
+
+/**
+ * Show volume control modal
+ */
+function showVolumeControl() {
+  if (!gameManager) {
+    uiManager.showError('No game is currently running');
+    return;
+  }
+
+  uiManager.showVolumeModal(gameManager.soundManager);
 }
 
 /**
