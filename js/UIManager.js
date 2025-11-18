@@ -547,6 +547,136 @@ export class UIManager {
   clearInput() {
     this.elements.textInput.value = '';
   }
+
+  // ===== Achievement Notifications =====
+
+  /**
+   * Show achievement notification popup
+   * @param {Object} achievement - Achievement data
+   * @param {string} achievement.id - Achievement ID
+   * @param {string} achievement.name - Achievement display name
+   * @param {string} achievement.description - Achievement description
+   * @param {number} achievement.points - Points awarded
+   * @param {string} achievement.icon - Icon/emoji for achievement (default: 🏆)
+   */
+  showAchievementNotification(achievement) {
+    const container = document.getElementById('achievement-container');
+    if (!container) {
+      this.logger.warn('Achievement container not found');
+      return;
+    }
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.setAttribute('data-achievement-id', achievement.id);
+
+    // Build notification HTML
+    const icon = achievement.icon || '🏆';
+    notification.innerHTML = `
+      <div class="achievement-header">
+        <div class="achievement-icon">${icon}</div>
+        <div class="achievement-title">Achievement Unlocked!</div>
+      </div>
+      <div class="achievement-name">${achievement.name}</div>
+      <div class="achievement-description">${achievement.description}</div>
+      <div class="achievement-points">+${achievement.points || 0} points</div>
+    `;
+
+    // Add to container
+    container.appendChild(notification);
+
+    // Play achievement sound if available
+    if (window.gameManager && window.gameManager.soundManager) {
+      try {
+        window.gameManager.soundManager.playSound('achievement_unlock', {
+          category: 'ui',
+          volume: 0.8,
+        });
+      } catch (error) {
+        this.logger.debug('Achievement sound not available');
+      }
+    }
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      this.hideAchievementNotification(notification);
+    }, 5000);
+
+    this.logger.debug(`Achievement notification shown: ${achievement.name}`);
+  }
+
+  /**
+   * Hide achievement notification with animation
+   * @param {HTMLElement} notification - Notification element to hide
+   */
+  hideAchievementNotification(notification) {
+    notification.classList.add('hiding');
+
+    // Remove from DOM after animation completes
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300); // Match slideOutRight animation duration
+  }
+
+  /**
+   * Clear all achievement notifications
+   */
+  clearAchievementNotifications() {
+    const container = document.getElementById('achievement-container');
+    if (container) {
+      container.innerHTML = '';
+    }
+  }
+
+  /**
+   * Show achievement progress notification (for multi-step achievements)
+   * @param {Object} achievement - Achievement data
+   * @param {number} currentProgress - Current progress (e.g., 3)
+   * @param {number} totalProgress - Total required (e.g., 5)
+   */
+  showAchievementProgress(achievement, currentProgress, totalProgress) {
+    const container = document.getElementById('achievement-container');
+    if (!container) {
+      this.logger.warn('Achievement container not found');
+      return;
+    }
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.setAttribute('data-achievement-id', achievement.id);
+
+    // Build notification HTML
+    const icon = achievement.icon || '📊';
+    const progressPercent = Math.round((currentProgress / totalProgress) * 100);
+
+    notification.innerHTML = `
+      <div class="achievement-header">
+        <div class="achievement-icon">${icon}</div>
+        <div class="achievement-title">Achievement Progress</div>
+      </div>
+      <div class="achievement-name">${achievement.name}</div>
+      <div class="achievement-description">${currentProgress}/${totalProgress} ${achievement.description}</div>
+      <div class="achievement-progress">
+        <div class="achievement-progress-bar" style="width: ${progressPercent}%"></div>
+      </div>
+    `;
+
+    // Add to container
+    container.appendChild(notification);
+
+    // Auto-dismiss after 3 seconds (shorter for progress updates)
+    setTimeout(() => {
+      this.hideAchievementNotification(notification);
+    }, 3000);
+
+    this.logger.debug(
+      `Achievement progress shown: ${achievement.name} (${currentProgress}/${totalProgress})`
+    );
+  }
 }
 
 export default UIManager;

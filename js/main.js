@@ -83,9 +83,15 @@ function initializeUI() {
         };
 
         gameManager = new GameManager(canvas, config);
+        window.gameManager = gameManager; // Expose for achievement sounds
         gameManager.displayMessage = (message) => {
           uiManager.addOutputText(message, 'game');
         };
+
+        // Set up achievement notification listener
+        gameManager.eventManager.on('achievementUnlocked', (data) => {
+          uiManager.showAchievementNotification(data.achievement);
+        });
 
         saveGameManager = new SaveGameManager(gameManager);
 
@@ -240,11 +246,17 @@ async function startNewGame(theme) {
 
     // Initialize game manager
     gameManager = new GameManager(canvas, config);
+    window.gameManager = gameManager; // Expose for achievement sounds
 
     // Override displayMessage to use UI
     gameManager.displayMessage = (message) => {
       uiManager.addOutputText(message, 'game');
     };
+
+    // Set up achievement notification listener
+    gameManager.eventManager.on('achievementUnlocked', (data) => {
+      uiManager.showAchievementNotification(data.achievement);
+    });
 
     // Create save game manager
     saveGameManager = new SaveGameManager(gameManager);
