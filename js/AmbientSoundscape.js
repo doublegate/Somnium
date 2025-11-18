@@ -415,7 +415,8 @@ export class AmbientSoundscape {
         // Play the sound
         const volume = randomDef.volumeRange
           ? randomDef.volumeRange[0] +
-            Math.random() * (randomDef.volumeRange[1] - randomDef.volumeRange[0])
+            Math.random() *
+              (randomDef.volumeRange[1] - randomDef.volumeRange[0])
           : 0.5;
 
         this.prioritySoundManager.playSound(randomDef.sound, {

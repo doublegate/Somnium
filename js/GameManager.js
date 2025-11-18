@@ -66,7 +66,10 @@ export class GameManager {
 
     // Initialize Sierra-inspired sound systems
     this.prioritySoundManager = new PrioritySoundManager(this.soundManager);
-    this.synchronizedSound = new SynchronizedSound(this.prioritySoundManager, this);
+    this.synchronizedSound = new SynchronizedSound(
+      this.prioritySoundManager,
+      this
+    );
     this.ambientSoundscape = new AmbientSoundscape(this.prioritySoundManager);
 
     // Initialize enhanced parser with Sierra patterns
@@ -172,7 +175,10 @@ export class GameManager {
       // Start ambient soundscape for starting room
       const currentRoom = this.gameState.getCurrentRoom();
       if (currentRoom.ambientSound) {
-        this.ambientSoundscape.startScape(currentRoom.ambientSound, this.gameState);
+        this.ambientSoundscape.startScape(
+          currentRoom.ambientSound,
+          this.gameState
+        );
       }
 
       // Render first room
@@ -447,12 +453,17 @@ export class GameManager {
           if (result.roomChanged) {
             const newRoom = this.gameState.getCurrentRoom();
             if (newRoom.ambientSound) {
-              this.ambientSoundscape.startScape(newRoom.ambientSound, this.gameState, true);
+              this.ambientSoundscape.startScape(
+                newRoom.ambientSound,
+                this.gameState,
+                true
+              );
             }
           }
         } else if (result && result.unscripted) {
           // No scripted response, try dynamic AI response
-          const dynamicResponse = await this.dynamicInteractionHandler.handleDynamicAction(command);
+          const dynamicResponse =
+            await this.dynamicInteractionHandler.handleDynamicAction(command);
           this.displayMessage(dynamicResponse);
         } else {
           // Command failed

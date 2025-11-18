@@ -35,7 +35,8 @@ export class SaveGameManager {
 
     // Add metadata
     saveData.slot = slot;
-    saveData.saveName = saveName || (slot === -1 ? 'Auto-save' : `Save ${slot + 1}`);
+    saveData.saveName =
+      saveName || (slot === -1 ? 'Auto-save' : `Save ${slot + 1}`);
     saveData.timestamp = new Date().toISOString();
 
     // Add thumbnail data (simplified - could be canvas snapshot)
@@ -188,7 +189,9 @@ export class SaveGameManager {
     const saveData = JSON.parse(savedDataStr);
 
     // Create blob and download URL
-    const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(saveData, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
 
     // Trigger download
@@ -411,7 +414,9 @@ export class SaveGameManager {
     const currentVersion = '1.0.0';
 
     if (saveVersion !== currentVersion) {
-      this.logger.warn(`Save version mismatch: ${saveVersion} vs ${currentVersion}`);
+      this.logger.warn(
+        `Save version mismatch: ${saveVersion} vs ${currentVersion}`
+      );
       // Could implement migration logic here
     }
   }

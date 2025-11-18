@@ -133,6 +133,37 @@ body {
   caret-color: var(--ega-white);
 }
 
+/* Text Output Types */
+.text-command {
+  color: var(--ega-light-cyan);
+  font-weight: bold;
+}
+
+.text-game {
+  color: var(--ega-white);
+}
+
+.text-system {
+  color: var(--ega-yellow);
+  font-style: italic;
+}
+
+.text-title {
+  color: var(--ega-light-magenta);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.text-description {
+  color: var(--ega-light-green);
+  margin: 4px 0;
+}
+
+.text-hint {
+  color: var(--ega-light-gray);
+  font-style: italic;
+}
+
 /* Main Menu */
 .main-menu {
   position: absolute;

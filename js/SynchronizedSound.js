@@ -28,7 +28,9 @@ export class SynchronizedSound {
    * @returns {Object} Sync control object
    */
   playSynchronized(soundId, cuePoints = [], options = {}) {
-    this.logger.log(`Playing synchronized sound: ${soundId} with ${cuePoints.length} cue points`);
+    this.logger.log(
+      `Playing synchronized sound: ${soundId} with ${cuePoints.length} cue points`
+    );
 
     // Play the sound
     const sound = this.prioritySoundManager.playSound(soundId, options);
@@ -197,15 +199,24 @@ export class SynchronizedSound {
     // Common effects based on Sierra games
     switch (effect) {
       case 'flash':
-        this.gameManager.sceneRenderer.flashScreen(params?.color || 15, duration || 100);
+        this.gameManager.sceneRenderer.flashScreen(
+          params?.color || 15,
+          duration || 100
+        );
         break;
 
       case 'shake':
-        this.gameManager.sceneRenderer.shakeScreen(params?.intensity || 5, duration || 500);
+        this.gameManager.sceneRenderer.shakeScreen(
+          params?.intensity || 5,
+          duration || 500
+        );
         break;
 
       case 'fade':
-        this.gameManager.sceneRenderer.fadeScreen(params?.direction || 'out', duration || 1000);
+        this.gameManager.sceneRenderer.fadeScreen(
+          params?.direction || 'out',
+          duration || 1000
+        );
         break;
 
       case 'particles':
@@ -329,7 +340,9 @@ export class SynchronizedSound {
     syncData.paused = false;
 
     // Note: Full resume would require recalculating remaining cue times
-    this.logger.log(`Synchronized sound resumed: ${syncId} (after ${pauseDuration}ms pause)`);
+    this.logger.log(
+      `Synchronized sound resumed: ${syncId} (after ${pauseDuration}ms pause)`
+    );
   }
 
   /**
@@ -343,7 +356,9 @@ export class SynchronizedSound {
 
     const elapsed = Date.now() - syncData.startTime;
     const totalCues = syncData.cuePoints.length;
-    const completedCues = syncData.cuePoints.filter((cue) => cue.time < elapsed).length;
+    const completedCues = syncData.cuePoints.filter(
+      (cue) => cue.time < elapsed
+    ).length;
 
     return {
       elapsed,
@@ -400,16 +415,39 @@ export class SynchronizedSound {
   playSubmarineDive() {
     const cuePoints = [
       { time: 0, type: 'state', property: 'diving', value: true },
-      { time: 1000, type: 'animation', target: 'submarine', animation: 'dive_start' },
-      { time: 2000, type: 'sound', soundId: 'submarine_klaxon', options: { volume: 0.5 } },
-      { time: 3000, type: 'effect', effect: 'particles', params: { type: 'bubbles', count: 50 } },
+      {
+        time: 1000,
+        type: 'animation',
+        target: 'submarine',
+        animation: 'dive_start',
+      },
+      {
+        time: 2000,
+        type: 'sound',
+        soundId: 'submarine_klaxon',
+        options: { volume: 0.5 },
+      },
+      {
+        time: 3000,
+        type: 'effect',
+        effect: 'particles',
+        params: { type: 'bubbles', count: 50 },
+      },
       { time: 5000, type: 'state', property: 'depth', value: 50 },
-      { time: 7000, type: 'animation', target: 'submarine', animation: 'dive_level' },
+      {
+        time: 7000,
+        type: 'animation',
+        target: 'submarine',
+        animation: 'dive_level',
+      },
       { time: 8000, type: 'state', property: 'diving', value: false },
       { time: 8000, type: 'event', event: 'dive_complete' },
     ];
 
-    return this.playSynchronized('submarine_dive', cuePoints, { type: 'ambient', volume: 0.7 });
+    return this.playSynchronized('submarine_dive', cuePoints, {
+      type: 'ambient',
+      volume: 0.7,
+    });
   }
 
   /**
@@ -420,16 +458,50 @@ export class SynchronizedSound {
   playSpellCast(spellType = 'generic') {
     const cuePoints = [
       { time: 0, type: 'animation', target: 'player', animation: 'cast_start' },
-      { time: 500, type: 'sound', soundId: 'spell_charge', options: { volume: 0.6 } },
-      { time: 1000, type: 'effect', effect: 'particles', params: { type: 'sparkles', count: 30 } },
-      { time: 1500, type: 'animation', target: 'player', animation: 'cast_release' },
-      { time: 1500, type: 'sound', soundId: 'spell_release', options: { volume: 0.8 } },
-      { time: 2000, type: 'effect', effect: 'flash', params: { color: 15 }, duration: 200 },
-      { time: 2200, type: 'event', event: 'spell_cast', params: { spell: spellType } },
+      {
+        time: 500,
+        type: 'sound',
+        soundId: 'spell_charge',
+        options: { volume: 0.6 },
+      },
+      {
+        time: 1000,
+        type: 'effect',
+        effect: 'particles',
+        params: { type: 'sparkles', count: 30 },
+      },
+      {
+        time: 1500,
+        type: 'animation',
+        target: 'player',
+        animation: 'cast_release',
+      },
+      {
+        time: 1500,
+        type: 'sound',
+        soundId: 'spell_release',
+        options: { volume: 0.8 },
+      },
+      {
+        time: 2000,
+        type: 'effect',
+        effect: 'flash',
+        params: { color: 15 },
+        duration: 200,
+      },
+      {
+        time: 2200,
+        type: 'event',
+        event: 'spell_cast',
+        params: { spell: spellType },
+      },
       { time: 2500, type: 'animation', target: 'player', animation: 'idle' },
     ];
 
-    return this.playSynchronized(`spell_${spellType}`, cuePoints, { type: 'magic', volume: 0.7 });
+    return this.playSynchronized(`spell_${spellType}`, cuePoints, {
+      type: 'magic',
+      volume: 0.7,
+    });
   }
 
   /**
@@ -439,13 +511,20 @@ export class SynchronizedSound {
    */
   playDoorOpen(doorType = 'wooden') {
     const cuePoints = [
-      { time: 0, type: 'sound', soundId: `door_${doorType}_open`, options: { volume: 0.6 } },
+      {
+        time: 0,
+        type: 'sound',
+        soundId: `door_${doorType}_open`,
+        options: { volume: 0.6 },
+      },
       { time: 200, type: 'animation', target: 'door', animation: 'open' },
       { time: 800, type: 'state', property: 'door_open', value: true },
       { time: 800, type: 'event', event: 'door_opened' },
     ];
 
-    return this.playSynchronized(`door_open_${doorType}`, cuePoints, { type: 'doors' });
+    return this.playSynchronized(`door_open_${doorType}`, cuePoints, {
+      type: 'doors',
+    });
   }
 }
 

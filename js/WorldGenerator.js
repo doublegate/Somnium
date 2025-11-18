@@ -104,20 +104,33 @@ export class WorldGenerator {
             primitives: [
               { type: 'rect', color: 0, dims: [0, 0, 320, 200] },
               { type: 'rect', color: 7, dims: [0, 100, 320, 100] },
-              { type: 'polygon', color: 14, points: [[160, 60], [150, 70], [170, 70]] },
+              {
+                type: 'polygon',
+                color: 14,
+                points: [
+                  [160, 60],
+                  [150, 70],
+                  [170, 70],
+                ],
+              },
             ],
           },
           exits: {
             south: { roomId: 'entrance', enabled: true },
             east: { roomId: 'library', enabled: true },
-            west: { roomId: 'dining', enabled: false, requirement: 'dining_key' },
+            west: {
+              roomId: 'dining',
+              enabled: false,
+              requirement: 'dining_key',
+            },
           },
           objects: ['chandelier'],
           items: ['candle'],
         },
         library: {
           name: 'Library',
-          description: 'Towering bookshelves surround you. The smell of old paper fills the air.',
+          description:
+            'Towering bookshelves surround you. The smell of old paper fills the air.',
           graphics: {
             primitives: [
               { type: 'rect', color: 0, dims: [0, 0, 320, 200] },
@@ -133,7 +146,8 @@ export class WorldGenerator {
         },
         dining: {
           name: 'Dining Room',
-          description: 'A long dining table dominates the room. Cobwebs hang from the corners.',
+          description:
+            'A long dining table dominates the room. Cobwebs hang from the corners.',
           graphics: {
             primitives: [
               { type: 'rect', color: 0, dims: [0, 0, 320, 200] },
@@ -162,7 +176,8 @@ export class WorldGenerator {
           takeable: true,
           size: 2,
           weight: 2,
-          readText: 'The book contains cryptic passages about hidden treasures.',
+          readText:
+            'The book contains cryptic passages about hidden treasures.',
         },
         dining_key: {
           name: 'brass key',
@@ -273,7 +288,8 @@ export class WorldGenerator {
     // Add more rooms
     world.rooms.kitchen = {
       name: 'Kitchen',
-      description: 'A dusty kitchen with rusted pots and pans hanging from the ceiling.',
+      description:
+        'A dusty kitchen with rusted pots and pans hanging from the ceiling.',
       graphics: {
         primitives: [
           { type: 'rect', color: 0, dims: [0, 0, 320, 200] },
@@ -336,12 +352,18 @@ export class WorldGenerator {
     for (const room of Object.values(worldData.rooms)) {
       if (room.graphics && room.graphics.primitives) {
         // Ensure all primitives have valid structure
-        room.graphics.primitives = room.graphics.primitives.filter((primitive) => {
-          return primitive.type && primitive.color !== undefined;
-        });
+        room.graphics.primitives = room.graphics.primitives.filter(
+          (primitive) => {
+            return primitive.type && primitive.color !== undefined;
+          }
+        );
 
         // Add sky if no background
-        if (!room.graphics.primitives.some((p) => p.type === 'rect' && p.dims[1] === 0)) {
+        if (
+          !room.graphics.primitives.some(
+            (p) => p.type === 'rect' && p.dims[1] === 0
+          )
+        ) {
           room.graphics.primitives.unshift({
             type: 'rect',
             color: 9, // Light blue sky
@@ -405,7 +427,9 @@ export class WorldGenerator {
     if (!fixed.rooms.start && Object.keys(fixed.rooms).length > 0) {
       const firstRoomId = Object.keys(fixed.rooms)[0];
       fixed.rooms.start = fixed.rooms[firstRoomId];
-      this.logger.warn(`No 'start' room found, using '${firstRoomId}' as start`);
+      this.logger.warn(
+        `No 'start' room found, using '${firstRoomId}' as start`
+      );
     }
 
     // Fix broken exit references
@@ -427,7 +451,9 @@ export class WorldGenerator {
       if (room.items) {
         room.items = room.items.filter((itemId) => {
           if (!fixed.items[itemId]) {
-            this.logger.warn(`Room ${roomId} references non-existent item ${itemId}, removing`);
+            this.logger.warn(
+              `Room ${roomId} references non-existent item ${itemId}, removing`
+            );
             return false;
           }
           return true;
@@ -459,8 +485,16 @@ export class WorldGenerator {
    * @param {string} direction - Direction of connection
    * @returns {Object} Merged world
    */
-  mergeWorlds(world1, world2, connectionRoom1, connectionRoom2, direction = 'north') {
-    this.logger.log(`Merging worlds via ${connectionRoom1} -> ${connectionRoom2}`);
+  mergeWorlds(
+    world1,
+    world2,
+    connectionRoom1,
+    connectionRoom2,
+    direction = 'north'
+  ) {
+    this.logger.log(
+      `Merging worlds via ${connectionRoom1} -> ${connectionRoom2}`
+    );
 
     const merged = JSON.parse(JSON.stringify(world1)); // Deep clone
 
@@ -475,7 +509,9 @@ export class WorldGenerator {
       // Update exit references
       if (merged.rooms[newRoomId].exits) {
         const updatedExits = {};
-        for (const [dir, exit] of Object.entries(merged.rooms[newRoomId].exits)) {
+        for (const [dir, exit] of Object.entries(
+          merged.rooms[newRoomId].exits
+        )) {
           updatedExits[dir] = {
             ...exit,
             roomId: prefix + exit.roomId,

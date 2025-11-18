@@ -24,10 +24,10 @@ export class DynamicInteractionHandler {
       talk: "They don't respond.",
       eat: "That's not edible.",
       drink: "You can't drink that.",
-      touch: "It feels ordinary.",
-      smell: "It has no particular smell.",
+      touch: 'It feels ordinary.',
+      smell: 'It has no particular smell.',
       listen: "You don't hear anything unusual.",
-      taste: "That would be unwise.",
+      taste: 'That would be unwise.',
     };
   }
 
@@ -49,14 +49,19 @@ export class DynamicInteractionHandler {
       }
 
       // Get AI response
-      const response = await this.aiManager.getDynamicResponse(context, command);
+      const response = await this.aiManager.getDynamicResponse(
+        context,
+        command
+      );
 
       // Validate and sanitize response
       const sanitized = this.sanitizeResponse(response);
 
       // Check if response might affect game state
       if (this.mightAffectState(sanitized)) {
-        this.logger.warn('AI response might affect state, using fallback instead');
+        this.logger.warn(
+          'AI response might affect state, using fallback instead'
+        );
         return this.getFallbackResponse(command);
       }
 
@@ -84,7 +89,9 @@ export class DynamicInteractionHandler {
       },
       inventory: inventory.map((item) => item.name),
       visibleObjects: this.getVisibleObjects(currentRoom),
-      recentActions: this.gameState.getRecentActions ? this.gameState.getRecentActions(5) : [],
+      recentActions: this.gameState.getRecentActions
+        ? this.gameState.getRecentActions(5)
+        : [],
       score: this.gameState.score || 0,
     };
 
@@ -154,7 +161,10 @@ export class DynamicInteractionHandler {
     if (room.items) {
       for (const itemId of room.items) {
         const item = this.gameState.getItem(itemId);
-        if (item && item.name.toLowerCase().includes(targetName.toLowerCase())) {
+        if (
+          item &&
+          item.name.toLowerCase().includes(targetName.toLowerCase())
+        ) {
           return {
             type: 'item',
             name: item.name,
@@ -189,7 +199,10 @@ export class DynamicInteractionHandler {
    */
   shouldUseAI(command, context) {
     // Don't use AI if offline
-    if (!this.aiManager.apiKey || this.aiManager.apiKey === 'your-api-key-here') {
+    if (
+      !this.aiManager.apiKey ||
+      this.aiManager.apiKey === 'your-api-key-here'
+    ) {
       return false;
     }
 
@@ -421,7 +434,8 @@ Visible objects: ${context.visibleObjects.join(', ')}`;
       cacheSize: this.aiManager.responseCache.size,
       requestCount: this.aiManager.requestCount,
       rateLimitReset: this.aiManager.requestResetTime,
-      offlineMode: !this.aiManager.apiKey || this.aiManager.apiKey === 'your-api-key-here',
+      offlineMode:
+        !this.aiManager.apiKey || this.aiManager.apiKey === 'your-api-key-here',
     };
   }
 }

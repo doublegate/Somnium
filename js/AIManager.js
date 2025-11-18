@@ -234,13 +234,18 @@ export class AIManager {
           try {
             return JSON.parse(content);
           } catch (parseError) {
-            throw new Error(`Failed to parse JSON response: ${parseError.message}`);
+            throw new Error(
+              `Failed to parse JSON response: ${parseError.message}`
+            );
           }
         }
 
         return content;
       } catch (error) {
-        logger.error(`API request failed (attempt ${attempt + 1}/${retries + 1}):`, error);
+        logger.error(
+          `API request failed (attempt ${attempt + 1}/${retries + 1}):`,
+          error
+        );
 
         if (attempt === retries) {
           // Last attempt failed, return mock data as fallback
@@ -494,13 +499,16 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
     if (data.rooms) {
       for (const [roomId, room] of Object.entries(data.rooms)) {
         if (!room.name) errors.push(`Room ${roomId} missing name`);
-        if (!room.description) errors.push(`Room ${roomId} missing description`);
+        if (!room.description)
+          errors.push(`Room ${roomId} missing description`);
 
         // Check exits
         if (room.exits) {
           for (const [direction, exit] of Object.entries(room.exits)) {
             if (exit.roomId && !roomIds.has(exit.roomId)) {
-              errors.push(`Room ${roomId} exit ${direction} points to non-existent room: ${exit.roomId}`);
+              errors.push(
+                `Room ${roomId} exit ${direction} points to non-existent room: ${exit.roomId}`
+              );
             }
           }
         }
@@ -509,7 +517,9 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
         if (room.items) {
           for (const itemId of room.items) {
             if (!itemIds.has(itemId)) {
-              errors.push(`Room ${roomId} references non-existent item: ${itemId}`);
+              errors.push(
+                `Room ${roomId} references non-existent item: ${itemId}`
+              );
             }
           }
         }
@@ -518,7 +528,9 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
         if (room.objects) {
           for (const objectId of room.objects) {
             if (!objectIds.has(objectId)) {
-              errors.push(`Room ${roomId} references non-existent object: ${objectId}`);
+              errors.push(
+                `Room ${roomId} references non-existent object: ${objectId}`
+              );
             }
           }
         }
@@ -529,7 +541,8 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
     if (data.items) {
       for (const [itemId, item] of Object.entries(data.items)) {
         if (!item.name) errors.push(`Item ${itemId} missing name`);
-        if (!item.description) errors.push(`Item ${itemId} missing description`);
+        if (!item.description)
+          errors.push(`Item ${itemId} missing description`);
       }
     }
 
@@ -537,7 +550,8 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
     if (data.objects) {
       for (const [objectId, object] of Object.entries(data.objects)) {
         if (!object.name) errors.push(`Object ${objectId} missing name`);
-        if (!object.description) errors.push(`Object ${objectId} missing description`);
+        if (!object.description)
+          errors.push(`Object ${objectId} missing description`);
       }
     }
 
@@ -545,7 +559,8 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
     if (data.puzzles) {
       for (const puzzle of data.puzzles) {
         if (!puzzle.id) errors.push('Puzzle missing id');
-        if (!puzzle.description) errors.push(`Puzzle ${puzzle.id} missing description`);
+        if (!puzzle.description)
+          errors.push(`Puzzle ${puzzle.id} missing description`);
         if (!puzzle.steps || puzzle.steps.length === 0) {
           errors.push(`Puzzle ${puzzle.id} has no steps`);
         }
@@ -554,10 +569,14 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
         if (puzzle.steps) {
           for (const step of puzzle.steps) {
             if (step.requires && !itemIds.has(step.requires)) {
-              errors.push(`Puzzle ${puzzle.id} requires non-existent item: ${step.requires}`);
+              errors.push(
+                `Puzzle ${puzzle.id} requires non-existent item: ${step.requires}`
+              );
             }
             if (step.target && !objectIds.has(step.target)) {
-              errors.push(`Puzzle ${puzzle.id} targets non-existent object: ${step.target}`);
+              errors.push(
+                `Puzzle ${puzzle.id} targets non-existent object: ${step.target}`
+              );
             }
           }
         }
@@ -576,12 +595,16 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
         // Check trading items
         if (npc.trading) {
           if (npc.trading.gives && !itemIds.has(npc.trading.gives)) {
-            errors.push(`NPC ${npcId} trading non-existent item: ${npc.trading.gives}`);
+            errors.push(
+              `NPC ${npcId} trading non-existent item: ${npc.trading.gives}`
+            );
           }
           if (npc.trading.wants) {
             for (const wantedItem of npc.trading.wants) {
               if (!itemIds.has(wantedItem)) {
-                errors.push(`NPC ${npcId} wants non-existent item: ${wantedItem}`);
+                errors.push(
+                  `NPC ${npcId} wants non-existent item: ${wantedItem}`
+                );
               }
             }
           }
