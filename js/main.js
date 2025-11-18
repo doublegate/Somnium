@@ -18,6 +18,9 @@ let saveGameManager = null;
 document.addEventListener('DOMContentLoaded', async () => {
   logger.info('Somnium v0.0.1 - Initializing...');
 
+  // Load accessibility preferences
+  loadHighContrastPreference();
+
   // Wait for config to load
   await waitForConfig();
 
@@ -510,9 +513,11 @@ function showSoundMenu() {
  * Show help menu
  */
 function showHelpMenu() {
+  const isHighContrast = document.body.classList.contains('high-contrast');
   const menu = [
     { label: 'How to Play', action: () => showHelp() },
     { label: 'Commands', action: () => showCommands() },
+    { label: isHighContrast ? '✓ High Contrast Mode' : 'High Contrast Mode', action: () => toggleHighContrast() },
     { label: 'About', action: () => uiManager.showAboutModal() },
   ];
   uiManager.showDropdownMenu(menu);
@@ -761,6 +766,38 @@ function showCommands() {
   });
   uiManager.addOutputText('');
   uiManager.addOutputText('The parser understands many synonyms!', 'hint');
+}
+
+/**
+ * Toggle high contrast mode
+ */
+function toggleHighContrast() {
+  const body = document.body;
+  const isEnabled = body.classList.toggle('high-contrast');
+
+  // Save preference to localStorage
+  localStorage.setItem('highContrastMode', isEnabled ? 'true' : 'false');
+
+  // Notify user
+  if (gameManager) {
+    uiManager.addOutputText(
+      isEnabled ? 'High contrast mode enabled.' : 'High contrast mode disabled.',
+      'system'
+    );
+  }
+
+  logger.info(`High contrast mode ${isEnabled ? 'enabled' : 'disabled'}`);
+}
+
+/**
+ * Load high contrast mode preference
+ */
+function loadHighContrastPreference() {
+  const preference = localStorage.getItem('highContrastMode');
+  if (preference === 'true') {
+    document.body.classList.add('high-contrast');
+    logger.info('High contrast mode loaded from preferences');
+  }
 }
 
 /**

@@ -79,6 +79,89 @@ input:focus,
   top: 0;
 }
 
+/* Accessibility - High Contrast Mode */
+body.high-contrast {
+  --ega-black: #000000;
+  --ega-white: #ffffff;
+  --ega-light-gray: #ffffff;
+  --ega-dark-gray: #666666;
+  --ega-blue: #0000ff;
+  --ega-yellow: #ffff00;
+  --ega-red: #ff0000;
+  --ega-green: #00ff00;
+  --ega-cyan: #00ffff;
+  --ega-magenta: #ff00ff;
+}
+
+body.high-contrast .menu-bar {
+  background-color: #000000;
+  color: #ffffff;
+  border-bottom: 3px solid #ffffff;
+}
+
+body.high-contrast .menu-item:hover,
+body.high-contrast .menu-item:focus {
+  background-color: #ffffff;
+  color: #000000;
+  outline: 3px solid #ffff00;
+}
+
+body.high-contrast .modal-content {
+  background-color: #000000;
+  border: 4px solid #ffffff;
+}
+
+body.high-contrast .button-primary {
+  background-color: #ffffff;
+  color: #000000;
+  border: 3px solid #000000;
+}
+
+body.high-contrast .button-primary:hover,
+body.high-contrast .button-primary:focus {
+  background-color: #ffff00;
+  color: #000000;
+  border: 3px solid #000000;
+}
+
+body.high-contrast .button-secondary {
+  background-color: #000000;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+}
+
+body.high-contrast .button-secondary:hover,
+body.high-contrast .button-secondary:focus {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.high-contrast .text-window {
+  background-color: #000000;
+  border: 4px solid #ffffff;
+}
+
+body.high-contrast .text-input {
+  background-color: #000000;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+}
+
+body.high-contrast .achievement-card {
+  background-color: #000000;
+  border: 3px solid #ffffff;
+}
+
+body.high-contrast .achievement-card.locked {
+  background-color: #1a1a1a;
+  border: 3px solid #666666;
+}
+
+body.high-contrast .achievement-notification {
+  background-color: #000000;
+  border: 4px solid #ffff00;
+}
+
 /* Menu Bar */
 .menu-bar {
   background-color: var(--ega-light-gray);
