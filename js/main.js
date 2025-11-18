@@ -182,6 +182,13 @@ function initializeUI() {
     uiManager.hideVolumeModal();
   });
 
+  // Achievement gallery modal
+  document
+    .getElementById('close-achievement-btn')
+    .addEventListener('click', () => {
+      uiManager.hideAchievementGallery();
+    });
+
   // Menu bar items
   document.querySelectorAll('.menu-item').forEach((item) => {
     item.addEventListener('click', (e) => {
@@ -388,6 +395,7 @@ function showGameMenu() {
   const menu = [
     { label: 'Restart', action: () => restartGame() },
     { label: 'Inventory', action: () => showInventory() },
+    { label: 'Achievements', action: () => showAchievements() },
     { label: 'About', action: () => uiManager.showAboutModal() },
   ];
   uiManager.showDropdownMenu(menu);
@@ -559,6 +567,18 @@ function showInventory() {
       uiManager.addOutputText(`  - ${item.name}`, 'game');
     });
   }
+}
+
+/**
+ * Show achievements gallery
+ */
+function showAchievements() {
+  if (!gameManager || !gameManager.gameProgression) {
+    uiManager.showError('No game is currently running');
+    return;
+  }
+
+  uiManager.showAchievementGallery(gameManager.gameProgression);
 }
 
 /**

@@ -646,3 +646,129 @@ body {
     opacity: 0;
   }
 }
+
+/* Achievement Gallery */
+.modal-wide {
+  max-width: 700px;
+}
+
+.achievement-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: var(--ega-dark-gray);
+  border: 2px solid var(--ega-light-gray);
+}
+
+.achievement-stats span {
+  color: var(--ega-white);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.achievement-gallery {
+  max-height: 500px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding: 8px;
+}
+
+.achievement-card {
+  background-color: var(--ega-dark-gray);
+  border: 2px solid var(--ega-light-gray);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  transition: all 0.2s;
+}
+
+.achievement-card:hover {
+  transform: translateX(4px);
+  border-color: var(--ega-white);
+}
+
+.achievement-card.locked {
+  opacity: 0.5;
+  background-color: var(--ega-black);
+}
+
+.achievement-card-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+  width: 60px;
+  text-align: center;
+  filter: grayscale(0);
+}
+
+.achievement-card.locked .achievement-card-icon {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+.achievement-card-content {
+  flex: 1;
+}
+
+.achievement-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.achievement-card-name {
+  color: var(--ega-light-cyan);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.achievement-card.locked .achievement-card-name {
+  color: var(--ega-light-gray);
+}
+
+.achievement-card-points {
+  color: var(--ega-yellow);
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.achievement-card.locked .achievement-card-points {
+  color: var(--ega-dark-gray);
+}
+
+.achievement-card-description {
+  color: var(--ega-light-gray);
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.achievement-card.locked .achievement-card-description {
+  color: var(--ega-dark-gray);
+  font-style: italic;
+}
+
+.achievement-card-status {
+  color: var(--ega-light-green);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.achievement-card.locked .achievement-card-status {
+  color: var(--ega-dark-gray);
+}
+
+.achievement-card-progress {
+  height: 6px;
+  background-color: var(--ega-black);
+  border: 1px solid var(--ega-light-gray);
+  margin-top: 8px;
+}
+
+.achievement-card-progress-bar {
+  height: 100%;
+  background-color: var(--ega-light-cyan);
+  transition: width 0.3s ease;
+}

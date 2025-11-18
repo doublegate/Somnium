@@ -677,6 +677,122 @@ export class UIManager {
       `Achievement progress shown: ${achievement.name} (${currentProgress}/${totalProgress})`
     );
   }
+
+  // ===== Achievement Gallery =====
+
+  /**
+   * Show achievement gallery modal
+   * @param {Object} gameProgression - GameProgression instance
+   */
+  showAchievementGallery(gameProgression) {
+    const modal = document.getElementById('achievement-modal');
+    const gallery = document.getElementById('achievement-gallery');
+    const countSpan = document.getElementById('achievement-count');
+    const pointsSpan = document.getElementById('achievement-points');
+
+    if (!modal || !gallery) {
+      this.logger.warn('Achievement modal elements not found');
+      return;
+    }
+
+    // Clear existing content
+    gallery.innerHTML = '';
+
+    // Get achievements data
+    const achievements = gameProgression.getAllAchievements();
+    const unlockedAchievements = gameProgression.getUnlockedAchievements();
+    const achievementProgress = gameProgression.achievementProgress || new Map();
+
+    // Calculate statistics
+    const totalAchievements = achievements.length;
+    const unlockedCount = unlockedAchievements.size;
+    const totalPoints = Array.from(unlockedAchievements).reduce(
+      (sum, id) => {
+        const achievement = achievements.find((a) => a.id === id);
+        return sum + (achievement?.points || 0);
+      },
+      0
+    );
+
+    // Update stats display
+    countSpan.textContent = `${unlockedCount}/${totalAchievements} Unlocked`;
+    pointsSpan.textContent = `${totalPoints} Points`;
+
+    // Create achievement cards
+    achievements.forEach((achievement) => {
+      const card = this.createAchievementCard(
+        achievement,
+        unlockedAchievements.has(achievement.id),
+        achievementProgress.get(achievement.id)
+      );
+      gallery.appendChild(card);
+    });
+
+    // Show modal
+    modal.classList.remove('hidden');
+    this.logger.debug('Achievement gallery shown');
+  }
+
+  /**
+   * Create achievement card element
+   * @private
+   * @param {Object} achievement - Achievement data
+   * @param {boolean} unlocked - Whether achievement is unlocked
+   * @param {Object} progress - Progress data (for multi-step achievements)
+   * @returns {HTMLElement} Achievement card element
+   */
+  createAchievementCard(achievement, unlocked, progress) {
+    const card = document.createElement('div');
+    card.className = `achievement-card ${unlocked ? '' : 'locked'}`;
+
+    const icon = achievement.icon || '🏆';
+    const iconHtml = unlocked ? icon : '🔒';
+
+    let statusHtml = '';
+    let progressBarHtml = '';
+
+    if (progress && !unlocked) {
+      const progressPercent = Math.round(
+        (progress.current / progress.target) * 100
+      );
+      statusHtml = `<div class="achievement-card-status">Progress: ${progress.current}/${progress.target}</div>`;
+      progressBarHtml = `
+        <div class="achievement-card-progress">
+          <div class="achievement-card-progress-bar" style="width: ${progressPercent}%"></div>
+        </div>
+      `;
+    } else if (unlocked) {
+      statusHtml = `<div class="achievement-card-status">✓ Unlocked</div>`;
+    } else {
+      statusHtml = `<div class="achievement-card-status">Locked</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="achievement-card-icon">${iconHtml}</div>
+      <div class="achievement-card-content">
+        <div class="achievement-card-header">
+          <div class="achievement-card-name">${achievement.name}</div>
+          <div class="achievement-card-points">${achievement.points || 0} pts</div>
+        </div>
+        <div class="achievement-card-description">${achievement.description}</div>
+        ${statusHtml}
+        ${progressBarHtml}
+      </div>
+    `;
+
+    return card;
+  }
+
+  /**
+   * Hide achievement gallery modal
+   */
+  hideAchievementGallery() {
+    const modal = document.getElementById('achievement-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      this.logger.debug('Achievement gallery hidden');
+    }
+  }
 }
 
 export default UIManager;
