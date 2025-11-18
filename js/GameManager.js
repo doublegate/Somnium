@@ -137,6 +137,17 @@ export class GameManager {
     this.fpsTime = 0;
     this.currentFPS = 60;
 
+    // Enhanced performance tracking
+    this.performanceMetrics = {
+      updateTime: 0,
+      renderTime: 0,
+      totalFrameTime: 0,
+      maxFrameTime: 0,
+      avgFrameTime: 0,
+      frameTimeSamples: [],
+      sampleSize: 60, // Track last 60 frames for average
+    };
+
     // Bind methods
     this.gameLoop = this.gameLoop.bind(this);
   }
@@ -299,6 +310,8 @@ export class GameManager {
       return;
     }
 
+    const frameStartTime = performance.now();
+
     // Calculate delta time and cap it
     if (this.lastFrameTime) {
       this.deltaTime = Math.min(
@@ -317,6 +330,7 @@ export class GameManager {
       this.accumulator += adjustedDelta;
 
       // Fixed timestep updates
+      const updateStartTime = performance.now();
       while (this.accumulator >= this.fixedTimeStep) {
         this.fixedUpdate(this.fixedTimeStep);
         this.accumulator -= this.fixedTimeStep;
@@ -327,9 +341,16 @@ export class GameManager {
 
       // Variable timestep updates (animations, etc)
       this.update(adjustedDelta);
+      this.performanceMetrics.updateTime = performance.now() - updateStartTime;
 
       // Render frame with interpolation
+      const renderStartTime = performance.now();
       this.render(interpolation);
+      this.performanceMetrics.renderTime = performance.now() - renderStartTime;
+
+      // Track frame timing
+      const frameTime = performance.now() - frameStartTime;
+      this.updatePerformanceMetrics(frameTime);
     }
 
     this.lastFrameTime = currentTime;
@@ -411,14 +432,47 @@ export class GameManager {
       this.frameCount = 0;
       this.fpsTime = currentTime;
 
-      // Dispatch FPS update event for UI
+      // Dispatch FPS update event for UI with performance metrics
       window.dispatchEvent(
         new CustomEvent('game-fps', {
-          detail: { fps: this.currentFPS },
+          detail: {
+            fps: this.currentFPS,
+            metrics: this.performanceMetrics,
+          },
           bubbles: true,
         })
       );
     }
+  }
+
+  /**
+   * Update performance metrics with new frame timing
+   * @param {number} frameTime - Time taken for this frame (ms)
+   */
+  updatePerformanceMetrics(frameTime) {
+    this.performanceMetrics.totalFrameTime = frameTime;
+
+    // Track max frame time
+    if (frameTime > this.performanceMetrics.maxFrameTime) {
+      this.performanceMetrics.maxFrameTime = frameTime;
+    }
+
+    // Add to samples
+    this.performanceMetrics.frameTimeSamples.push(frameTime);
+    if (
+      this.performanceMetrics.frameTimeSamples.length >
+      this.performanceMetrics.sampleSize
+    ) {
+      this.performanceMetrics.frameTimeSamples.shift();
+    }
+
+    // Calculate average
+    const sum = this.performanceMetrics.frameTimeSamples.reduce(
+      (a, b) => a + b,
+      0
+    );
+    this.performanceMetrics.avgFrameTime =
+      sum / this.performanceMetrics.frameTimeSamples.length;
   }
 
   /**
