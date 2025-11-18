@@ -159,35 +159,75 @@ function initializeUI() {
   });
 
   // About modal
-  document.getElementById('close-about-btn').addEventListener('click', () => {
+  const closeAboutBtn = document.getElementById('close-about-btn');
+  closeAboutBtn.addEventListener('click', () => {
     uiManager.hideAboutModal();
+  });
+  closeAboutBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideAboutModal();
+    }
   });
 
   // Error modal
-  document.getElementById('close-error-btn').addEventListener('click', () => {
+  const closeErrorBtn = document.getElementById('close-error-btn');
+  closeErrorBtn.addEventListener('click', () => {
     uiManager.hideErrorModal();
+  });
+  closeErrorBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideErrorModal();
+    }
   });
 
   // Save/Load modals
-  document.getElementById('close-save-btn').addEventListener('click', () => {
+  const closeSaveBtn = document.getElementById('close-save-btn');
+  closeSaveBtn.addEventListener('click', () => {
     uiManager.hideSaveGameModal();
   });
+  closeSaveBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideSaveGameModal();
+    }
+  });
 
-  document.getElementById('close-load-btn').addEventListener('click', () => {
+  const closeLoadBtn = document.getElementById('close-load-btn');
+  closeLoadBtn.addEventListener('click', () => {
     uiManager.hideLoadGameModal();
+  });
+  closeLoadBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideLoadGameModal();
+    }
   });
 
   // Volume modal
-  document.getElementById('close-volume-btn').addEventListener('click', () => {
+  const closeVolumeBtn = document.getElementById('close-volume-btn');
+  closeVolumeBtn.addEventListener('click', () => {
     uiManager.hideVolumeModal();
+  });
+  closeVolumeBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideVolumeModal();
+    }
   });
 
   // Achievement gallery modal
-  document
-    .getElementById('close-achievement-btn')
-    .addEventListener('click', () => {
+  const closeAchievementBtn = document.getElementById('close-achievement-btn');
+  closeAchievementBtn.addEventListener('click', () => {
+    uiManager.hideAchievementGallery();
+  });
+  closeAchievementBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
       uiManager.hideAchievementGallery();
-    });
+    }
+  });
 
   // Menu bar items
   document.querySelectorAll('.menu-item').forEach((item) => {
@@ -195,6 +235,45 @@ function initializeUI() {
       const menu = e.target.getAttribute('data-menu');
       handleMenuClick(menu);
     });
+
+    // Keyboard support for menu items
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const menu = e.target.getAttribute('data-menu');
+        handleMenuClick(menu);
+      }
+    });
+  });
+
+  // Global keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Escape key closes modals
+    if (e.key === 'Escape') {
+      closeTopModal();
+    }
+
+    // Alt+key shortcuts for menu bar (only when game is running)
+    if (e.altKey && !e.ctrlKey && !e.shiftKey && gameManager) {
+      switch (e.key.toLowerCase()) {
+        case 'f':
+          e.preventDefault();
+          handleMenuClick('file');
+          break;
+        case 'g':
+          e.preventDefault();
+          handleMenuClick('game');
+          break;
+        case 's':
+          e.preventDefault();
+          handleMenuClick('sound');
+          break;
+        case 'h':
+          e.preventDefault();
+          handleMenuClick('help');
+          break;
+      }
+    }
   });
 
   // Text input
@@ -683,6 +762,85 @@ function showCommands() {
   uiManager.addOutputText('');
   uiManager.addOutputText('The parser understands many synonyms!', 'hint');
 }
+
+/**
+ * Close the topmost open modal
+ */
+function closeTopModal() {
+  // Check modals in reverse order of typical opening
+  const modals = [
+    { id: 'achievement-modal', closeFn: () => uiManager.hideAchievementGallery() },
+    { id: 'volume-modal', closeFn: () => uiManager.hideVolumeModal() },
+    { id: 'save-modal', closeFn: () => uiManager.hideSaveGameModal() },
+    { id: 'load-modal', closeFn: () => uiManager.hideLoadGameModal() },
+    { id: 'error-modal', closeFn: () => uiManager.hideErrorModal() },
+    { id: 'about-modal', closeFn: () => uiManager.hideAboutModal() },
+    { id: 'theme-modal', closeFn: () => uiManager.hideThemeModal() },
+  ];
+
+  for (const modal of modals) {
+    const element = document.getElementById(modal.id);
+    if (element && !element.classList.contains('hidden')) {
+      modal.closeFn();
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Set up tab trapping for a modal
+ * @param {HTMLElement} modal - Modal element
+ */
+function setupModalTabTrap(modal) {
+  const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const focusableElements = modal.querySelectorAll(focusableSelector);
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+
+  const trapFocus = (e) => {
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey) {
+      // Shift+Tab: If on first element, go to last
+      if (document.activeElement === firstFocusable) {
+        e.preventDefault();
+        lastFocusable.focus();
+      }
+    } else {
+      // Tab: If on last element, go to first
+      if (document.activeElement === lastFocusable) {
+        e.preventDefault();
+        firstFocusable.focus();
+      }
+    }
+  };
+
+  modal.addEventListener('keydown', trapFocus);
+
+  // Return cleanup function
+  return () => modal.removeEventListener('keydown', trapFocus);
+}
+
+// Set up tab trapping for all modals on load
+document.addEventListener('DOMContentLoaded', () => {
+  const modalIds = [
+    'theme-modal',
+    'about-modal',
+    'error-modal',
+    'save-modal',
+    'load-modal',
+    'volume-modal',
+    'achievement-modal'
+  ];
+
+  modalIds.forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) {
+      setupModalTabTrap(modal);
+    }
+  });
+});
 
 // Export for debugging/testing
 window.getGameManager = () => gameManager;
