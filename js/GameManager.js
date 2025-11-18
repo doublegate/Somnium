@@ -24,6 +24,13 @@ import { MovementSystem } from './MovementSystem.js';
 import { PuzzleSystem } from './PuzzleSystem.js';
 import { NPCSystem } from './NPCSystem.js';
 import { GameProgression } from './GameProgression.js';
+import { WorldGenerator } from './WorldGenerator.js';
+import { DynamicInteractionHandler } from './DynamicInteractionHandler.js';
+import { PrioritySoundManager } from './PrioritySoundManager.js';
+import { SynchronizedSound } from './SynchronizedSound.js';
+import { AmbientSoundscape } from './AmbientSoundscape.js';
+import { EnhancedParser } from './EnhancedParser.js';
+import { PriorityRenderer } from './PriorityRenderer.js';
 
 export class GameManager {
   /**
@@ -53,10 +60,23 @@ export class GameManager {
 
     this.gameState = new GameState();
     this.sceneRenderer = new SceneRenderer(canvasElement);
+    this.priorityRenderer = new PriorityRenderer(canvasElement);
     this.viewManager = new ViewManager(this.sceneRenderer);
     this.soundManager = new SoundManager();
-    this.parser = new Parser({}); // TODO: Load vocabulary config
+
+    // Initialize Sierra-inspired sound systems
+    this.prioritySoundManager = new PrioritySoundManager(this.soundManager);
+    this.synchronizedSound = new SynchronizedSound(this.prioritySoundManager, this);
+    this.ambientSoundscape = new AmbientSoundscape(this.prioritySoundManager);
+
+    // Initialize enhanced parser with Sierra patterns
+    this.parser = config.useSierraParser
+      ? new EnhancedParser({})
+      : new Parser({}); // TODO: Load vocabulary config
     this.eventManager = new EventManager(this.gameState, this.aiManager);
+
+    // Initialize world generator
+    this.worldGenerator = new WorldGenerator(this.aiManager);
 
     // Initialize game logic systems
     this.inventory = new Inventory(this.gameState);
@@ -95,6 +115,13 @@ export class GameManager {
       this.gameProgression
     );
 
+    // Initialize dynamic interaction handler for AI-powered responses
+    this.dynamicInteractionHandler = new DynamicInteractionHandler(
+      this.aiManager,
+      this.gameState,
+      this.commandExecutor
+    );
+
     // Timing
     this.lastFrameTime = 0;
     this.deltaTime = 0;
@@ -114,15 +141,21 @@ export class GameManager {
   /**
    * Generates and starts a new adventure
    * @param {string} [theme] - Theme or setting for the adventure
+   * @param {Object} options - Generation options
    * @returns {Promise<void>}
    * @throws {Error} if generation fails
    */
-  async startNewGame(theme) {
+  async startNewGame(theme, options = {}) {
     try {
       logger.info(`Starting new game with theme: ${theme || 'random'}`);
 
-      // Generate world via AI
-      const gameJSON = await this.aiManager.generateWorld(theme);
+      // Generate world via WorldGenerator
+      const gameJSON = options.useStatic
+        ? this.worldGenerator.createStaticWorld(options.worldType || 'small')
+        : await this.worldGenerator.generateAIWorld(theme, {
+            enhanceGraphics: true,
+            addAmbientSounds: true,
+          });
 
       // Load resources into game state
       this.gameState.loadResources(gameJSON);
@@ -136,14 +169,25 @@ export class GameManager {
       // Initialize audio
       await this.soundManager.initialize();
 
-      // Render first room
+      // Start ambient soundscape for starting room
       const currentRoom = this.gameState.getCurrentRoom();
-      this.sceneRenderer.renderRoom(currentRoom.graphics);
+      if (currentRoom.ambientSound) {
+        this.ambientSoundscape.startScape(currentRoom.ambientSound, this.gameState);
+      }
+
+      // Render first room
+      if (this.config.usePriorityRenderer) {
+        this.priorityRenderer.renderScene(currentRoom, []);
+      } else {
+        this.sceneRenderer.renderRoom(currentRoom.graphics);
+      }
 
       // Start game loop
       this.isRunning = true;
       this.isPaused = false;
       requestAnimationFrame(this.gameLoop);
+
+      logger.info('Game started successfully');
     } catch (error) {
       logger.error('Failed to start new game:', error);
       throw error;
@@ -392,10 +436,30 @@ export class GameManager {
       const command = this.parser.parse(input);
 
       if (command) {
-        // Execute the command
-        await this.eventManager.executeCommand(command);
+        // Try to execute scripted command first
+        const result = await this.commandExecutor.execute(command);
+
+        if (result && result.success) {
+          // Scripted command executed successfully
+          this.displayMessage(result.message);
+
+          // Check if room changed - update ambient sound
+          if (result.roomChanged) {
+            const newRoom = this.gameState.getCurrentRoom();
+            if (newRoom.ambientSound) {
+              this.ambientSoundscape.startScape(newRoom.ambientSound, this.gameState, true);
+            }
+          }
+        } else if (result && result.unscripted) {
+          // No scripted response, try dynamic AI response
+          const dynamicResponse = await this.dynamicInteractionHandler.handleDynamicAction(command);
+          this.displayMessage(dynamicResponse);
+        } else {
+          // Command failed
+          this.displayMessage(result?.message || "You can't do that.");
+        }
       } else {
-        // Display error message
+        // Failed to parse
         this.displayMessage("I don't understand that command.");
       }
     } catch (error) {
