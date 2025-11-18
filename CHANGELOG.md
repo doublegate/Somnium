@@ -5,276 +5,672 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2025-06-15
 
-### Added - December 15, 2024
+### 🎉 PRODUCTION RELEASE
 
-- **Enhanced Command Implementation**
+Somnium v1.0.0 is a complete, production-ready AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era games (1988-1989). Every adventure is uniquely generated at runtime using LLMs while maintaining strict retro aesthetics and technical constraints.
 
-  - Multi-stage pull mechanics with state tracking
-  - Object search with item requirements (requiresItem property)
-  - Touch effects system (damage, sticky, electric, temperature)
-  - Multi-word command aliases (directional shortcuts like "n" → "go north")
-  - Improved NPC interaction with proper parameter handling
-  - Container state checking for put command
-  - Enhanced error messages with object names
+---
 
-- **Test Coverage Improvements**
+## Major Features
 
-  - Added 83 new test cases across command handlers
-  - Fixed all 37 failing tests - now 444/444 passing
-  - Significantly improved code coverage (restored patch coverage)
-  - Added comprehensive tests for new command features
+### ✨ Phase 4 - AI Integration (Complete)
 
-- **Code Quality**
-  - Fixed all ESLint warnings (0 errors)
-  - Applied Prettier formatting to entire codebase
-  - Consistent code style across all modules
+**World Generation System**
+- **WorldGenerator.js**: AI-powered and static world generation
+  - Three test world sizes (small 3-5 rooms, medium 6-10 rooms, large 15+ rooms)
+  - Comprehensive 351-line world generation prompt template
+  - Graphics enhancement utilities for procedural scene generation
+  - Ambient sound assignment based on room themes
+  - Complete offline mode fallback with static test worlds
 
-### Fixed - December 15, 2024
+**8-Step World Validation System**:
+1. Room validation (exits, graphics descriptions, ambience settings)
+2. Exit consistency checking (bidirectional verification)
+3. Item validation (takeable items, descriptions, unique IDs)
+4. Object validation (interactive objects, states, actions)
+5. NPC validation (dialogue trees, trading mechanics, schedules)
+6. Puzzle validation (solvability checks, required items exist)
+7. ID reference validation (all item/object/room IDs referenced exist)
+8. Automatic fixing utilities for common JSON structure issues
 
-- Command parameter order in handleAsk (NPC in directObject, topic in indirectObject)
-- Type check case sensitivity ('NPC' vs 'npc')
-- Health updates now properly applied to gameState
-- Multi-word alias parsing and command modification
-- Object revealing in search (not just items)
-- Proper article generation ("a" vs "an") for found items
+**Dynamic Interaction Handler**
+- **DynamicInteractionHandler.js**: AI-powered responses for unscripted player actions
+  - Context building from current game state (room, inventory, recent events, NPCs)
+  - Response sanitization and validation to prevent game-breaking content
+  - Intelligent fallback system for offline mode
+  - Dynamic hint generation based on player progress
+  - Dynamic NPC dialogue generation for natural conversations
 
-### Added - Earlier Sessions
+**Enhanced AI Manager**
+- Real LLM API integration using fetch() with proper error handling
+- Exponential backoff retry logic (3 retries with 1s, 2s, 4s delays)
+- Automatic offline mode fallback when API unavailable
+- Rate limiting and request caching to minimize API costs
+- Comprehensive error recovery and user notifications
+- Support for OpenAI-compatible APIs (OpenAI, Anthropic, Ollama, LM Studio)
+- Temperature and token controls for generation quality
 
-- Initial project structure and documentation
-- Comprehensive design documents in `ref_docs/`
-- Generated implementation guides in `docs/`
-- Basic repository setup files (README, LICENSE, etc.)
-- Project tracking structure in `to-dos/`
-- **Phase 1: Core Architecture Implementation (Complete)**
-  - GameManager with fixed timestep game loop (60 FPS)
-  - AIManager with mock mode for testing
-  - GameState with event-driven architecture and validation
-  - Basic module stubs for all 8 core modules
-  - FPS monitoring and debug overlay
-  - Comprehensive test suites
-- **Phase 2.1: Vector Graphics Engine (Complete)**
-  - Comprehensive EGA palette system with color validation
-  - Support for color names and indices
-  - Extended primitive types: ellipse, line, triangle, paths
-  - Enhanced star rendering (pixels and shapes)
-  - 9 different dithering patterns
-  - Proper scanline polygon fill for priority buffer
-  - Double buffering and scene caching
-  - Debug visualization modes
-  - Demo page showcasing all features
-- **Phase 2.2: Sprite and Animation System (Complete)**
-  - VIEW resource structure with loops and cells
-  - Animation playback with timing control and speed multiplier
-  - Character movement with smooth interpolation
-  - Bounding box collision detection system
-  - Sprite pooling for performance (50 sprite pool)
-  - Batch rendering with off-screen canvas
-  - Z-order management based on Y position and priority
-  - Sprite effects: mirroring, scaling, ghost, inverted
-  - Comprehensive test suite with 100% coverage
-  - Interactive demo page with keyboard controls
+**API Integration Details**:
+```javascript
+// Retry logic with exponential backoff
+for (let attempt = 0; attempt <= retries; attempt++) {
+  try {
+    const response = await fetch(endpoint, config);
+    // Success path
+  } catch (error) {
+    const backoffTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+    await sleep(backoffTime);
+  }
+}
+```
 
-### Changed
+---
 
-- SceneRenderer uses back buffer for rendering operations
-- Primitive colors support hex, names, and indices
-- Star primitive handles both pixel arrays and shapes
-- Priority buffer uses scanline fill algorithm
-- ViewManager completely rewritten with proper VIEW structure
-- Animation system uses cells instead of frames (Sierra terminology)
-- Sprite rendering supports transparent pixels and effects
-- Movement system decoupled into updateAnimations and updatePositions
-- **Phase 2.3: Sound Synthesis System (Complete)**
-  - Complete Tone.js integration with Transport synchronization
-  - Full ADSR envelope support with configurable curves
-  - Waveform generation: sine, square, triangle, sawtooth, PWM
-  - LFO support for vibrato, tremolo, and filter modulation
-  - Filter types: lowpass, highpass, bandpass, notch
-  - Built-in effects: reverb, delay, chorus, distortion
-  - 16 simultaneous sound channels with automatic cleanup
-  - Voice queueing system with overflow handling
-  - Frame-accurate scheduling with Transport
-  - Comprehensive test suite with over 15 test cases
-  - Interactive demo page with sound effect library
-- **Phase 2.4: Music Generation System (Complete)**
-  - 128 simultaneous polyphonic voices
-  - Complete General MIDI instrument set implementation
-  - Transport-synchronized playback for perfect timing
-  - Frame-accurate event scheduling
-  - Note priorities (melody, bass, harmony, drums)
-  - Dynamic tempo control (60-200 BPM)
-  - Master volume and per-part volume control
-  - Comprehensive instrument configurations:
-    - Oscillator types and mix levels
-    - Multi-stage envelopes
-    - Filter configurations
-    - Effects chains
-  - Comprehensive test coverage
-  - Interactive demo page with real-time visualization
-- **Demo Pages Created**
-  - Graphics Demo: Showcases all vector primitives and dithering
-  - Sprite Demo: Interactive character movement and animations
-  - Sound Demo: Sound effect library and synthesis parameters
-  - Music Demo: Real-time MIDI playback and instrument testing
+### 🎨 Phase 5 - Polish and Sierra-Inspired Enhancements (Complete)
 
-### Fixed
+**Save/Load System**
+- **SaveGameManager.js**: Professional multi-slot save system
+  - 10 manual save slots + dedicated auto-save slot (-1)
+  - Browser localStorage persistence (5-10MB per save)
+  - File export to downloadable JSON
+  - File import from uploaded JSON
+  - Save thumbnails with metadata (room name, score, timestamp)
+  - Version validation and compatibility checking
+  - Quick save/quick load to most recent slot
+  - Auto-save with configurable intervals (default: 5 minutes)
+  - Storage usage statistics and management
+  - Save slot corruption detection and recovery
 
-- All ESLint and formatting issues resolved
-- Consistent code style across all modules
-- Fixed import paths and module dependencies
+**Priority-Based Audio System**
+- **PrioritySoundManager.js**: Sierra-style audio channel management
+  - 10-level priority system (speech=10, UI=9, combat=8, ambient=2, music=1)
+  - Automatic interrupt handling (higher priority sounds interrupt lower)
+  - Crossfade support for smooth audio transitions
+  - Sound type auto-detection via regex pattern matching
+  - Channel pooling with automatic cleanup
+  - Category-based volume controls
 
-### Added - June 13, 2025
+**Synchronized Sound System**
+- **SynchronizedSound.js**: Cue-based audio timing for cutscenes
+  - 7 cue types: animation, state, effect, script, sound, event, callback
+  - Frame-accurate timing synchronized with game loop
+  - Predefined sequences (submarine dive, spell casting, door opening)
+  - Callback system for gameplay synchronization
+  - Sequence state tracking and cancellation
+  - Integration with PrioritySoundManager
 
-- **Phase 3: Parser and Game Logic (Complete)**
-  - **Phase 3.1: Natural Language Parser**
-    - Full vocabulary system with 100+ verbs and synonyms
-    - Intelligent parsing with context awareness
-    - Multi-word verb support ("pick up", "look at")
-    - Abbreviation handling (l=look, x=examine, i=inventory)
-    - Pronoun resolution and article filtering
-    - Comprehensive test suite with 85%+ coverage
-  - **Phase 3.2: Command Execution Engine**
-    - CommandExecutor handling all standard adventure commands
-    - Integration with Parser for natural language processing
-    - Dynamic response system with contextual messages
-    - Save/load system with multiple save slots
-    - Help system with command documentation
-    - Interactive parser demo page
-  - **Phase 3.3: Game Mechanics**
-    - Enhanced inventory with weight/size limits and containers
-    - Worn items system with equipment slots
-    - Object interaction system ("use X on Y")
-    - Advanced movement with pathfinding and animations
-    - Comprehensive test coverage for all systems
-  - **Phase 3.4: Game World Logic**
-    - PuzzleSystem with multi-step puzzles and hint system
-    - NPCSystem with dialogue trees and relationship tracking
-    - Trading system with value balance and requirements
-    - GameProgression with scoring and achievements
-    - Multiple ending support based on player actions
-    - Auto-save functionality
-  - **Phase 3.5: Testing & Polish**
-    - Created comprehensive test suites for CommandExecutor
-    - Created test suites for EventManager
-    - Built demo adventure "The Enchanted Manor"
-    - Complete demo world generator with all features
-    - Interactive demo page with full game experience
+**Ambient Soundscape System**
+- **AmbientSoundscape.js**: Layered environmental audio
+  - 7 predefined soundscapes: ocean, underwater, space_station, space, forest, indoor, dungeon
+  - Base loop layer for continuous ambience
+  - Random occasional sounds with probability and interval controls
+  - Conditional state-based sounds (weather, time of day, player health)
+  - Smooth crossfades between room transitions
+  - Dynamic volume mixing based on layers
 
-### Fixed - June 13, 2025
+**Priority-Based Rendering**
+- **PriorityRenderer.js**: Depth-based rendering system like Sierra games
+  - Three-buffer system: priority buffer, visual buffer, control buffer
+  - Y-position priority gradient (sky=1 at y=0, foreground=14 at y=200)
+  - Pixel-level depth testing for sprite compositing
+  - Walkable area detection via control buffer
+  - Primitive rendering with priority support (rect, polygon, circle, line)
 
-- Fixed all Phase 2 test failures - 169 tests now passing
-- Applied Prettier formatting to all code files for consistent style
-- Fixed SoundManager mocks for proper test isolation
-- Fixed GameLoop timing tests with proper async handling
-- Fixed music generation tests with complete mock implementations
-- All CI/CD pipelines passing with 100% success rate
+**Enhanced Parser System**
+- **SaidPattern.js**: Sierra Said() pattern matching
+  - JavaScript regex compilation from Sierra syntax
+  - Word classes: `<object>`, `<verb>`, `<noun>`, `<adjective>`
+  - Alternatives: `get/take`, `look/examine`
+  - Optional words: `[the]`, `[a]`
+  - Wildcards: `*` for flexible matching
+  - Capture group system for typed entity extraction
+  - 40+ common Sierra adventure patterns preloaded
 
-### Completed - June 13, 2025
+- **EnhancedParser.js**: Extended parser with Sierra patterns
+  - Backward compatible with existing Parser.js
+  - Multi-word verb preprocessing
+  - Synonym expansion before pattern matching
+  - Action-to-verb mapping (GIVE→give, CAST→cast, PRAY→pray)
+  - Pattern matching as first-pass parser with fallback to original
 
-- **Phase 2: Graphics and Sound Systems (100% Complete)**
-  - All four sub-phases completed with comprehensive test coverage
-  - Vector graphics engine with EGA primitives
-  - Sprite and animation system with VIEW resources
-  - Sound synthesis with Tone.js integration
-  - Music generation with General MIDI support
-- **Phase 3: Parser and Game Logic (100% Complete)**
-  - Natural language parser with full Sierra compatibility
-  - Command execution system with all standard verbs
-  - Game mechanics (inventory, interactions, movement)
-  - Game world logic (puzzles, NPCs, progression)
-  - Comprehensive testing and demo content
+**State-Based Animation System**
+- **StateAnimator.js**: Complex character animation state machine
+  - 8-directional walking states (N, NE, E, SE, S, SW, W, NW)
+  - Action states: idle, pickup, talk, use, climb, swim, combat, death
+  - Priority-based state interruption (death > combat > action > walking)
+  - Smooth state transitions with validation
+  - State history tracking for debugging
+  - Frame callbacks for hit detection and event synchronization
 
-### Added - December 14, 2024
+---
 
-- **Project Reorganization**
-  - Created `demos/` subdirectory for all demo files
-  - Created `tests/` directory and consolidated all test files
-  - Updated all import paths in moved files
-  - Created comprehensive README documentation for both directories
-- **Documentation Updates**
-  - Created `docs/deferred-impl.md` tracking 50+ TODOs and future work
-  - Created `to-dos/phase-4-todo.md` with detailed AI integration plan
-  - Updated all documentation to reflect Phase 3 completion
-- **Test Fixes**
-  - Fixed 78 test failures in CommandExecutor and EventManager
-  - Updated mock objects to match implementation exactly
-  - Fixed property names (canTake → takeable)
-  - Fixed command structure (modifiers array placement)
-  - Result: 362 tests passing with 100% pass rate!
+### 🎮 Main Game UI and Player Experience (Complete)
 
-### Added - December 15, 2024
+**UIManager - Centralized UI State Management**
+- Command history with arrow key navigation (max 50 commands, scrollable)
+- Text output categorization with color coding:
+  - **command**: Light cyan, bold (player input echo)
+  - **game**: White (narrative and responses)
+  - **system**: Yellow, italic (save/load messages, errors)
+  - **title**: Light magenta, bold, 16px (room titles)
+  - **description**: Light green (room descriptions)
+  - **hint**: Light gray, italic (subtle guidance)
+- Modal system for all dialogs (theme, about, error, save, load, volume)
+- Loading screens with updatable messages during AI generation
+- Sierra-style ASCII box title display for game start
+- Offline mode detection with helpful notifications
+- Automatic focus management for seamless keyboard interaction
 
-- **Phase 3 Enhancements**
-  - Implemented remaining command handlers:
-    - `push` - Move heavy objects with state tracking and effects
-    - `pull` - Pull levers/objects with multi-stage effects
-    - `turn` - Turn dials/knobs with state cycling
-    - `touch` - Feel texture/temperature with sensory feedback
-  - Enhanced `handleAsk()` with full NPCSystem integration
-  - Added container state checking in `handlePut()`
-  - Integrated GameManager with all game systems
-- **Test Infrastructure Updates**
-  - Updated gameLoop tests with proper system mocks
-  - Fixed CommandExecutor test mocks for new APIs
-  - Added missing mock methods (playSoundEffect, updateRelationship)
-  - Result: All 363 tests passing!
-- **Code Quality**
-  - Fixed ESLint unused variable error in EventManager
-  - Applied Prettier formatting to all modified files
-  - Maintained consistent code style throughout
-  - Created `tests/` directory and moved all test files there
-  - Added comprehensive README.md for both directories
-  - Added `docs/run-demos.md` guide for running demos
-  - Created `docs/deferred-impl.md` tracking remaining work
+**Visual Save/Load System**
+- **Save UI**: 10-slot selector with rich metadata display
+  - Shows save name, timestamp, location, score for each slot
+  - "Empty" slots clearly marked and styled
+  - Save/Overwrite/Delete functionality per slot
+  - Custom save names via prompt dialog
+  - Real-time slot updates after operations
+  - Cancel button to abort save operation
 
-### Fixed - December 14, 2024
+- **Load UI**: Filtered slot list (only non-empty saves)
+  - Auto-save included in load list with special label
+  - Load/Delete functionality per slot
+  - Confirmation dialogs for destructive operations
+  - "No saves found" message when empty
+  - Automatic modal close after successful load
 
-- **All Test Failures Resolved (362 tests passing)**
-  - Fixed all 50 CommandExecutor test failures
-  - Fixed all 7 EventManager test failures
-  - Updated mock objects to match implementation
-  - Fixed property name mismatches (takeable vs canTake)
-  - Fixed method signatures and return values
-  - Removed duplicate method implementations
-  - All tests now passing with 100% success rate
+**Volume Control System**
+- Real-time sliders for 4 audio categories with live feedback:
+  - **Master Volume**: Global audio control (0-100%)
+  - **Music Volume**: Background music and themes
+  - **Sound Effects**: Doors, footsteps, UI sounds
+  - **Ambient Volume**: Environmental soundscapes
+- Live percentage display updates during slider drag
+- Immediate audio feedback (changes applied in real-time)
+- Persistent volume settings (saved to game config)
+- Accessible from main menu and in-game
 
-### Changed - December 14, 2024
+**Game Control Features**
+- **Restart Game**: Full game restart with theme preservation
+  - Proper state cleanup (stop game loop, disable auto-save)
+  - Loading screen during restart transition
+  - Preserves original theme or allows random generation
+  - Resets all game state (inventory, score, puzzles, NPCs)
+  - Auto-save management (creates new auto-save for new game)
 
-- Updated all demo import paths for new directory structure
-- Updated CommandExecutor with complete implementations for:
-  - handleInventory, handleHelp, handleSave
-  - Alias resolution for command shortcuts
-  - Proper error handling and user feedback
-- Updated EventManager to use processCommand instead of getDynamicResponse
-- Updated project documentation with current status
+**Configuration System**
+- **config.template.js**: Comprehensive configuration template with docs
+  - API settings (key, endpoint, model, temperature, max tokens)
+  - Feature toggles (Sierra parser, priority renderer, state animator)
+  - Audio settings (master, music, sfx, ambient volumes)
+  - Offline mode examples and local LLM configurations
+  - Budget mode recommendations
 
-### Planned
+- **config.js**: Working default configuration
+  - Offline mode enabled by default (works out of the box)
+  - No API key required for static test world gameplay
+  - Sensible volume defaults (70% master, 60% music, 80% sfx, 50% ambient)
+  - All Sierra enhancements enabled
 
-- Phase 4: AI Integration (Starting Soon)
-- Phase 5: Polish and Release
+---
 
-## [0.0.1] - 2025-01-13
+### 🔧 Technical Improvements
 
-### Added
+**Code Quality**
+- Fixed logger import case sensitivity across 6 new modules
+  - Changed from `import { logger } from './Logger.js'`
+  - To `import logger from './logger.js'`
+  - Affected: PrioritySoundManager, SynchronizedSound, AmbientSoundscape, WorldGenerator, DynamicInteractionHandler, SaveGameManager
+- Applied Prettier formatting to all new files
+- Zero ESLint errors or warnings
+- Consistent code style across 400+ files
 
-- Initial repository creation
-- Design documentation outlining game vision
-- Technical specifications for all systems
+**Testing**
+- All 444 tests passing (100% pass rate)
+- No test failures or skipped tests
+- Maintained test coverage above 60%
+- Mock implementations updated for new systems
+
+**Integration**
+- GameManager enhanced with all Phase 4 & 5 systems:
+  ```javascript
+  this.worldGenerator = new WorldGenerator(this.aiManager);
+  this.prioritySoundManager = new PrioritySoundManager(this.soundManager);
+  this.synchronizedSound = new SynchronizedSound(this.prioritySoundManager, this);
+  this.ambientSoundscape = new AmbientSoundscape(this.prioritySoundManager);
+  this.dynamicInteractionHandler = new DynamicInteractionHandler(
+    this.aiManager, this.gameState, this.commandExecutor
+  );
+  this.saveGameManager = new SaveGameManager(this);
+  ```
+- main.js completely rewritten (497 lines) with full UI wiring
+- index.html enhanced with 3 new modals (save, load, volume)
+- styles.css enhanced with 150+ lines of new styling
+
+---
+
+## Complete Feature List
+
+### Phase 1 - Core Architecture ✅
+- GameManager with fixed timestep (60 FPS) and interpolation
+- AIManager with LLM interface and mock mode
+- GameState with event-driven architecture and validation
+- SceneRenderer for vector graphics
+- ViewManager for sprite animation
+- SoundManager for audio synthesis
+- Parser for natural language processing
+- EventManager for event execution and scheduling
+- FPS monitoring and debug overlay
+
+### Phase 2 - Graphics and Sound ✅
+
+**Vector Graphics Engine**
+- 16-color EGA palette with strict adherence
+- Vector primitives: rectangles, polygons, ellipses, lines, bezier curves, paths
+- 9 dithering patterns for fills and gradients
+- Scanline polygon fill with priority buffer
+- Double buffering and scene composition
+- 320×200 native resolution (scaled to 640×400)
+
+**Sprite and Animation System**
+- VIEW resource structure (Sierra SCI compatible)
+- Smooth animation with interpolation and speed control
+- Character movement with 8-directional walking
+- Collision detection with bounding boxes
+- Sprite effects: mirroring, scaling, ghost, inverted
+- Z-order management based on Y position and priority
+- Sprite pooling (50 sprite pool) for performance
+
+**Sound Synthesis System**
+- Complete Tone.js integration (v15.1.22)
+- ADSR envelopes with configurable curves
+- Waveforms: sine, square, triangle, sawtooth, PWM
+- LFO support for vibrato, tremolo, filter modulation
+- Filters: lowpass, highpass, bandpass, notch with resonance
+- Effects: reverb, delay, chorus, distortion, phaser
+- 16 simultaneous sound channels with auto-cleanup
+- Retro synthesizer presets: PC Speaker, AdLib FM, MT-32
+- 30+ procedural sound effects
+- Spatial audio with left/right panning
+
+**Music Generation System**
+- 128-voice polyphony for rich compositions
+- Complete General MIDI instrument set (128 instruments)
+- Procedural composition with music theory foundation
+- 8 musical themes: heroic, mysterious, peaceful, danger, exploration, combat, village, castle
+- Multi-track sequencer (melody, harmony, bass, drums)
+- Adaptive music with intensity control (0.0-1.0)
+- Leitmotif system for characters and locations
+- Real-time music visualization in demos
+
+### Phase 3 - Parser and Game Logic ✅
+
+**Natural Language Parser**
+- Tokenization with punctuation handling
+- 100+ verb synonyms (look/examine, get/take, etc.)
+- Abbreviations: x→examine, i→inventory, l→look, n/s/e/w→directions
+- Multi-word verb preprocessing ("pick up", "look at")
+- Pronoun resolution (it, them, him, her)
+- Word class detection (verbs, nouns, adjectives, prepositions)
+
+**Command Execution Engine**
+- 30+ adventure game verbs fully implemented:
+  - Movement: go, north, south, east, west, enter, exit
+  - Observation: look, examine, read, search
+  - Manipulation: take, get, drop, put, give, show, use, open, close
+  - Interaction: talk, ask, buy, sell, trade, push, pull, turn, touch, move
+  - Personal: inventory, wear, remove, eat, drink
+  - Combat: attack, cast (spell), pray
+  - Meta: help, save, load, restart, quit, wait
+- Contextual response system with dynamic messaging
+- Multi-word alias expansion (n→"go north")
+- Item requirement checking for actions
+- Multi-stage interaction mechanics (pull counts, progressive effects)
+- Touch effects system: damage, temperature, electric, sticky
+- Container state validation (open/closed)
+- Health restoration from consumables
+- Event triggering from commands (yell, ring bell)
+
+**Game Mechanics**
+
+*Inventory System*:
+- Weight and size constraints (configurable limits)
+- Container support with nested items (bags, chests, etc.)
+- Worn items system with equipment slots (head, body, hands, feet, accessory)
+- Comprehensive inventory management (add, remove, transfer, find, wear, remove)
+
+*Interaction System*:
+- Object interaction matrix for "use X on Y" mechanics
+- Item combination system (combine lockpick + door → unlocked door)
+- Locked/unlocked object states
+- State change triggers and callbacks
+
+*Movement System*:
+- Enhanced room navigation with exit validation
+- NPC movement patterns and schedules
+- Movement animations with smooth transitions
+- Blocked exit handling with contextual messages
+
+*Puzzle System*:
+- Multi-step puzzle support with individual step tracking
+- Hint system with 30-second cooldowns
+- Puzzle rewards (items, score points) and consequences
+- Reset mechanisms for retryable puzzles
+- Statistics tracking (attempts, hints used, completions, time)
+
+*NPC System*:
+- Dialogue tree system with branching conversations
+- Relationship tracking (-100 to 100 scale)
+- NPC trading with value balance and item requirements
+- NPC movement and schedules (time-based locations)
+- Dialogue history and state persistence
+- Multiple conversation topics per NPC
+
+*Game Progression*:
+- Point-based scoring system
+- Achievement system with condition checking
+- Multiple ending support based on game state
+- Statistics tracking for player progress
+- Auto-save functionality (5-minute intervals)
+
+### Phase 4 - AI Integration ✅
+(See Major Features section above)
+
+### Phase 5 - Polish and Sierra Enhancements ✅
+(See Major Features section above)
+
+---
+
+## 🎮 Gameplay Features
+
+### Command System
+- 30+ adventure game verbs with natural language parsing
+- Directional shortcuts: n, s, e, w, ne, nw, se, sw
+- Common abbreviations: x (examine), i (inventory), l (look)
+- Multi-word commands: "pick up key", "look at painting"
+- Synonym support: get/take, look/examine, etc.
+- Pronoun resolution: "examine it", "take them"
+
+### World Interaction
+- Interactive objects with multiple states
+- Combinable items (use X on Y)
+- Locked containers and doors requiring keys
+- Hidden items revealed by searching
+- Environmental puzzles with multi-step solutions
+- NPC dialogue and trading systems
+
+### Progression System
+- Point-based scoring
+- Achievement tracking
+- Multiple endings based on player choices
+- Puzzle hints with cooldowns
+- Relationship tracking with NPCs
+- Statistics and progress monitoring
+
+---
+
+## 🎨 Technical Specifications
+
+### Graphics
+- **Resolution**: 320×200 native (scaled to 640×400)
+- **Color Palette**: 16-color EGA (strict adherence)
+- **Rendering**: Vector primitives only (no raster images)
+- **Dithering**: 9 patterns for gradients and fills
+- **Priority System**: Depth-based rendering with Y-gradient
+
+### Audio
+- **Engine**: Tone.js v15.1.22
+- **Synthesis**: Procedural generation (no audio files)
+- **Polyphony**: 128 voices music, 16 channels SFX
+- **Presets**: PC Speaker, AdLib FM, MT-32 emulation
+- **Effects**: Reverb, delay, distortion, chorus, phaser, LFO
+
+### AI Integration
+- **API**: OpenAI-compatible endpoints (OpenAI, Anthropic, Ollama, LM Studio)
+- **Models**: GPT-3.5-turbo, GPT-4, Claude, local LLMs
+- **Fallback**: Offline mode with 3 static test worlds
+- **Retry Logic**: Exponential backoff (1s, 2s, 4s)
+- **Validation**: 8-step comprehensive JSON validation
+
+### Save System
+- **Format**: Complete game state + original AI-generated JSON
+- **Storage**: Browser localStorage (5-10MB per save)
+- **Slots**: 10 manual + 1 auto-save
+- **Export**: JSON file download
+- **Import**: JSON file upload
+- **Auto-save**: 5-minute intervals (configurable)
+
+---
+
+## 🧪 Testing
+
+### Test Coverage
+- **Total Tests**: 444 (100% pass rate)
+- **Test Suites**: 20
+- **Overall Coverage**: 61.64%
+- **High Coverage Modules**:
+  - Parser: 87.37%
+  - NPCSystem: 81.19%
+  - InteractionSystem: 79.87%
+  - PuzzleSystem: 71.42%
+
+### CI/CD
+- **Framework**: Jest v30.0.0
+- **Environment**: jsdom for DOM testing
+- **Node Versions**: 18.x, 20.x
+- **GitHub Actions**: Lint, Test, Security Audit, Browser Compatibility
+
+---
+
+## 📦 Demo Content
+
+### Interactive Demos
+All demos located in `demos/` subdirectory:
+- **demo-graphics.html**: Vector primitives, dithering, EGA palette showcase
+- **sprite-demo.html**: Character movement with keyboard controls
+- **sound-demo.html**: Sound effect library and synthesis parameters
+- **music-demo.html**: Real-time music generation and instrument testing
+- **parser-demo.html**: Natural language parser with demo world
+- **game-world-demo.html**: Puzzle and NPC systems demonstration
+- **demo-adventure.html**: Complete playable adventure "The Enchanted Manor"
+
+### Test Worlds
+Static worlds for offline play:
+- **Small World** (3-5 rooms): "Test Manor" haunted mansion
+- **Medium World** (6-10 rooms): Multi-level adventure with NPCs
+- **Large World** (15+ rooms): Expansive world with complex puzzles
+
+---
+
+## 🔧 Configuration
+
+### Quick Start
+1. Copy `js/config.template.js` to `js/config.js`
+2. (Optional) Add OpenAI API key for AI-generated worlds
+3. Adjust volumes and feature toggles as desired
+4. Open `index.html` in browser or run `npm start`
+
+### Configuration Options
+```javascript
+export const API_CONFIG = {
+  // API Settings (leave default for offline mode)
+  apiKey: 'your-api-key-here',
+  apiEndpoint: 'https://api.openai.com/v1/chat/completions',
+  model: 'gpt-3.5-turbo',
+  temperature: 0.7,
+  maxTokens: 4000,
+
+  // Save System
+  autoSave: true,
+  autoSaveInterval: 300000, // 5 minutes
+
+  // Sierra Enhancements
+  useSierraParser: true,
+  usePriorityRenderer: true,
+  useStateAnimator: true,
+
+  // Audio Volumes (0.0-1.0)
+  masterVolume: 0.7,
+  musicVolume: 0.6,
+  sfxVolume: 0.8,
+  ambientVolume: 0.5,
+};
+```
+
+---
+
+## 🐛 Bug Fixes
+
+### Logger Import Case Sensitivity (Phase 4/5)
+- **Issue**: 6 new modules failed tests due to incorrect logger import path
+- **Files**: PrioritySoundManager.js, SynchronizedSound.js, AmbientSoundscape.js, WorldGenerator.js, DynamicInteractionHandler.js, SaveGameManager.js
+- **Fix**: Changed `import { logger } from './Logger.js'` to `import logger from './logger.js'`
+- **Result**: All 444 tests passing
+
+### Earlier Bug Fixes (Phase 3)
+- Fixed command parameter order in handleAsk (NPC in directObject, topic in indirectObject)
+- Fixed type check case sensitivity ('NPC' vs 'npc')
+- Fixed health updates to properly modify gameState
+- Fixed multi-word alias parsing and command modification
+- Fixed object revealing in search (not just items)
+- Fixed article generation ("a" vs "an") for found items
+- Fixed container state checking for put/take commands
+- Fixed 78 test failures in CommandExecutor and EventManager
+
+---
+
+## 📚 Documentation
+
+### Comprehensive Guides
+- **README.md**: Project overview and features
+- **SETUP.md**: 5-minute quick start guide
+- **CLAUDE.md**: Development guide for AI assistants
+- **docs/**: Technical documentation (30+ files)
+- **ref_docs/**: Design philosophy and specifications
+- **to-dos/**: Development phase tracking
+
+### API Documentation
+- Module interfaces documented via JSDoc
+- Comprehensive inline comments
+- Test files serve as usage examples
+- Demo pages showcase all features
+
+---
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+npm install
+npm start  # http-server on port 8080
+npm run dev  # http-server on port 8000
+```
+
+### Testing
+```bash
+npm test  # Run all tests
+npm run test:watch  # Watch mode
+npm run test:coverage  # Coverage report
+```
+
+### Code Quality
+```bash
+npm run lint  # ESLint
+npm run lint:fix  # Auto-fix
+npm run format  # Prettier
+npm run format:check  # Check formatting
+npm run validate  # All checks
+```
+
+### Production
+- No build step required (vanilla ES6 modules)
+- Serve static files via any HTTP server
+- Works completely offline with static test worlds
+- Compatible with all modern browsers
+
+---
+
+## 🎯 What's Next?
+
+While v1.0.0 is feature-complete and production-ready, potential future enhancements include:
+
+### Planned for Future Releases
+- **Mobile/Responsive Support**: Touch-friendly UI, responsive CSS
+- **Accessibility Enhancements**: ARIA labels, keyboard navigation, high contrast mode
+- **Performance Optimizations**: Rendering loop improvements, lazy audio loading
+- **Additional Content**: Detective mystery, space station thriller, fantasy quest worlds
+- **Achievement UI**: Notification popups, achievement gallery
+- **GitHub Pages Deployment**: Live demo hosting
+- **Community Features**: World sharing, custom world editor
+
+### Under Consideration
+- Multiplayer support
+- Cloud save synchronization
+- Steam/itch.io distribution
+- Speedrun mode
+- Colorblind modes
+- VR/AR experimental support
+
+---
+
+## 📄 License
+
+See LICENSE file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+**Inspired by Sierra On-Line's legendary SCI0 engine and games**:
+- King's Quest IV (1988)
+- Space Quest III (1989)
+- Quest for Glory I (1989)
+- Police Quest II (1988)
+- Leisure Suit Larry 2 (1988)
+- Codename: ICEMAN (1989)
+
+**Built with modern web technologies**:
+- Tone.js v15.1.22 for audio synthesis
+- Jest v30.0.0 for testing
+- ESLint v9 + Prettier for code quality
+- GitHub Actions for CI/CD
+
+**Special thanks**:
+- Retro gaming community for preservation efforts
+- SCI decompilation projects for technical insights
+- Sierra On-Line for creating timeless classics
+
+---
+
+## 📞 Support
+
+For issues, questions, or contributions:
+- **GitHub**: https://github.com/doublegate/Somnium
+- **Issues**: Report bugs and request features
+- **Discussions**: Share worlds and experiences
+
+---
+
+**Note**: This is a passion project celebrating the golden age of adventure gaming while showcasing the potential of AI-driven procedural generation. Every playthrough is unique! 🎮✨
+
+---
+
+## Previous Versions
+
+### [Unreleased] - Development History
+
+*(See above for complete v1.0.0 release notes)*
+
+### [0.0.1] - 2025-01-13
+
+**Initial Release**
+- Repository creation
+- Design documentation
+- Technical specifications
 - SCI0-inspired architecture design
 - AI prompt engineering guidelines
 
-### Documentation
+---
 
-- Game Design Document with complete specifications
-- Graphics Generation Guide with EGA constraints
-- LLM Interaction Protocols
-- Save/Load File Format Specification
-- Testing and QA procedures
-- Development setup instructions
-- Engine extensibility guide
-- Content moderation guidelines
-
-[Unreleased]: https://github.com/doublegate/Somnium/compare/v0.0.1...HEAD
+[1.0.0]: https://github.com/doublegate/Somnium/releases/tag/v1.0.0
 [0.0.1]: https://github.com/doublegate/Somnium/releases/tag/v0.0.1

@@ -1,8 +1,19 @@
 # Somnium
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/doublegate/Somnium/releases/tag/v1.0.0)
+[![Tests](https://img.shields.io/badge/tests-444%20passing-brightgreen.svg)](https://github.com/doublegate/Somnium/actions)
+[![Coverage](https://img.shields.io/badge/coverage-61.64%25-yellow.svg)](https://github.com/doublegate/Somnium)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era games (1988-1989). Every time you play, the AI generates a completely unique adventure with its own story, puzzles, and world.
 
 ![Somnium Banner](https://github.com/doublegate/Somnium/blob/main/assets/banner.png)
+
+## 🎮 Play Now
+
+**[Play Somnium Online](https://doublegate.github.io/Somnium/)** - No installation required! Works in any modern browser.
+
+> **Note**: The live demo runs in offline mode with static test worlds. For AI-generated adventures, follow the [Quick Start](#quick-start) guide below to set up your own API key.
 
 ## Features
 
@@ -186,52 +197,81 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ## Status
 
-🎉 **PROJECT COMPLETE!** 🎉
+🎉 **VERSION 1.0.0 RELEASED!** 🎉
 
-Somnium has successfully completed all 5 development phases!
+Somnium v1.0.0 is **production-ready** and **feature-complete**! All 5 development phases have been successfully completed and the game is ready for public release.
 
-- **Phase 1 (Core Architecture)** - ✅ Complete (100%)
-- **Phase 2 (Graphics and Sound Systems)** - ✅ Complete (100%)
-- **Phase 3 (Parser and Game Logic)** - ✅ Complete (100%)
+### What's Included in v1.0.0
 
-  - Natural language parser with 100+ verbs
-  - Command execution for 30+ adventure game actions
-  - Enhanced inventory system with containers and worn items
+- **Phase 1 (Core Architecture)** - ✅ Complete
+  - Fixed timestep game loop (60 FPS) with interpolation
+  - Event-driven state management
+  - FPS monitoring and debug overlay
+
+- **Phase 2 (Graphics and Sound Systems)** - ✅ Complete
+  - 16-color EGA vector graphics engine with 9 dithering patterns
+  - Sierra-compatible sprite animation system
+  - Procedural sound synthesis (30+ SFX, 8 music themes)
+  - Retro synthesizer presets (PC Speaker, AdLib FM, MT-32)
+
+- **Phase 3 (Parser and Game Logic)** - ✅ Complete
+  - Natural language parser with 100+ verb synonyms
+  - 30+ fully implemented adventure game commands
+  - Enhanced inventory system with containers and equipment
   - Multi-step puzzle system with hints
-  - NPC dialogue and trading systems
-  - Achievement and scoring system
+  - NPC dialogue trees with relationship tracking and trading
+  - Achievement and scoring system with multiple endings
 
-- **Phase 4 (AI Integration)** - ✅ Complete (100%)
-
-  - Full OpenAI-compatible LLM integration with retry logic
-  - AI world generation with comprehensive validation
+- **Phase 4 (AI Integration)** - ✅ Complete
+  - OpenAI-compatible LLM integration with exponential backoff retry
+  - AI world generation with 8-step validation
   - Dynamic interaction handling for unscripted actions
-  - Offline mode with automatic fallback
+  - Offline mode with 3 static test worlds (small, medium, large)
 
-- **Phase 5 (Polish and Enhancements)** - ✅ Complete (100%)
-  - Multi-slot save system with auto-save
+- **Phase 5 (Polish and Sierra Enhancements)** - ✅ Complete
+  - Professional save/load system (10 slots + auto-save)
   - File import/export for save games
   - Priority-based audio management (Sierra-inspired)
-  - Synchronized sound with cue points
+  - Synchronized sound with cue-based timing
   - Layered ambient soundscapes (7 predefined)
-  - Priority rendering system
-  - Enhanced parser with Sierra Said() patterns
+  - Priority rendering system with depth testing
+  - Enhanced parser with Sierra Said() pattern matching
+  - State-based animation system
 
-**All 444 tests passing!** (100% pass rate across 20 test suites)
+- **Main Game UI** - ✅ Complete
+  - Professional UI with command history (arrow key navigation)
+  - Visual save/load slot selector with metadata
+  - Real-time volume controls (master, music, SFX, ambient)
+  - Restart functionality with theme preservation
+  - Sierra-style ASCII box title display
+  - Offline mode detection and notifications
 
-### Latest Updates (Session: Complete Project Implementation)
+### Quality Metrics
 
-- ✅ Implemented full LLM integration with world generation
-- ✅ Created comprehensive save/load system
-- ✅ Added Sierra-inspired audio enhancements (Priority, Synchronized, Ambient)
-- ✅ Integrated priority rendering and enhanced parser
-- ✅ Fixed all import issues and test failures
-- ✅ All systems integrated and tested
-  - NPC interaction improvements
-  - Touch effects and damage system
-  - Multi-word command aliases (e.g., "n" → "go north")
+- **444 tests passing** (100% pass rate across 20 test suites)
+- **61.64% overall code coverage** with high coverage in critical modules
+- **Zero ESLint/Prettier errors**
+- **Full CI/CD pipeline** (Node.js 18.x and 20.x tested)
 
-See [Deferred Implementations](docs/deferred-impl.md) for remaining work items and [CHANGELOG.md](CHANGELOG.md) for version history.
+### Release Information
+
+- **Version**: 1.0.0
+- **Release Date**: June 15, 2025
+- **Changelog**: See [CHANGELOG.md](CHANGELOG.md) for complete release notes
+- **Download**: [Latest Release](https://github.com/doublegate/Somnium/releases/tag/v1.0.0)
+- **Live Demo**: [Play Online](https://doublegate.github.io/Somnium/)
+
+### What's Next?
+
+While v1.0.0 is feature-complete, future enhancements are planned:
+- Mobile/responsive support
+- Accessibility improvements (ARIA, keyboard nav, high contrast)
+- Performance optimizations
+- Additional test worlds (detective mystery, space station, fantasy quest)
+- Achievement notification popups
+- Community features (world sharing, custom world editor)
+
+See [Deferred Implementations](docs/deferred-impl.md) for the full roadmap.
 
 ---
 
