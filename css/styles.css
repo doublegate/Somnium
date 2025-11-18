@@ -772,3 +772,368 @@ body {
   background-color: var(--ega-light-cyan);
   transition: width 0.3s ease;
 }
+
+/* ========== Responsive Design for Mobile ========== */
+
+/* Tablets and smaller desktops (max-width: 900px) */
+@media (max-width: 900px) {
+  .game-container {
+    width: 90vw;
+    max-width: 640px;
+    height: auto;
+    margin: 10px auto;
+  }
+
+  #game-canvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .text-window {
+    max-height: 100px;
+  }
+
+  .modal-content {
+    width: 85%;
+    max-width: 500px;
+  }
+
+  .modal-wide {
+    max-width: 600px;
+  }
+
+  .achievement-gallery {
+    max-height: 400px;
+  }
+}
+
+/* Mobile devices (max-width: 600px) */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+
+  /* Menu bar adjustments */
+  .menu-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 4px 2px;
+    font-size: 12px;
+  }
+
+  .menu-item {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+
+  .menu-status {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+
+  /* Game container */
+  .game-container {
+    width: 100vw;
+    height: auto;
+    margin: 0;
+  }
+
+  #game-canvas {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+  }
+
+  /* Text window */
+  .text-window {
+    position: relative;
+    max-height: 180px;
+    padding: 6px;
+  }
+
+  .text-output {
+    max-height: 120px;
+    font-size: 13px;
+  }
+
+  .text-input {
+    font-size: 14px;
+  }
+
+  /* Main menu */
+  .main-menu {
+    width: 90vw;
+    max-width: 350px;
+    padding: 24px 20px;
+  }
+
+  .main-menu h1 {
+    font-size: 32px;
+  }
+
+  .tagline {
+    font-size: 13px;
+  }
+
+  .menu-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  /* Modals */
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    padding: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-wide {
+    max-width: none;
+  }
+
+  .modal-content h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .modal-content p {
+    font-size: 13px;
+  }
+
+  /* Theme input */
+  .theme-input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  /* Buttons */
+  .button-primary,
+  .button-secondary {
+    padding: 10px 16px;
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Save/Load slots */
+  .save-slots {
+    max-height: 300px;
+  }
+
+  .save-slot {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .save-slot-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  .save-slot-meta {
+    font-size: 11px;
+  }
+
+  /* Volume controls */
+  .volume-controls {
+    padding: 12px 0;
+  }
+
+  .volume-control {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .volume-control label {
+    flex: none;
+    font-size: 13px;
+  }
+
+  .volume-control input[type='range'] {
+    width: 100%;
+  }
+
+  .volume-control span {
+    flex: none;
+    text-align: left;
+  }
+
+  /* Loading screen */
+  .loading-content h2 {
+    font-size: 20px;
+  }
+
+  #loading-message {
+    font-size: 13px;
+  }
+
+  /* Achievement notifications */
+  .achievement-container {
+    top: 40px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .achievement-notification {
+    min-width: auto;
+    max-width: none;
+    padding: 12px;
+  }
+
+  .achievement-icon {
+    font-size: 24px;
+  }
+
+  .achievement-title {
+    font-size: 12px;
+  }
+
+  .achievement-name {
+    font-size: 14px;
+  }
+
+  .achievement-description {
+    font-size: 12px;
+  }
+
+  /* Achievement gallery */
+  .achievement-stats {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .achievement-gallery {
+    max-height: 350px;
+    padding: 4px;
+  }
+
+  .achievement-card {
+    padding: 12px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .achievement-card-icon {
+    font-size: 36px;
+    width: auto;
+  }
+
+  .achievement-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .achievement-card-name {
+    font-size: 14px;
+  }
+
+  .achievement-card-points {
+    font-size: 12px;
+  }
+
+  .achievement-card-description {
+    font-size: 12px;
+  }
+
+  /* Debug info */
+  .debug-info {
+    font-size: 10px;
+    top: 2px;
+    right: 2px;
+    padding: 2px 4px;
+  }
+}
+
+/* Very small devices (max-width: 400px) */
+@media (max-width: 400px) {
+  .menu-bar {
+    font-size: 11px;
+  }
+
+  .menu-item {
+    padding: 3px 4px;
+  }
+
+  .main-menu h1 {
+    font-size: 28px;
+  }
+
+  .text-output {
+    font-size: 12px;
+  }
+
+  .text-input {
+    font-size: 13px;
+  }
+
+  .modal-content {
+    padding: 12px;
+  }
+
+  .modal-content h2 {
+    font-size: 16px;
+  }
+
+  .achievement-notification {
+    padding: 10px;
+  }
+
+  .achievement-icon {
+    font-size: 20px;
+  }
+
+  .achievement-title {
+    font-size: 11px;
+  }
+
+  .achievement-name {
+    font-size: 13px;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 900px) and (orientation: landscape) {
+  #game-canvas {
+    max-height: 60vh;
+  }
+
+  .text-window {
+    max-height: 120px;
+  }
+
+  .text-output {
+    max-height: 80px;
+  }
+
+  .modal-content {
+    max-height: 80vh;
+  }
+
+  .achievement-gallery {
+    max-height: 300px;
+  }
+}
+
+/* High DPI displays (Retina, etc.) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Ensure pixelated rendering for canvas */
+  #game-canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+}
