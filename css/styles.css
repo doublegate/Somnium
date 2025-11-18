@@ -37,6 +37,48 @@ body {
   image-rendering: crisp-edges;
 }
 
+/* Accessibility - Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Accessibility - Enhanced Focus Indicators */
+*:focus {
+  outline: 3px solid var(--ega-yellow);
+  outline-offset: 2px;
+}
+
+button:focus,
+input:focus,
+.menu-item:focus {
+  outline: 3px solid var(--ega-yellow);
+  outline-offset: 2px;
+}
+
+/* Accessibility - Skip to Main Content */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ega-blue);
+  color: var(--ega-white);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
 /* Menu Bar */
 .menu-bar {
   background-color: var(--ega-light-gray);

@@ -13,137 +13,141 @@
   </head>
   <body>
     <!-- Menu Bar -->
-    <div id="menu-bar" class="menu-bar">
-      <div class="menu-item" data-menu="file">File</div>
-      <div class="menu-item" data-menu="game">Game</div>
-      <div class="menu-item" data-menu="speed">Speed</div>
-      <div class="menu-item" data-menu="sound">Sound</div>
-      <div class="menu-item" data-menu="help">Help</div>
-      <div class="menu-status">
-        <span id="game-title">Somnium</span>
-        <span id="score">Score: 0</span>
+    <nav id="menu-bar" class="menu-bar" role="menubar" aria-label="Main menu">
+      <div class="menu-item" data-menu="file" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">File</div>
+      <div class="menu-item" data-menu="game" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Game</div>
+      <div class="menu-item" data-menu="speed" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Speed</div>
+      <div class="menu-item" data-menu="sound" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Sound</div>
+      <div class="menu-item" data-menu="help" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Help</div>
+      <div class="menu-status" role="status" aria-live="polite">
+        <span id="game-title" aria-label="Current game">Somnium</span>
+        <span id="score" aria-label="Current score">Score: 0</span>
       </div>
-    </div>
+    </nav>
 
     <!-- Dropdown Menus -->
-    <div id="dropdown-menus" class="dropdown-container"></div>
+    <div id="dropdown-menus" class="dropdown-container" role="menu" aria-label="Menu options"></div>
 
     <!-- Main Game Container -->
-    <div id="game-container" class="game-container">
+    <main id="game-container" class="game-container" role="main" aria-label="Game view">
       <!-- Game Canvas (320x200) -->
-      <canvas id="game-canvas" width="320" height="200"></canvas>
+      <canvas id="game-canvas" width="320" height="200" role="img" aria-label="Game graphics display"></canvas>
 
       <!-- Text Window (hidden by default) -->
-      <div id="text-window" class="text-window hidden">
-        <div id="text-output" class="text-output"></div>
+      <div id="text-window" class="text-window hidden" role="region" aria-label="Game text and input">
+        <div id="text-output" class="text-output" role="log" aria-live="polite" aria-atomic="false"></div>
         <div class="text-input-container">
-          <span class="prompt">&gt;</span>
+          <label for="text-input" class="prompt" aria-hidden="true">&gt;</label>
           <input
             type="text"
             id="text-input"
             class="text-input"
             maxlength="80"
             autocomplete="off"
+            aria-label="Command input"
+            aria-describedby="text-output"
           />
         </div>
       </div>
 
       <!-- Debug Info (FPS counter) -->
-      <div id="debug-info" class="debug-info hidden">
-        <span id="fps-counter">FPS: 0</span>
+      <div id="debug-info" class="debug-info hidden" role="status" aria-live="polite" aria-atomic="true">
+        <span id="fps-counter" aria-label="Frames per second">FPS: 0</span>
       </div>
-    </div>
+    </main>
 
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen hidden">
+    <div id="loading-screen" class="loading-screen hidden" role="status" aria-live="assertive" aria-busy="true">
       <div class="loading-content">
-        <h2>Generating Your Adventure...</h2>
-        <div class="loading-spinner"></div>
-        <p id="loading-message">Weaving narrative threads...</p>
+        <h2 id="loading-title">Generating Your Adventure...</h2>
+        <div class="loading-spinner" role="progressbar" aria-label="Loading progress" aria-valuemin="0" aria-valuemax="100"></div>
+        <p id="loading-message" aria-live="polite">Weaving narrative threads...</p>
       </div>
     </div>
 
     <!-- Main Menu -->
-    <div id="main-menu" class="main-menu">
-      <h1>Somnium</h1>
-      <p class="tagline">Every adventure is unique</p>
-      <div class="menu-options">
-        <button id="new-game-btn" class="menu-button">New Adventure</button>
-        <button id="load-game-btn" class="menu-button">Load Game</button>
-        <button id="about-btn" class="menu-button">About</button>
-      </div>
+    <div id="main-menu" class="main-menu" role="dialog" aria-labelledby="main-menu-title" aria-modal="true">
+      <h1 id="main-menu-title">Somnium</h1>
+      <p class="tagline" role="doc-subtitle">Every adventure is unique</p>
+      <nav class="menu-options" role="navigation" aria-label="Main menu options">
+        <button id="new-game-btn" class="menu-button" aria-label="Start a new adventure">New Adventure</button>
+        <button id="load-game-btn" class="menu-button" aria-label="Load a saved game">Load Game</button>
+        <button id="about-btn" class="menu-button" aria-label="About Somnium">About</button>
+      </nav>
     </div>
 
     <!-- Theme Selection Modal -->
-    <div id="theme-modal" class="modal hidden">
+    <div id="theme-modal" class="modal hidden" role="dialog" aria-labelledby="theme-modal-title" aria-modal="true" aria-hidden="true">
       <div class="modal-content">
-        <h2>Choose Your Adventure Theme</h2>
-        <p>Enter a theme or leave blank for a surprise:</p>
+        <h2 id="theme-modal-title">Choose Your Adventure Theme</h2>
+        <p id="theme-modal-desc">Enter a theme or leave blank for a surprise:</p>
+        <label for="theme-input" class="sr-only">Adventure theme</label>
         <input
           type="text"
           id="theme-input"
           class="theme-input"
           placeholder="e.g., haunted castle, space station, pirate island"
+          aria-describedby="theme-modal-desc"
         />
-        <div class="modal-buttons">
-          <button id="start-adventure-btn" class="button-primary">
+        <div class="modal-buttons" role="group" aria-label="Theme selection actions">
+          <button id="start-adventure-btn" class="button-primary" aria-label="Start adventure with selected theme">
             Start Adventure
           </button>
-          <button id="cancel-theme-btn" class="button-secondary">Cancel</button>
+          <button id="cancel-theme-btn" class="button-secondary" aria-label="Cancel and return to main menu">Cancel</button>
         </div>
       </div>
     </div>
 
     <!-- About Modal -->
-    <div id="about-modal" class="modal hidden">
+    <div id="about-modal" class="modal hidden" role="dialog" aria-labelledby="about-modal-title" aria-modal="true" aria-hidden="true">
       <div class="modal-content">
-        <h2>About Somnium</h2>
+        <h2 id="about-modal-title">About Somnium</h2>
         <p>
           Somnium is an AI-driven adventure game inspired by Sierra On-Line's
           classic SCI0 games.
         </p>
         <p>Every time you play, a unique world is generated just for you.</p>
-        <p>Version: <span id="version">0.0.1</span></p>
-        <button id="close-about-btn" class="button-primary">Close</button>
+        <p>Version: <span id="version" aria-label="Version number">1.0.0</span></p>
+        <button id="close-about-btn" class="button-primary" aria-label="Close about dialog">Close</button>
       </div>
     </div>
 
     <!-- Error Modal -->
-    <div id="error-modal" class="modal hidden">
+    <div id="error-modal" class="modal hidden" role="alertdialog" aria-labelledby="error-modal-title" aria-describedby="error-message" aria-modal="true" aria-hidden="true">
       <div class="modal-content error">
-        <h2>Error</h2>
-        <p id="error-message"></p>
-        <button id="close-error-btn" class="button-primary">OK</button>
+        <h2 id="error-modal-title">Error</h2>
+        <p id="error-message" role="alert" aria-live="assertive"></p>
+        <button id="close-error-btn" class="button-primary" aria-label="Dismiss error message">OK</button>
       </div>
     </div>
 
     <!-- Save Game Modal -->
-    <div id="save-modal" class="modal hidden">
+    <div id="save-modal" class="modal hidden" role="dialog" aria-labelledby="save-modal-title" aria-modal="true" aria-hidden="true">
       <div class="modal-content">
-        <h2>Save Game</h2>
-        <div id="save-slots" class="save-slots"></div>
-        <div class="modal-buttons">
-          <button id="close-save-btn" class="button-secondary">Cancel</button>
+        <h2 id="save-modal-title">Save Game</h2>
+        <div id="save-slots" class="save-slots" role="list" aria-label="Available save slots"></div>
+        <div class="modal-buttons" role="group" aria-label="Save dialog actions">
+          <button id="close-save-btn" class="button-secondary" aria-label="Cancel saving">Cancel</button>
         </div>
       </div>
     </div>
 
     <!-- Load Game Modal -->
-    <div id="load-modal" class="modal hidden">
+    <div id="load-modal" class="modal hidden" role="dialog" aria-labelledby="load-modal-title" aria-modal="true" aria-hidden="true">
       <div class="modal-content">
-        <h2>Load Game</h2>
-        <div id="load-slots" class="save-slots"></div>
-        <div class="modal-buttons">
-          <button id="close-load-btn" class="button-secondary">Cancel</button>
+        <h2 id="load-modal-title">Load Game</h2>
+        <div id="load-slots" class="save-slots" role="list" aria-label="Saved games"></div>
+        <div class="modal-buttons" role="group" aria-label="Load dialog actions">
+          <button id="close-load-btn" class="button-secondary" aria-label="Cancel loading">Cancel</button>
         </div>
       </div>
     </div>
 
     <!-- Volume Control Modal -->
-    <div id="volume-modal" class="modal hidden">
+    <div id="volume-modal" class="modal hidden" role="dialog" aria-labelledby="volume-modal-title" aria-modal="true" aria-hidden="true">
       <div class="modal-content">
-        <h2>Volume Settings</h2>
-        <div class="volume-controls">
+        <h2 id="volume-modal-title">Volume Settings</h2>
+        <div class="volume-controls" role="group" aria-labelledby="volume-modal-title">
           <div class="volume-control">
             <label for="master-volume">Master Volume</label>
             <input
@@ -152,8 +156,12 @@
               min="0"
               max="100"
               value="70"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="70"
+              aria-valuetext="70 percent"
             />
-            <span id="master-volume-value">70%</span>
+            <span id="master-volume-value" aria-live="polite">70%</span>
           </div>
           <div class="volume-control">
             <label for="music-volume">Music</label>
@@ -163,13 +171,22 @@
               min="0"
               max="100"
               value="60"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="60"
+              aria-valuetext="60 percent"
             />
-            <span id="music-volume-value">60%</span>
+            <span id="music-volume-value" aria-live="polite">60%</span>
           </div>
           <div class="volume-control">
             <label for="sfx-volume">Sound Effects</label>
-            <input type="range" id="sfx-volume" min="0" max="100" value="80" />
-            <span id="sfx-volume-value">80%</span>
+            <input type="range" id="sfx-volume" min="0" max="100" value="80"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="80"
+              aria-valuetext="80 percent"
+            />
+            <span id="sfx-volume-value" aria-live="polite">80%</span>
           </div>
           <div class="volume-control">
             <label for="ambient-volume">Ambient</label>
@@ -179,30 +196,34 @@
               min="0"
               max="100"
               value="50"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="50"
+              aria-valuetext="50 percent"
             />
-            <span id="ambient-volume-value">50%</span>
+            <span id="ambient-volume-value" aria-live="polite">50%</span>
           </div>
         </div>
-        <div class="modal-buttons">
-          <button id="close-volume-btn" class="button-primary">Close</button>
+        <div class="modal-buttons" role="group" aria-label="Volume dialog actions">
+          <button id="close-volume-btn" class="button-primary" aria-label="Close volume settings">Close</button>
         </div>
       </div>
     </div>
 
     <!-- Achievement Notification Container -->
-    <div id="achievement-container" class="achievement-container"></div>
+    <div id="achievement-container" class="achievement-container" role="region" aria-live="polite" aria-label="Achievement notifications"></div>
 
     <!-- Achievement Gallery Modal -->
-    <div id="achievement-modal" class="modal hidden">
+    <div id="achievement-modal" class="modal hidden" role="dialog" aria-labelledby="achievement-modal-title" aria-modal="true" aria-hidden="true">
       <div class="modal-content modal-wide">
-        <h2>Achievements</h2>
-        <div class="achievement-stats">
-          <span id="achievement-count">0/0 Unlocked</span>
-          <span id="achievement-points">0 Points</span>
+        <h2 id="achievement-modal-title">Achievements</h2>
+        <div class="achievement-stats" role="status" aria-live="polite">
+          <span id="achievement-count" aria-label="Achievements unlocked">0/0 Unlocked</span>
+          <span id="achievement-points" aria-label="Total achievement points">0 Points</span>
         </div>
-        <div id="achievement-gallery" class="achievement-gallery"></div>
-        <div class="modal-buttons">
-          <button id="close-achievement-btn" class="button-primary">Close</button>
+        <div id="achievement-gallery" class="achievement-gallery" role="list" aria-label="Achievement list"></div>
+        <div class="modal-buttons" role="group" aria-label="Achievement dialog actions">
+          <button id="close-achievement-btn" class="button-primary" aria-label="Close achievements">Close</button>
         </div>
       </div>
     </div>

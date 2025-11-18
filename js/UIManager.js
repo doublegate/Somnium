@@ -167,6 +167,7 @@ export class UIManager {
    */
   showThemeModal() {
     this.elements.themeModal.classList.remove('hidden');
+    this.elements.themeModal.removeAttribute('aria-hidden');
     document.getElementById('theme-input').focus();
     this.logger.debug('Theme modal shown');
   }
@@ -176,6 +177,7 @@ export class UIManager {
    */
   hideThemeModal() {
     this.elements.themeModal.classList.add('hidden');
+    this.elements.themeModal.setAttribute('aria-hidden', 'true');
     document.getElementById('theme-input').value = '';
     this.logger.debug('Theme modal hidden');
   }
@@ -185,6 +187,7 @@ export class UIManager {
    */
   showAboutModal() {
     this.elements.aboutModal.classList.remove('hidden');
+    this.elements.aboutModal.removeAttribute('aria-hidden');
     this.logger.debug('About modal shown');
   }
 
@@ -193,6 +196,7 @@ export class UIManager {
    */
   hideAboutModal() {
     this.elements.aboutModal.classList.add('hidden');
+    this.elements.aboutModal.setAttribute('aria-hidden', 'true');
     this.logger.debug('About modal hidden');
   }
 
@@ -203,6 +207,7 @@ export class UIManager {
   showError(message) {
     this.elements.errorMessage.textContent = message;
     this.elements.errorModal.classList.remove('hidden');
+    this.elements.errorModal.removeAttribute('aria-hidden');
     this.logger.error(`Error shown: ${message}`);
   }
 
@@ -211,6 +216,7 @@ export class UIManager {
    */
   hideErrorModal() {
     this.elements.errorModal.classList.add('hidden');
+    this.elements.errorModal.setAttribute('aria-hidden', 'true');
     this.logger.debug('Error modal hidden');
   }
 
@@ -293,10 +299,17 @@ export class UIManager {
         }
 
         slotDiv.appendChild(actionsDiv);
+
+        // Add ARIA attributes
+        slotDiv.setAttribute('role', 'listitem');
+        slotDiv.setAttribute('aria-label', slot.empty ? `Slot ${slot.slot + 1} - Empty` : `${slot.saveName} - ${new Date(slot.timestamp).toLocaleString()}`);
+        saveBtn.setAttribute('aria-label', slot.empty ? `Save to slot ${slot.slot + 1}` : `Overwrite save in slot ${slot.slot + 1}`);
+
         container.appendChild(slotDiv);
       });
 
     modal.classList.remove('hidden');
+    modal.removeAttribute('aria-hidden');
     this.logger.debug('Save game modal shown');
   }
 
@@ -306,6 +319,7 @@ export class UIManager {
   hideSaveGameModal() {
     const modal = document.getElementById('save-modal');
     modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
     this.logger.debug('Save game modal hidden');
   }
 
@@ -382,6 +396,7 @@ export class UIManager {
     }
 
     modal.classList.remove('hidden');
+    modal.removeAttribute('aria-hidden');
     this.logger.debug('Load game modal shown');
   }
 
@@ -391,6 +406,7 @@ export class UIManager {
   hideLoadGameModal() {
     const modal = document.getElementById('load-modal');
     modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
     this.logger.debug('Load game modal hidden');
   }
 
@@ -431,6 +447,9 @@ export class UIManager {
       slider.oninput = () => {
         const value = parseInt(slider.value);
         valueSpan.textContent = `${value}%`;
+        // Update ARIA attributes
+        slider.setAttribute('aria-valuenow', value);
+        slider.setAttribute('aria-valuetext', `${value} percent`);
         callback(value / 100);
       };
     };
@@ -455,6 +474,7 @@ export class UIManager {
     );
 
     modal.classList.remove('hidden');
+    modal.removeAttribute('aria-hidden');
     this.logger.debug('Volume control modal shown');
   }
 
@@ -464,6 +484,7 @@ export class UIManager {
   hideVolumeModal() {
     const modal = document.getElementById('volume-modal');
     modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
     this.logger.debug('Volume control modal hidden');
   }
 
@@ -730,6 +751,7 @@ export class UIManager {
 
     // Show modal
     modal.classList.remove('hidden');
+    modal.removeAttribute('aria-hidden');
     this.logger.debug('Achievement gallery shown');
   }
 
@@ -744,12 +766,14 @@ export class UIManager {
   createAchievementCard(achievement, unlocked, progress) {
     const card = document.createElement('div');
     card.className = `achievement-card ${unlocked ? '' : 'locked'}`;
+    card.setAttribute('role', 'listitem');
 
     const icon = achievement.icon || '🏆';
     const iconHtml = unlocked ? icon : '🔒';
 
     let statusHtml = '';
     let progressBarHtml = '';
+    let ariaLabel = '';
 
     if (progress && !unlocked) {
       const progressPercent = Math.round(
@@ -757,18 +781,23 @@ export class UIManager {
       );
       statusHtml = `<div class="achievement-card-status">Progress: ${progress.current}/${progress.target}</div>`;
       progressBarHtml = `
-        <div class="achievement-card-progress">
+        <div class="achievement-card-progress" role="progressbar" aria-valuenow="${progressPercent}" aria-valuemin="0" aria-valuemax="100" aria-valuetext="${progressPercent} percent complete">
           <div class="achievement-card-progress-bar" style="width: ${progressPercent}%"></div>
         </div>
       `;
+      ariaLabel = `${achievement.name}, ${achievement.points} points, Locked - Progress: ${progress.current} of ${progress.target}, ${progressPercent}% complete. ${achievement.description}`;
     } else if (unlocked) {
       statusHtml = `<div class="achievement-card-status">✓ Unlocked</div>`;
+      ariaLabel = `${achievement.name}, ${achievement.points} points, Unlocked. ${achievement.description}`;
     } else {
       statusHtml = `<div class="achievement-card-status">Locked</div>`;
+      ariaLabel = `${achievement.name}, ${achievement.points} points, Locked. ${achievement.description}`;
     }
 
+    card.setAttribute('aria-label', ariaLabel);
+
     card.innerHTML = `
-      <div class="achievement-card-icon">${iconHtml}</div>
+      <div class="achievement-card-icon" aria-hidden="true">${iconHtml}</div>
       <div class="achievement-card-content">
         <div class="achievement-card-header">
           <div class="achievement-card-name">${achievement.name}</div>
@@ -790,6 +819,7 @@ export class UIManager {
     const modal = document.getElementById('achievement-modal');
     if (modal) {
       modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
       this.logger.debug('Achievement gallery hidden');
     }
   }
