@@ -1,6 +1,6 @@
 # Somnium
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/doublegate/Somnium/releases/tag/v1.0.0)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/doublegate/Somnium/releases/tag/v2.0.0)
 [![Tests](https://img.shields.io/badge/tests-444%20passing-brightgreen.svg)](https://github.com/doublegate/Somnium/actions)
 [![Coverage](https://img.shields.io/badge/coverage-61.64%25-yellow.svg)](https://github.com/doublegate/Somnium)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -16,6 +16,8 @@ An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era
 > **Note**: The live demo runs in offline mode with static test worlds. For AI-generated adventures, follow the [Quick Start](#quick-start) guide below to set up your own API key.
 
 ## Features
+
+### 🎮 Core Game Experience
 
 - **AI-Generated Adventures**: Each playthrough creates a unique world with original puzzles, characters, and storylines
 - **Authentic Retro Experience**: Faithful recreation of Sierra's SCI0 engine look and feel
@@ -34,6 +36,50 @@ An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era
 - **Save Your Dreams**: Complete save/load system preserves your unique generated worlds
 - **Intelligent Interactions**: Unscripted actions handled dynamically by AI
 - **Family-Friendly**: Built-in content moderation ensures appropriate content
+
+### 🌐 v2.0 Multiplayer & Cloud Features
+
+- **🎭 Multiplayer Co-op**: Play adventures together with friends in real-time
+  - WebSocket-based real-time synchronization
+  - Session browser with password protection
+  - Three game modes: Co-op, Competitive, and Shared World
+  - Built-in chat system for player communication
+  - Automatic state synchronization across all players
+- **☁️ Cloud Saves**: Save your progress to the cloud and play anywhere
+  - Secure authentication with encrypted passwords
+  - Unlimited cloud save slots
+  - Automatic sync across devices
+  - Import/export save files for offline backup
+- **🤝 Social Sharing**: Share your favorite worlds with the community
+  - Upload and download player-created worlds
+  - Rating and review system
+  - Browse by rating, date, or world name
+  - Discover adventures created by other players
+
+### 🛠️ World Creation Tools
+
+- **Visual World Editor**: Create custom adventures with the built-in editor
+  - Drag-and-drop room design
+  - Vector graphics drawing tools
+  - NPC and item placement
+  - Puzzle and event scripting
+- **World Templates**: Jump-start your creativity with professional templates
+  - Medieval Castle (5-room fantasy adventure)
+  - Mysterious Dungeon (4-room dungeon crawler)
+  - Space Station (4-room sci-fi exploration)
+  - Empty template for building from scratch
+- **Interactive Tutorial**: Learn to play with a guided walkthrough
+  - 5-room tutorial world teaching all mechanics
+  - Helpful guide NPC with comprehensive dialogue
+  - Practice movement, items, puzzles, and commands
+  - Earn achievements for completing the tutorial
+
+### 🔧 Developer Features
+
+- **Automated Deployment**: GitHub Actions workflow for continuous deployment
+- **Cross-Browser Testing**: Playwright E2E tests across 5 browsers (Chrome, Firefox, Safari, Mobile)
+- **PWA Support**: Full Progressive Web App with offline capability
+- **Accessibility**: ARIA labels, keyboard navigation, high contrast mode
 
 ## Quick Start
 
@@ -76,6 +122,38 @@ npx http-server -c-1 .
 
 5. Click "New Adventure" and optionally enter a theme (e.g., "haunted castle", "space station")
 
+### Multiplayer Server Setup (Optional)
+
+To enable multiplayer features, run the backend servers:
+
+1. Navigate to the server directory:
+
+```bash
+cd server
+npm install
+```
+
+2. Create a `.env` file in the `server/` directory (optional):
+
+```env
+PORT=3000
+MULTIPLAYER_PORT=8080
+JWT_SECRET=your-secret-key
+```
+
+3. Start both servers:
+
+```bash
+# Start both API and multiplayer servers
+npm run start:all
+
+# Or start individually
+npm run start              # API server only (port 3000)
+npm run start:multiplayer  # Multiplayer server only (port 8080)
+```
+
+4. Access multiplayer lobby at `http://localhost:8000/multiplayer.html`
+
 ## How to Play
 
 ### Basic Commands
@@ -96,10 +174,19 @@ npx http-server -c-1 .
 
 Explore Somnium's features through interactive demonstrations:
 
+**Game Experiences:**
+- **Tutorial World**: Learn to play with an interactive guide - `http://localhost:8000/demos/demo-adventure.html?world=tutorial`
 - **Complete Adventure**: Play "The Enchanted Manor" demo - `http://localhost:8000/demos/demo-adventure.html`
+- **Multiplayer Lobby**: Test multiplayer features - `http://localhost:8000/multiplayer.html`
+
+**Technical Demos:**
 - **Parser Demo**: Test the natural language parser - `http://localhost:8000/demos/parser-demo.html`
 - **Graphics Demo**: See the vector graphics engine - `http://localhost:8000/demos/demo-graphics.html`
 - **Sound Demo**: Experience retro sound synthesis - `http://localhost:8000/demos/sound-demo.html`
+
+**Creation Tools:**
+- **World Editor**: Create custom adventures - `http://localhost:8000/editor.html`
+- **World Templates**: Browse pre-built templates in the editor's "New World" menu
 
 See [Running Demos](docs/run-demos.md) for the complete list and instructions.
 
@@ -107,14 +194,27 @@ See [Running Demos](docs/run-demos.md) for the complete list and instructions.
 
 ### Testing
 
-Somnium includes a comprehensive test suite with 300+ tests covering all major systems:
+Somnium includes a comprehensive test suite with 444+ tests covering all major systems:
 
-- **Unit Tests**: Individual module functionality
+- **Unit Tests**: Individual module functionality (444 tests)
 - **Integration Tests**: System interactions
 - **Parser Tests**: Natural language processing
 - **Game Logic Tests**: Puzzles, NPCs, progression
+- **E2E Tests**: Cross-browser end-to-end testing with Playwright
 
-Run tests with: `npm test`
+```bash
+# Run unit tests
+npm test
+
+# Run E2E tests (requires servers running)
+npx playwright test
+
+# Run E2E tests with UI
+npx playwright test --ui
+
+# Run E2E tests in specific browser
+npx playwright test --project=chromium
+```
 
 See [Test Documentation](tests/README.md) for details.
 
@@ -123,17 +223,32 @@ See [Test Documentation](tests/README.md) for details.
 ```
 Somnium/
 ├── index.html          # Main game file
+├── editor.html         # World editor interface
+├── multiplayer.html    # Multiplayer lobby
 ├── js/                 # Game engine modules
-│   ├── GameManager.js  # Core game loop
-│   ├── AIManager.js    # LLM integration
-│   ├── Parser.js       # Text input processing
-│   └── ...            # Other modules
-├── css/               # Styles
-├── demos/             # Interactive demonstrations
-├── docs/              # Documentation
-├── ref_docs/          # Design documents
-├── tests/             # Test suites
-└── to-dos/            # Project tracking
+│   ├── GameManager.js        # Core game loop
+│   ├── AIManager.js          # LLM integration
+│   ├── Parser.js             # Text input processing
+│   ├── MultiplayerManager.js # Multiplayer client
+│   ├── world-templates.js    # Pre-built world templates
+│   └── ...                   # Other modules
+├── css/                # Styles
+│   ├── main.css             # Main game styles
+│   ├── editor.css           # Editor styles
+│   └── multiplayer.css      # Multiplayer styles
+├── server/             # Backend servers
+│   ├── api-server.js        # REST API (auth, saves, sharing)
+│   ├── multiplayer-server.js # WebSocket server
+│   └── package.json         # Server dependencies
+├── demos/              # Interactive demonstrations
+├── docs/               # Documentation
+├── ref_docs/           # Design documents
+├── tests/              # Test suites
+│   ├── unit/               # Jest unit tests
+│   └── e2e/                # Playwright E2E tests
+├── scripts/            # Utility scripts
+│   └── generate-icons.js   # PWA icon generator
+└── to-dos/             # Project tracking
 ```
 
 ### Building from Source
@@ -197,11 +312,31 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ## Status
 
-🎉 **VERSION 1.0.0 RELEASED!** 🎉
+🚀 **VERSION 2.0.0 RELEASED!** 🚀
 
-Somnium v1.0.0 is **production-ready** and **feature-complete**! All 5 development phases have been successfully completed and the game is ready for public release.
+Somnium v2.0.0 is **production-ready** with multiplayer, cloud features, and comprehensive testing! All development phases complete, including backend infrastructure and deployment automation.
 
-### What's Included in v1.0.0
+### What's New in v2.0.0
+
+**Path A - Full Production Launch:**
+- ✅ Node.js multiplayer server with WebSocket support
+- ✅ Express REST API for authentication, cloud saves, and social sharing
+- ✅ GitHub Actions deployment workflow for automatic CI/CD
+- ✅ Playwright E2E testing across 5 browsers (Chrome, Firefox, Safari, Mobile)
+- ✅ PWA icon generation script for all required sizes
+
+**Path B - Editor Enhancement:**
+- ✅ World template library with 4 professional templates
+- ✅ Interactive tutorial world teaching all game mechanics
+- ✅ Pre-built worlds: Medieval Castle, Mysterious Dungeon, Space Station
+
+**Path C - Multiplayer Focus:**
+- ✅ Multiplayer lobby UI with session management
+- ✅ Real-time chat system for player communication
+- ✅ Three game modes: Co-op, Competitive, Shared World
+- ✅ Session browser with password protection and privacy options
+
+### What's Included in v1.0.0 (Base)
 
 - **Phase 1 (Core Architecture)** - ✅ Complete
   - Fixed timestep game loop (60 FPS) with interpolation
@@ -255,21 +390,24 @@ Somnium v1.0.0 is **production-ready** and **feature-complete**! All 5 developme
 
 ### Release Information
 
-- **Version**: 1.0.0
-- **Release Date**: June 15, 2025
+- **Version**: 2.0.0
+- **Release Date**: June 18, 2025
 - **Changelog**: See [CHANGELOG.md](CHANGELOG.md) for complete release notes
-- **Download**: [Latest Release](https://github.com/doublegate/Somnium/releases/tag/v1.0.0)
+- **Download**: [Latest Release](https://github.com/doublegate/Somnium/releases/tag/v2.0.0)
 - **Live Demo**: [Play Online](https://doublegate.github.io/Somnium/)
+- **Multiplayer**: [Join Lobby](https://doublegate.github.io/Somnium/multiplayer.html)
+- **Editor**: [Create Worlds](https://doublegate.github.io/Somnium/editor.html)
 
 ### What's Next?
 
-While v1.0.0 is feature-complete, future enhancements are planned:
-- Mobile/responsive support
-- Accessibility improvements (ARIA, keyboard nav, high contrast)
-- Performance optimizations
-- Additional test worlds (detective mystery, space station, fantasy quest)
-- Achievement notification popups
-- Community features (world sharing, custom world editor)
+v2.0.0 is production-ready with multiplayer and cloud features! Future enhancements:
+- Mobile app versions (iOS/Android)
+- Voice command support
+- VR/AR integration
+- Advanced world editor features (terrain tools, lighting effects)
+- Community marketplace for custom worlds
+- Leaderboards and competitive tournaments
+- Mod support and plugin system
 
 See [Deferred Implementations](docs/deferred-impl.md) for the full roadmap.
 

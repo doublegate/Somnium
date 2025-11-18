@@ -1,6 +1,6 @@
 {
   "name": "somnium",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era games",
   "main": "index.html",
   "type": "module",
