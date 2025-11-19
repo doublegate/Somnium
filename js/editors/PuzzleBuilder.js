@@ -121,13 +121,19 @@ export class PuzzleBuilder {
   setupEventListeners() {
     // Toolbar actions
     this.ui.newPuzzle.addEventListener('click', () => this.newPuzzle());
-    this.ui.loadPuzzle.addEventListener('click', () => this.showModal('loadPuzzleModal'));
+    this.ui.loadPuzzle.addEventListener('click', () =>
+      this.showModal('loadPuzzleModal')
+    );
     this.ui.savePuzzle.addEventListener('click', () => this.savePuzzle());
     this.ui.exportPuzzle.addEventListener('click', () => this.exportPuzzle());
     this.ui.addStep.addEventListener('click', () => this.addStep('item'));
-    this.ui.deleteStep.addEventListener('click', () => this.deleteSelectedStep());
+    this.ui.deleteStep.addEventListener('click', () =>
+      this.deleteSelectedStep()
+    );
     this.ui.testPuzzle.addEventListener('click', () => this.testPuzzle());
-    this.ui.validatePuzzle.addEventListener('click', () => this.validatePuzzle());
+    this.ui.validatePuzzle.addEventListener('click', () =>
+      this.validatePuzzle()
+    );
 
     // Grid controls
     this.ui.showGrid.addEventListener('change', (e) => {
@@ -173,14 +179,22 @@ export class PuzzleBuilder {
     this.ui.addReward.addEventListener('click', () => this.addReward());
 
     // Canvas interactions
-    this.canvas.addEventListener('mousedown', (e) => this.handleCanvasMouseDown(e));
-    this.canvas.addEventListener('mousemove', (e) => this.handleCanvasMouseMove(e));
+    this.canvas.addEventListener('mousedown', (e) =>
+      this.handleCanvasMouseDown(e)
+    );
+    this.canvas.addEventListener('mousemove', (e) =>
+      this.handleCanvasMouseMove(e)
+    );
     this.canvas.addEventListener('mouseup', (e) => this.handleCanvasMouseUp(e));
     this.canvas.addEventListener('wheel', (e) => this.handleCanvasWheel(e));
-    this.canvas.addEventListener('dblclick', (e) => this.handleCanvasDoubleClick(e));
+    this.canvas.addEventListener('dblclick', (e) =>
+      this.handleCanvasDoubleClick(e)
+    );
 
     // File input
-    this.ui.puzzleFileInput.addEventListener('change', (e) => this.loadPuzzleFile(e));
+    this.ui.puzzleFileInput.addEventListener('change', (e) =>
+      this.loadPuzzleFile(e)
+    );
 
     // Test controls
     this.ui.startTest.addEventListener('click', () => this.startTest());
@@ -293,7 +307,8 @@ export class PuzzleBuilder {
   findStepAtPosition(x, y) {
     for (const step of this.steps.values()) {
       const distance = Math.sqrt(
-        Math.pow(x - (step.x + step.width / 2), 2) + Math.pow(y - (step.y + step.height / 2), 2)
+        Math.pow(x - (step.x + step.width / 2), 2) +
+          Math.pow(y - (step.y + step.height / 2), 2)
       );
       if (distance <= step.width / 2) {
         return step;
@@ -389,8 +404,10 @@ export class PuzzleBuilder {
     this.ctx.strokeStyle = '#333333';
     this.ctx.lineWidth = 1 / this.zoom;
 
-    const startX = Math.floor(-this.panX / this.zoom / this.gridSize) * this.gridSize;
-    const startY = Math.floor(-this.panY / this.zoom / this.gridSize) * this.gridSize;
+    const startX =
+      Math.floor(-this.panX / this.zoom / this.gridSize) * this.gridSize;
+    const startY =
+      Math.floor(-this.panY / this.zoom / this.gridSize) * this.gridSize;
     const endX = startX + width / this.zoom + this.gridSize;
     const endY = startY + height / this.zoom + this.gridSize;
 
@@ -515,11 +532,19 @@ export class PuzzleBuilder {
     this.ctx.font = `${24 / this.zoom}px monospace`;
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
-    this.ctx.fillText(icon, step.x + step.width / 2, step.y + step.height / 2 - 5);
+    this.ctx.fillText(
+      icon,
+      step.x + step.width / 2,
+      step.y + step.height / 2 - 5
+    );
 
     // Draw label
     this.ctx.font = `${12 / this.zoom}px monospace`;
-    this.ctx.fillText(step.type, step.x + step.width / 2, step.y + step.height + 15);
+    this.ctx.fillText(
+      step.type,
+      step.x + step.width / 2,
+      step.y + step.height + 15
+    );
   }
 
   /**
@@ -564,8 +589,7 @@ export class PuzzleBuilder {
 
       // Find next layer (steps whose dependencies are all visited)
       currentLayer = steps.filter(
-        (s) =>
-          !visited.has(s.id) && s.dependencies.every((d) => visited.has(d))
+        (s) => !visited.has(s.id) && s.dependencies.every((d) => visited.has(d))
       );
     }
 
@@ -577,8 +601,10 @@ export class PuzzleBuilder {
    */
   updateStepProperties() {
     if (!this.selectedStep) {
-      this.ui.stepProperties.innerHTML = '<p class="text-muted">Select a step to edit properties</p>';
-      this.ui.stepDependencies.innerHTML = '<p class="text-muted">Select a step to manage dependencies</p>';
+      this.ui.stepProperties.innerHTML =
+        '<p class="text-muted">Select a step to edit properties</p>';
+      this.ui.stepDependencies.innerHTML =
+        '<p class="text-muted">Select a step to manage dependencies</p>';
       this.ui.addHint.disabled = true;
       return;
     }
@@ -614,7 +640,9 @@ export class PuzzleBuilder {
     `;
 
     // Dependencies form
-    const otherSteps = Array.from(this.steps.values()).filter((s) => s.id !== step.id);
+    const otherSteps = Array.from(this.steps.values()).filter(
+      (s) => s.id !== step.id
+    );
     const depOptions = otherSteps
       .map((s) => `<option value="${s.id}">${s.type} - ${s.id}</option>`)
       .join('');
@@ -651,13 +679,17 @@ export class PuzzleBuilder {
       this.updateCanvas();
     });
 
-    document.getElementById('propStepDescription').addEventListener('change', (e) => {
-      step.description = e.target.value;
-    });
+    document
+      .getElementById('propStepDescription')
+      .addEventListener('change', (e) => {
+        step.description = e.target.value;
+      });
 
-    document.getElementById('propStepRequirement').addEventListener('change', (e) => {
-      step.requirement = e.target.value;
-    });
+    document
+      .getElementById('propStepRequirement')
+      .addEventListener('change', (e) => {
+        step.requirement = e.target.value;
+      });
 
     document.getElementById('addDependency').addEventListener('change', (e) => {
       if (e.target.value) {
@@ -724,7 +756,9 @@ export class PuzzleBuilder {
 
     this.ui.validationResults.innerHTML = html;
     this.switchTab('validation');
-    this.log(`Validation complete: ${errors.length === 0 ? 'VALID' : 'INVALID'}`);
+    this.log(
+      `Validation complete: ${errors.length === 0 ? 'VALID' : 'INVALID'}`
+    );
   }
 
   /**
@@ -806,7 +840,8 @@ export class PuzzleBuilder {
     this.testState.inventory = [];
     this.ui.stepForward.disabled = true;
     this.updateCanvas();
-    this.ui.testOutput.innerHTML = '<p class="text-muted">Click "Start Test" to test puzzle flow</p>';
+    this.ui.testOutput.innerHTML =
+      '<p class="text-muted">Click "Start Test" to test puzzle flow</p>';
   }
 
   /**
@@ -963,7 +998,10 @@ export class PuzzleBuilder {
    * Create new puzzle
    */
   newPuzzle() {
-    if (this.steps.size > 0 && !confirm('Create new puzzle? Current work will be lost.')) {
+    if (
+      this.steps.size > 0 &&
+      !confirm('Create new puzzle? Current work will be lost.')
+    ) {
       return;
     }
 
@@ -994,9 +1032,13 @@ export class PuzzleBuilder {
   saveStepFromModal() {
     if (!this.selectedStep) return;
 
-    this.selectedStep.description = document.getElementById('modalStepDescription').value;
+    this.selectedStep.description = document.getElementById(
+      'modalStepDescription'
+    ).value;
     this.selectedStep.type = document.getElementById('modalStepType').value;
-    this.selectedStep.requirement = document.getElementById('modalStepRequirement').value;
+    this.selectedStep.requirement = document.getElementById(
+      'modalStepRequirement'
+    ).value;
 
     this.updateCanvas();
     this.updateStepProperties();

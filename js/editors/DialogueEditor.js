@@ -122,13 +122,23 @@ export class DialogueEditor {
   setupEventListeners() {
     // Toolbar actions
     this.ui.newDialogue.addEventListener('click', () => this.newDialogue());
-    this.ui.loadDialogue.addEventListener('click', () => this.showModal('loadDialogueModal'));
+    this.ui.loadDialogue.addEventListener('click', () =>
+      this.showModal('loadDialogueModal')
+    );
     this.ui.saveDialogue.addEventListener('click', () => this.saveDialogue());
-    this.ui.exportDialogue.addEventListener('click', () => this.exportDialogue());
+    this.ui.exportDialogue.addEventListener('click', () =>
+      this.exportDialogue()
+    );
     this.ui.addNode.addEventListener('click', () => this.addNode());
-    this.ui.deleteNode.addEventListener('click', () => this.deleteSelectedNode());
-    this.ui.playDialogue.addEventListener('click', () => this.startPlaythrough());
-    this.ui.validateDialogue.addEventListener('click', () => this.validateDialogue());
+    this.ui.deleteNode.addEventListener('click', () =>
+      this.deleteSelectedNode()
+    );
+    this.ui.playDialogue.addEventListener('click', () =>
+      this.startPlaythrough()
+    );
+    this.ui.validateDialogue.addEventListener('click', () =>
+      this.validateDialogue()
+    );
 
     // Grid controls
     this.ui.showGrid.addEventListener('change', (e) => {
@@ -174,20 +184,32 @@ export class DialogueEditor {
     });
 
     // Response management
-    this.ui.addResponse.addEventListener('click', () => this.addResponseToNode());
+    this.ui.addResponse.addEventListener('click', () =>
+      this.addResponseToNode()
+    );
 
     // Condition management
-    this.ui.addCondition.addEventListener('click', () => this.addConditionToNode());
+    this.ui.addCondition.addEventListener('click', () =>
+      this.addConditionToNode()
+    );
 
     // Canvas interactions
-    this.canvas.addEventListener('mousedown', (e) => this.handleCanvasMouseDown(e));
-    this.canvas.addEventListener('mousemove', (e) => this.handleCanvasMouseMove(e));
+    this.canvas.addEventListener('mousedown', (e) =>
+      this.handleCanvasMouseDown(e)
+    );
+    this.canvas.addEventListener('mousemove', (e) =>
+      this.handleCanvasMouseMove(e)
+    );
     this.canvas.addEventListener('mouseup', (e) => this.handleCanvasMouseUp(e));
     this.canvas.addEventListener('wheel', (e) => this.handleCanvasWheel(e));
-    this.canvas.addEventListener('dblclick', (e) => this.handleCanvasDoubleClick(e));
+    this.canvas.addEventListener('dblclick', (e) =>
+      this.handleCanvasDoubleClick(e)
+    );
 
     // File input
-    this.ui.dialogueFileInput.addEventListener('change', (e) => this.loadDialogueFile(e));
+    this.ui.dialogueFileInput.addEventListener('change', (e) =>
+      this.loadDialogueFile(e)
+    );
 
     // Playthrough
     this.ui.restartPlaythrough.addEventListener('click', () => {
@@ -289,7 +311,11 @@ export class DialogueEditor {
    * Handle keyboard shortcuts
    */
   handleKeyDown(e) {
-    if (e.key === 'Delete' && this.selectedNode && this.selectedNode !== this.rootNode) {
+    if (
+      e.key === 'Delete' &&
+      this.selectedNode &&
+      this.selectedNode !== this.rootNode
+    ) {
       this.deleteSelectedNode();
     } else if (e.key === 'Escape') {
       this.selectedNode = null;
@@ -303,7 +329,9 @@ export class DialogueEditor {
    */
   findNodeAtPosition(x, y) {
     for (const node of this.nodes.values()) {
-      const distance = Math.sqrt(Math.pow(x - node.x, 2) + Math.pow(y - node.y, 2));
+      const distance = Math.sqrt(
+        Math.pow(x - node.x, 2) + Math.pow(y - node.y, 2)
+      );
       if (distance <= 50) {
         // Node radius
         return node;
@@ -435,8 +463,10 @@ export class DialogueEditor {
     this.ctx.strokeStyle = '#333333';
     this.ctx.lineWidth = 1 / this.zoom;
 
-    const startX = Math.floor(-this.panX / this.zoom / this.gridSize) * this.gridSize;
-    const startY = Math.floor(-this.panY / this.zoom / this.gridSize) * this.gridSize;
+    const startX =
+      Math.floor(-this.panX / this.zoom / this.gridSize) * this.gridSize;
+    const startY =
+      Math.floor(-this.panY / this.zoom / this.gridSize) * this.gridSize;
     const endX = startX + width / this.zoom + this.gridSize;
     const endY = startY + height / this.zoom + this.gridSize;
 
@@ -552,7 +582,8 @@ export class DialogueEditor {
     this.ctx.fillText(node.type, node.x, node.y + 65);
 
     // Draw text preview (truncated)
-    const preview = node.text.length > 20 ? node.text.substring(0, 20) + '...' : node.text;
+    const preview =
+      node.text.length > 20 ? node.text.substring(0, 20) + '...' : node.text;
     this.ctx.font = `${10 / this.zoom}px monospace`;
     this.ctx.fillText(preview, node.x, node.y + 80);
   }
@@ -590,7 +621,8 @@ export class DialogueEditor {
    */
   updateNodeProperties() {
     if (!this.selectedNode) {
-      this.ui.nodeProperties.innerHTML = '<p class="text-muted">Select a node to edit properties</p>';
+      this.ui.nodeProperties.innerHTML =
+        '<p class="text-muted">Select a node to edit properties</p>';
       this.ui.addResponse.disabled = true;
       this.ui.addCondition.disabled = true;
       return;
@@ -658,9 +690,11 @@ export class DialogueEditor {
       this.updatePreview();
     });
 
-    document.getElementById('propNodeEmotion').addEventListener('change', (e) => {
-      node.emotion = e.target.value;
-    });
+    document
+      .getElementById('propNodeEmotion')
+      .addEventListener('change', (e) => {
+        node.emotion = e.target.value;
+      });
 
     // Update responses list
     this.updateResponsesList();
@@ -815,7 +849,8 @@ export class DialogueEditor {
    */
   updateTreeView() {
     if (!this.rootNode) {
-      this.ui.treeView.innerHTML = '<p class="text-muted">No dialogue tree yet</p>';
+      this.ui.treeView.innerHTML =
+        '<p class="text-muted">No dialogue tree yet</p>';
       return;
     }
 
@@ -923,8 +958,14 @@ export class DialogueEditor {
 
     // Check for dead ends
     for (const node of this.nodes.values()) {
-      if (node.type !== 'end' && node.children.length === 0 && node.responses.length === 0) {
-        warnings.push(`Node ${node.id} is a dead end (no children or responses)`);
+      if (
+        node.type !== 'end' &&
+        node.children.length === 0 &&
+        node.responses.length === 0
+      ) {
+        warnings.push(
+          `Node ${node.id} is a dead end (no children or responses)`
+        );
       }
     }
 
@@ -947,7 +988,9 @@ export class DialogueEditor {
 
     this.ui.validationResults.innerHTML = html;
     this.switchTab('validation');
-    this.log(`Validation complete: ${errors.length === 0 ? 'VALID' : 'INVALID'}`);
+    this.log(
+      `Validation complete: ${errors.length === 0 ? 'VALID' : 'INVALID'}`
+    );
   }
 
   /**
@@ -976,8 +1019,12 @@ export class DialogueEditor {
 
     this.ui.playthroughOptions.innerHTML = '';
 
-    if (this.currentNode.responses.length === 0 && this.currentNode.children.length === 0) {
-      this.ui.playthroughOptions.innerHTML = '<p class="text-muted">End of conversation</p>';
+    if (
+      this.currentNode.responses.length === 0 &&
+      this.currentNode.children.length === 0
+    ) {
+      this.ui.playthroughOptions.innerHTML =
+        '<p class="text-muted">End of conversation</p>';
       return;
     }
 
@@ -992,7 +1039,8 @@ export class DialogueEditor {
           this.currentNode = this.nodes.get(response.target);
           this.updatePlaythrough();
         } else {
-          this.ui.playthroughOptions.innerHTML = '<p class="text-muted">End of conversation</p>';
+          this.ui.playthroughOptions.innerHTML =
+            '<p class="text-muted">End of conversation</p>';
         }
       });
 
@@ -1000,7 +1048,10 @@ export class DialogueEditor {
     }
 
     // If no responses, auto-advance to first child
-    if (this.currentNode.responses.length === 0 && this.currentNode.children.length > 0) {
+    if (
+      this.currentNode.responses.length === 0 &&
+      this.currentNode.children.length > 0
+    ) {
       const firstChild = this.nodes.get(this.currentNode.children[0]);
       if (firstChild) {
         setTimeout(() => {
@@ -1091,7 +1142,9 @@ export class DialogueEditor {
     this.rootNode = null;
 
     // Reconstruct nodes
-    for (const [nodeId, nodeData] of Object.entries(dialogueData.dialogueTree || {})) {
+    for (const [nodeId, nodeData] of Object.entries(
+      dialogueData.dialogueTree || {}
+    )) {
       const node = {
         id: nodeId,
         ...nodeData,
@@ -1130,7 +1183,10 @@ export class DialogueEditor {
    * Create new dialogue
    */
   newDialogue() {
-    if (this.nodes.size > 0 && !confirm('Create new dialogue? Current work will be lost.')) {
+    if (
+      this.nodes.size > 0 &&
+      !confirm('Create new dialogue? Current work will be lost.')
+    ) {
       return;
     }
 
@@ -1183,7 +1239,8 @@ export class DialogueEditor {
 
     this.selectedNode.type = document.getElementById('modalNodeType').value;
     this.selectedNode.text = document.getElementById('modalNodeText').value;
-    this.selectedNode.emotion = document.getElementById('modalNodeEmotion').value;
+    this.selectedNode.emotion =
+      document.getElementById('modalNodeEmotion').value;
 
     this.updateCanvas();
     this.updateTreeView();

@@ -48,6 +48,12 @@
             <span>🔄</span> Auto Layout
           </button>
         </div>
+
+        <div class="toolbar-section">
+          <button id="showHelp" class="btn" title="Keyboard Shortcuts">
+            <span>❓</span> Help
+          </button>
+        </div>
       </header>
 
       <!-- Main Content Area -->
@@ -238,6 +244,45 @@
         <div class="modal-actions">
           <button id="saveRoomModal" class="btn btn-primary">Save</button>
           <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+      <div class="modal-content modal-large">
+        <h2>Keyboard Shortcuts</h2>
+        <div style="column-count: 2; column-gap: 2em;">
+          <h3>Navigation</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><kbd>Arrow Keys</kbd> - Pan canvas</li>
+            <li><kbd>+</kbd> / <kbd>-</kbd> - Zoom in/out</li>
+            <li><kbd>0</kbd> - Reset zoom</li>
+          </ul>
+          
+          <h3>File Operations</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><kbd>Ctrl+N</kbd> - New world</li>
+            <li><kbd>Ctrl+O</kbd> - Open world</li>
+            <li><kbd>Ctrl+S</kbd> - Save world</li>
+            <li><kbd>Ctrl+E</kbd> - Export JSON</li>
+          </ul>
+          
+          <h3>Room Operations</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><kbd>Delete</kbd> - Delete selected room</li>
+            <li><kbd>Enter</kbd> - Edit selected room</li>
+            <li><kbd>Escape</kbd> - Deselect room</li>
+          </ul>
+          
+          <h3>View</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><kbd>G</kbd> - Toggle grid</li>
+            <li><kbd>Ctrl+L</kbd> - Auto layout</li>
+            <li><kbd>F1</kbd> or <kbd>?</kbd> - Show this help</li>
+          </ul>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary modal-close">Close</button>
         </div>
       </div>
     </div>
