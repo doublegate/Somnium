@@ -647,4 +647,20 @@ export class GameProgression {
       completionPercentage: this.calculateCompletionPercentage(),
     };
   }
+
+  /**
+   * Get all available achievements as an array
+   * @returns {Array} Array of achievement objects
+   */
+  getAllAchievements() {
+    return Array.from(this.achievements.values());
+  }
+
+  /**
+   * Get set of unlocked achievement IDs
+   * @returns {Set} Set of unlocked achievement IDs
+   */
+  getUnlockedAchievements() {
+    return this.unlockedAchievements;
+  }
 }

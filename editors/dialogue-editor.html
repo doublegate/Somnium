@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium - Dialogue Tree Editor</title>
+    <link rel="stylesheet" href="../css/dialogue-editor.css" />
+  </head>
+  <body>
+    <div class="editor-container">
+      <!-- Top Toolbar -->
+      <header class="toolbar">
+        <div class="toolbar-section">
+          <button id="newDialogue" class="btn btn-primary" title="New Dialogue">
+            <span>📄</span> New
+          </button>
+          <button id="loadDialogue" class="btn" title="Load Dialogue">
+            <span>📂</span> Load
+          </button>
+          <button id="saveDialogue" class="btn" title="Save Dialogue">
+            <span>💾</span> Save
+          </button>
+          <button id="exportDialogue" class="btn" title="Export JSON">
+            <span>📤</span> Export
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <button id="addNode" class="btn btn-success" title="Add Node">
+            <span>➕</span> Add Node
+          </button>
+          <button id="deleteNode" class="btn btn-danger" title="Delete Node">
+            <span>🗑️</span> Delete
+          </button>
+          <button id="playDialogue" class="btn" title="Play Dialogue">
+            <span>▶</span> Play
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <label>
+            <input type="checkbox" id="showGrid" checked /> Show Grid
+          </label>
+          <label>
+            <input type="checkbox" id="autoExpand" checked /> Auto Expand
+          </label>
+          <button id="validateDialogue" class="btn" title="Validate Dialogue">
+            <span>✓</span> Validate
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <div class="editor-main">
+        <!-- Left Sidebar - Dialogue Properties -->
+        <aside class="sidebar sidebar-left">
+          <div class="panel">
+            <h3>Dialogue Properties</h3>
+            <div class="form-group">
+              <label for="npcId">NPC ID:</label>
+              <input type="text" id="npcId" placeholder="merchant_1" />
+            </div>
+            <div class="form-group">
+              <label for="npcName">NPC Name:</label>
+              <input type="text" id="npcName" placeholder="Merchant" />
+            </div>
+            <div class="form-group">
+              <label for="npcPersonality">Personality:</label>
+              <select id="npcPersonality">
+                <option value="friendly">Friendly</option>
+                <option value="hostile">Hostile</option>
+                <option value="neutral">Neutral</option>
+                <option value="mysterious">Mysterious</option>
+                <option value="jovial">Jovial</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="initialGreeting">Initial Greeting:</label>
+              <textarea
+                id="initialGreeting"
+                rows="3"
+                placeholder="Hello, traveler!"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Node Templates</h3>
+            <div class="template-grid">
+              <button class="template-btn" data-type="greeting">
+                <span>👋</span> Greeting
+              </button>
+              <button class="template-btn" data-type="question">
+                <span>❓</span> Question
+              </button>
+              <button class="template-btn" data-type="response">
+                <span>💬</span> Response
+              </button>
+              <button class="template-btn" data-type="branch">
+                <span>🌳</span> Branch
+              </button>
+              <button class="template-btn" data-type="trade">
+                <span>💰</span> Trade
+              </button>
+              <button class="template-btn" data-type="end">
+                <span>🏁</span> End
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Dialogue Tree</h3>
+            <div id="treeView" class="tree-view"></div>
+          </div>
+        </aside>
+
+        <!-- Center Canvas - Dialogue Tree Visualization -->
+        <div class="canvas-container">
+          <div class="canvas-toolbar">
+            <button id="zoomIn" class="btn-icon" title="Zoom In">
+              <span>🔍+</span>
+            </button>
+            <button id="zoomOut" class="btn-icon" title="Zoom Out">
+              <span>🔍−</span>
+            </button>
+            <button id="resetView" class="btn-icon" title="Reset View">
+              <span>↺</span>
+            </button>
+            <span id="zoomLevel" class="zoom-indicator">100%</span>
+          </div>
+          <canvas id="dialogueCanvas" width="1200" height="800"></canvas>
+          <div class="canvas-hint">
+            Drag nodes to reposition. Click to select. Double-click to edit.
+          </div>
+        </div>
+
+        <!-- Right Sidebar - Node Properties -->
+        <aside class="sidebar sidebar-right">
+          <div class="panel">
+            <h3>Node Properties</h3>
+            <div id="nodeProperties" class="properties-form">
+              <p class="text-muted">Select a node to edit properties</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Player Responses</h3>
+            <div id="playerResponses" class="responses-list">
+              <button id="addResponse" class="btn btn-block btn-sm" disabled>
+                Add Response
+              </button>
+              <div id="responsesList"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Conditions</h3>
+            <div id="nodeConditions" class="conditions-form">
+              <button id="addCondition" class="btn btn-block btn-sm" disabled>
+                Add Condition
+              </button>
+              <div id="conditionsList"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bottom Panel - Testing & Preview -->
+      <footer class="bottom-panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="preview">Preview</button>
+          <button class="tab" data-tab="validation">Validation</button>
+          <button class="tab" data-tab="console">Console</button>
+        </div>
+        <div class="tab-content">
+          <div id="preview" class="tab-panel active">
+            <div class="dialogue-preview">
+              <div id="previewNPC" class="preview-npc">
+                <div class="npc-portrait">👤</div>
+                <div id="npcSpeech" class="npc-speech">
+                  Select a node to preview dialogue
+                </div>
+              </div>
+              <div id="previewPlayer" class="preview-player">
+                <div id="playerOptions" class="player-options"></div>
+              </div>
+            </div>
+          </div>
+          <div id="validation" class="tab-panel">
+            <div id="validationResults">
+              <p class="text-muted">No validation results yet</p>
+            </div>
+          </div>
+          <div id="console" class="tab-panel">
+            <div id="consoleOutput" class="console-output"></div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="nodeModal" class="modal">
+      <div class="modal-content modal-large">
+        <h2 id="nodeModalTitle">Node Details</h2>
+        <div class="form-group">
+          <label>Node ID:</label>
+          <input type="text" id="modalNodeId" readonly />
+        </div>
+        <div class="form-group">
+          <label>Type:</label>
+          <select id="modalNodeType">
+            <option value="greeting">Greeting</option>
+            <option value="question">Question</option>
+            <option value="response">Response</option>
+            <option value="branch">Branch</option>
+            <option value="trade">Trade</option>
+            <option value="end">End</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>NPC Text:</label>
+          <textarea id="modalNodeText" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Emotion:</label>
+          <select id="modalNodeEmotion">
+            <option value="neutral">Neutral</option>
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="angry">Angry</option>
+            <option value="surprised">Surprised</option>
+            <option value="fearful">Fearful</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button id="saveNodeModal" class="btn btn-primary">Save</button>
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loadDialogueModal" class="modal">
+      <div class="modal-content">
+        <h2>Load Dialogue</h2>
+        <input type="file" id="dialogueFileInput" accept=".json" />
+        <div class="modal-actions">
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="playModal" class="modal">
+      <div class="modal-content modal-large">
+        <h2>Dialogue Playthrough</h2>
+        <div class="playthrough-container">
+          <div class="playthrough-npc">
+            <div class="npc-portrait-large">👤</div>
+            <div id="playthroughNPCName" class="npc-name">NPC</div>
+            <div id="playthroughNPCText" class="npc-text">...</div>
+          </div>
+          <div class="playthrough-player">
+            <h4>Your response:</h4>
+            <div id="playthroughOptions" class="playthrough-options"></div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="restartPlaythrough" class="btn">Restart</button>
+          <button class="btn modal-close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/editors/DialogueEditor.js"></script>
+  </body>
+</html>

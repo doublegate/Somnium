@@ -21,28 +21,28 @@ export class SaidPattern {
    */
   compileSaidPattern(pattern) {
     let regex = pattern;
-    
+
     // Handle word classes first to identify capture groups
     regex = regex.replace(/<(\w+)>/g, (match, group) => {
       this.captureGroups.push(group);
       return '([\\w\\s]+?)'; // Non-greedy capture
     });
-    
+
     // Handle alternatives - support multiple alternatives
     regex = regex.replace(/(\w+)(?:\/(\w+))+/g, (match) => {
       const alternatives = match.split('/');
       return `(?:${alternatives.join('|')})`;
     });
-    
+
     // Handle optional words/phrases
     regex = regex.replace(/\[([^\]]+)\]/g, '(?:$1)?\\s*');
-    
+
     // Handle wildcards
     regex = regex.replace(/\*/g, '.*?');
-    
+
     // Handle whitespace - make it flexible
     regex = regex.replace(/\s+/g, '\\s+');
-    
+
     // Anchor the pattern
     return new RegExp(`^${regex}$`, 'i');
   }
@@ -51,7 +51,7 @@ export class SaidPattern {
     // First expand input using vocabulary synonyms
     const expanded = this.expandSynonyms(input, vocabulary);
     const match = expanded.match(this.pattern);
-    
+
     if (match) {
       const captures = {};
       this.captureGroups.forEach((group, index) => {
@@ -59,15 +59,18 @@ export class SaidPattern {
       });
       return { matched: true, captures, action: this.action };
     }
-    
+
     return { matched: false };
   }
 
   expandSynonyms(input, vocabulary) {
-    return input.split(' ').map(word => {
-      const canonical = vocabulary.getCanonical(word);
-      return canonical || word;
-    }).join(' ');
+    return input
+      .split(' ')
+      .map((word) => {
+        const canonical = vocabulary.getCanonical(word);
+        return canonical || word;
+      })
+      .join(' ');
   }
 }
 
@@ -86,25 +89,25 @@ export class SaidPatternCollection {
     this.add('wave [the] [magic] wand [at] <target>', 'WAVE_WAND');
     this.add('play [the] lute/flute/instrument', 'PLAY_INSTRUMENT');
     this.add('dig [in] [the] [ground/dirt/sand]', 'DIG');
-    
+
     // From SQ3: Sci-fi interactions
     this.add('insert/put [the] <item> [in/into] [the] <container>', 'INSERT');
     this.add('scan/analyze <object> [with] [the] [scanner]', 'SCAN');
     this.add('push/press [the] <button> [button]', 'PUSH_BUTTON');
     this.add('order <item> [from] [the] [menu]', 'ORDER');
-    
+
     // From QFG1: Combat and RPG commands
     this.add('cast [magic/spell] <spell> [at/on] <target>', 'CAST');
     this.add('throw/hurl [the] <item> [at] <target>', 'THROW');
     this.add('ask [the] <character> about <topic>', 'ASK_ABOUT');
     this.add('climb [up/down] [the] <object>', 'CLIMB');
-    
+
     // From Iceman: Procedural commands
     this.add('set [the] <control> [to] <value>', 'SET_CONTROL');
     this.add('check/inspect [the] <equipment> [for] [damage]', 'INSPECT');
     this.add('salute [the] <person>', 'SALUTE');
     this.add('dive [to] <depth> [feet/meters]', 'DIVE');
-    
+
     // Common multi-word verbs from all games
     this.add('pick up [the] <item>', 'TAKE');
     this.add('put down [the] <item>', 'DROP');
@@ -120,7 +123,7 @@ export class SaidPatternCollection {
     this.add('wake up', 'WAKE');
     this.add('put on [the] <clothing>', 'WEAR');
     this.add('take off [the] <clothing>', 'REMOVE');
-    
+
     // Additional patterns from Sierra games
     this.add('unlock [the] <door> [with] [the] <key>', 'UNLOCK');
     this.add('lock [the] <door> [with] [the] <key>', 'LOCK');

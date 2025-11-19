@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium - Puzzle Builder</title>
+    <link rel="stylesheet" href="../css/puzzle-builder.css" />
+  </head>
+  <body>
+    <div class="builder-container">
+      <!-- Top Toolbar -->
+      <header class="toolbar">
+        <div class="toolbar-section">
+          <button id="newPuzzle" class="btn btn-primary" title="New Puzzle">
+            <span>📄</span> New
+          </button>
+          <button id="loadPuzzle" class="btn" title="Load Puzzle">
+            <span>📂</span> Load
+          </button>
+          <button id="savePuzzle" class="btn" title="Save Puzzle">
+            <span>💾</span> Save
+          </button>
+          <button id="exportPuzzle" class="btn" title="Export JSON">
+            <span>📤</span> Export
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <button id="addStep" class="btn btn-success" title="Add Step">
+            <span>➕</span> Add Step
+          </button>
+          <button id="deleteStep" class="btn btn-danger" title="Delete Step">
+            <span>🗑️</span> Delete
+          </button>
+          <button id="testPuzzle" class="btn" title="Test Puzzle">
+            <span>▶</span> Test
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <label>
+            <input type="checkbox" id="showGrid" checked /> Show Grid
+          </label>
+          <label>
+            <input type="checkbox" id="autoArrange" checked /> Auto Arrange
+          </label>
+          <button id="validatePuzzle" class="btn" title="Validate Puzzle">
+            <span>✓</span> Validate
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <div class="builder-main">
+        <!-- Left Sidebar - Puzzle Properties -->
+        <aside class="sidebar sidebar-left">
+          <div class="panel">
+            <h3>Puzzle Properties</h3>
+            <div class="form-group">
+              <label for="puzzleId">Puzzle ID:</label>
+              <input type="text" id="puzzleId" placeholder="puzzle_1" />
+            </div>
+            <div class="form-group">
+              <label for="puzzleName">Name:</label>
+              <input type="text" id="puzzleName" placeholder="The Ancient Door" />
+            </div>
+            <div class="form-group">
+              <label for="puzzleDescription">Description:</label>
+              <textarea
+                id="puzzleDescription"
+                rows="3"
+                placeholder="A mysterious door blocks your path..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="puzzleDifficulty">Difficulty:</label>
+              <select id="puzzleDifficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="puzzleCategory">Category:</label>
+              <select id="puzzleCategory">
+                <option value="logic">Logic</option>
+                <option value="inventory">Inventory</option>
+                <option value="sequence">Sequence</option>
+                <option value="riddle">Riddle</option>
+                <option value="mechanical">Mechanical</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Step Templates</h3>
+            <div class="template-grid">
+              <button class="template-btn" data-type="item">
+                <span>🔑</span> Item Required
+              </button>
+              <button class="template-btn" data-type="action">
+                <span>⚡</span> Action Required
+              </button>
+              <button class="template-btn" data-type="sequence">
+                <span>🔢</span> Sequence
+              </button>
+              <button class="template-btn" data-type="condition">
+                <span>❓</span> Condition
+              </button>
+              <button class="template-btn" data-type="combine">
+                <span>🔗</span> Combine Items
+              </button>
+              <button class="template-btn" data-type="trigger">
+                <span>🎯</span> Trigger Event
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Rewards</h3>
+            <div id="rewardsList" class="rewards-list">
+              <button id="addReward" class="btn btn-block btn-sm">
+                Add Reward
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Center Canvas - Puzzle Flowchart -->
+        <div class="canvas-container">
+          <div class="canvas-toolbar">
+            <button id="zoomIn" class="btn-icon" title="Zoom In">
+              <span>🔍+</span>
+            </button>
+            <button id="zoomOut" class="btn-icon" title="Zoom Out">
+              <span>🔍−</span>
+            </button>
+            <button id="resetView" class="btn-icon" title="Reset View">
+              <span>↺</span>
+            </button>
+            <span id="zoomLevel" class="zoom-indicator">100%</span>
+          </div>
+          <canvas id="puzzleCanvas" width="1200" height="800"></canvas>
+          <div class="canvas-hint">
+            Drag steps to reposition. Click to select. Double-click to edit.
+          </div>
+        </div>
+
+        <!-- Right Sidebar - Step Properties -->
+        <aside class="sidebar sidebar-right">
+          <div class="panel">
+            <h3>Step Properties</h3>
+            <div id="stepProperties" class="properties-form">
+              <p class="text-muted">Select a step to edit properties</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Dependencies</h3>
+            <div id="stepDependencies" class="dependencies-form">
+              <p class="text-muted">Select a step to manage dependencies</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Hints</h3>
+            <div id="stepHints" class="hints-list">
+              <button id="addHint" class="btn btn-block btn-sm" disabled>
+                Add Hint
+              </button>
+              <div id="hintsList"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bottom Panel - Testing & Validation -->
+      <footer class="bottom-panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="testing">Testing</button>
+          <button class="tab" data-tab="validation">Validation</button>
+          <button class="tab" data-tab="console">Console</button>
+        </div>
+        <div class="tab-content">
+          <div id="testing" class="tab-panel active">
+            <div class="test-controls">
+              <button id="startTest" class="btn btn-success">
+                <span>▶</span> Start Test
+              </button>
+              <button id="resetTest" class="btn">
+                <span>↻</span> Reset
+              </button>
+              <button id="stepForward" class="btn" disabled>
+                <span>⏩</span> Step Forward
+              </button>
+            </div>
+            <div id="testOutput" class="test-output">
+              <p class="text-muted">Click "Start Test" to test puzzle flow</p>
+            </div>
+          </div>
+          <div id="validation" class="tab-panel">
+            <div id="validationResults">
+              <p class="text-muted">No validation results yet</p>
+            </div>
+          </div>
+          <div id="console" class="tab-panel">
+            <div id="consoleOutput" class="console-output"></div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="stepModal" class="modal">
+      <div class="modal-content modal-large">
+        <h2 id="stepModalTitle">Step Details</h2>
+        <div class="form-group">
+          <label>Step ID:</label>
+          <input type="text" id="modalStepId" readonly />
+        </div>
+        <div class="form-group">
+          <label>Description:</label>
+          <textarea id="modalStepDescription" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Type:</label>
+          <select id="modalStepType">
+            <option value="item">Item Required</option>
+            <option value="action">Action Required</option>
+            <option value="sequence">Sequence</option>
+            <option value="condition">Condition</option>
+            <option value="combine">Combine Items</option>
+            <option value="trigger">Trigger Event</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Required Item/Action:</label>
+          <input type="text" id="modalStepRequirement" />
+        </div>
+        <div class="modal-actions">
+          <button id="saveStepModal" class="btn btn-primary">Save</button>
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loadPuzzleModal" class="modal">
+      <div class="modal-content">
+        <h2>Load Puzzle</h2>
+        <input type="file" id="puzzleFileInput" accept=".json" />
+        <div class="modal-actions">
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/editors/PuzzleBuilder.js"></script>
+  </body>
+</html>
