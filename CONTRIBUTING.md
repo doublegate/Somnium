@@ -44,13 +44,30 @@ By participating in this project, you agree to abide by our Code of Conduct:
 
 ### Areas We Need Help
 
-- **Parser Development**: Implementing natural language processing for Phase 3
-- **Game Logic**: Building event systems and scripting engine
-- **AI Integration**: Connecting LLM services for dynamic content generation
-- **Testing**: Expanding test coverage for all Phase 2 systems
+**Frontend (Game Engine)**:
+- **Advanced Features**: Voice commands, mobile responsive UI, VR/AR support
+- **World Templates**: Creating new pre-built world templates
+- **Accessibility**: Improving ARIA labels, keyboard navigation, screen reader support
 - **Cross-browser Compatibility**: Testing on different browsers and devices
-- **Documentation**: Improving user guides and API documentation
-- **Accessibility**: Making the game more accessible
+- **Performance**: Optimizing rendering loop, reducing memory usage
+
+**Backend (v2.0 Servers)**:
+- **Multiplayer Features**: Spectator mode, tournament system, advanced matchmaking
+- **Cloud Features**: Database migration (file storage → PostgreSQL), Redis caching
+- **API Development**: New endpoints, rate limiting improvements, WebSocket scaling
+- **Security**: Authentication improvements, input validation, security audits
+- **Performance**: Load testing, optimization, horizontal scaling
+
+**Content Creation**:
+- **Test Worlds**: Designing new demo adventures with puzzles and NPCs
+- **Tutorial Worlds**: Creating educational worlds for new players
+- **World Templates**: Building reusable templates for different genres
+
+**Documentation & Community**:
+- **User Guides**: Writing tutorials, FAQs, troubleshooting guides
+- **API Documentation**: Documenting endpoints, WebSocket events, data formats
+- **Video Content**: Creating walkthroughs, tutorials, developer guides
+- **Localization**: Translating UI and documentation to other languages
 
 ### Types of Contributions
 
@@ -159,7 +176,9 @@ Examples:
 
 ## Testing
 
-### Running Tests
+### Unit Testing (Jest)
+
+**Running Unit Tests**:
 
 ```bash
 npm test                 # Run all tests
@@ -167,12 +186,13 @@ npm run test:watch      # Run tests in watch mode
 npm run test:coverage   # Generate coverage report
 ```
 
-### Writing Tests
+**Writing Unit Tests**:
 
 - Write tests for all new functionality
-- Place test files next to source files: `Parser.test.js`
+- Place test files in `tests/` directory
 - Use descriptive test names
 - Test edge cases and error conditions
+- Aim for 70%+ code coverage
 
 Example:
 
@@ -195,12 +215,227 @@ describe('Parser', () => {
 });
 ```
 
-### Manual Testing
+### End-to-End Testing (Playwright)
 
-- Test your changes in multiple browsers
-- Try edge cases and unusual inputs
-- Verify no regressions in existing functionality
-- Check performance impact
+**Running E2E Tests**:
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install
+
+# Run E2E tests
+npx playwright test
+
+# Run with UI
+npx playwright test --ui
+
+# Run specific browser
+npx playwright test --project=chromium
+npx playwright test --project=firefox
+npx playwright test --project=webkit
+
+# Run specific test file
+npx playwright test tests/e2e/game.spec.js
+```
+
+**Writing E2E Tests**:
+
+- Place tests in `tests/e2e/` directory
+- Test full user workflows
+- Include accessibility checks
+- Test across multiple browsers
+
+Example:
+
+```javascript
+import { test, expect } from '@playwright/test';
+
+test.describe('Game Loading', () => {
+  test('should load the main page', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle(/Somnium/);
+
+    // Check canvas rendered
+    const canvas = page.locator('#game-canvas');
+    await expect(canvas).toBeVisible();
+  });
+});
+```
+
+### Backend Testing
+
+**Server Tests**:
+
+```bash
+cd server
+npm test
+```
+
+**Manual API Testing**:
+
+```bash
+# Test API endpoints
+curl http://localhost:3000/api/health
+
+# Test WebSocket
+wscat -c ws://localhost:8080
+```
+
+### Manual Testing Checklist
+
+- [ ] Test in Chrome, Firefox, and Safari
+- [ ] Test on mobile devices (iOS and Android)
+- [ ] Try edge cases and unusual inputs
+- [ ] Verify no regressions in existing functionality
+- [ ] Check performance impact (FPS, memory usage)
+- [ ] Test with screen reader (accessibility)
+- [ ] Test keyboard navigation
+- [ ] Verify console has no errors
+
+## Backend Development (v2.0)
+
+### Setting Up Backend Environment
+
+```bash
+# Navigate to server directory
+cd server
+
+# Install dependencies
+npm install
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env and add your configuration
+nano .env
+
+# Generate secrets
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+# Start servers
+npm run start:all
+```
+
+### Backend Project Structure
+
+```
+server/
+├── api-server.js           # Express REST API
+├── multiplayer-server.js   # WebSocket server
+├── package.json            # Dependencies
+├── .env.example            # Environment template
+├── .env                    # Your config (gitignored)
+├── storage/                # File storage
+│   ├── users/             # User data
+│   ├── saves/             # Cloud saves
+│   └── shared/            # Shared worlds
+└── logs/                  # Server logs
+```
+
+### Adding New API Endpoints
+
+1. **Define Route** in `api-server.js`:
+
+```javascript
+// GET /api/stats
+app.get('/api/stats', authenticate, async (req, res) => {
+  try {
+    const stats = await getPlayerStats(req.userId);
+    res.json(stats);
+  } catch (error) {
+    console.error('Stats error:', error);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+```
+
+2. **Add Authentication** if needed:
+   - Use `authenticate` middleware for protected routes
+   - JWT token in `Authorization: Bearer <token>` header
+
+3. **Handle Errors** properly:
+   - Catch all errors
+   - Return appropriate HTTP status codes
+   - Log errors for debugging
+
+4. **Document the Endpoint**:
+   - Add to API documentation
+   - Include request/response examples
+   - Note authentication requirements
+
+### Adding WebSocket Events
+
+1. **Define Handler** in `multiplayer-server.js`:
+
+```javascript
+handleCustomEvent(ws, message) {
+  const client = this.clients.get(ws);
+  if (!client || !client.sessionId) return;
+
+  const session = this.sessions.get(client.sessionId);
+  if (!session) return;
+
+  // Handle event
+  // ...
+
+  // Broadcast to session
+  this.broadcastToSession(client.sessionId, {
+    type: 'custom_event_response',
+    data: responseData,
+  });
+}
+```
+
+2. **Add to Message Router**:
+
+```javascript
+switch (type) {
+  // ... existing cases
+  case 'custom_event':
+    this.handleCustomEvent(ws, message);
+    break;
+}
+```
+
+3. **Update Client** (`js/MultiplayerManager.js`):
+
+```javascript
+sendCustomEvent(data) {
+  this.send({
+    type: 'custom_event',
+    data: data,
+  });
+}
+```
+
+### Backend Best Practices
+
+- **Security First**: Never trust client input, validate everything
+- **Error Handling**: Catch errors, log them, return user-friendly messages
+- **Rate Limiting**: Protect endpoints from abuse
+- **Input Validation**: Sanitize and validate all user input
+- **Authentication**: Use JWT tokens, never plain passwords
+- **Logging**: Log important events, errors, and security issues
+- **Performance**: Optimize database queries, cache when appropriate
+
+### Deployment Testing
+
+Before submitting backend changes:
+
+```bash
+# Run in production mode
+NODE_ENV=production npm start
+
+# Test API endpoints
+curl http://localhost:3000/api/health
+curl -H "Authorization: Bearer <token>" http://localhost:3000/api/saves
+
+# Test WebSocket connection
+wscat -c ws://localhost:8080
+
+# Check logs for errors
+tail -f logs/server.log
+```
 
 ## Submitting Changes
 
