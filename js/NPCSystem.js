@@ -652,6 +652,68 @@ export class NPCSystem {
   }
 
   /**
+   * Give item to NPC (handles acceptance logic)
+   * @param {string} npcId - NPC receiving the item
+   * @param {string} itemId - Item being given
+   * @returns {Object} Result of giving the item
+   */
+  giveItem(npcId, itemId) {
+    const npc = this.npcs.get(npcId);
+    const state = this.npcStates.get(npcId);
+
+    if (!npc || !state) {
+      return {
+        success: false,
+        message: "They're not here.",
+      };
+    }
+
+    // Check if NPC accepts this item
+    const acceptsItem =
+      !npc.acceptsItems || npc.acceptsItems.includes(itemId);
+
+    if (acceptsItem) {
+      // Add item to NPC inventory
+      if (!state.inventory) {
+        state.inventory = [];
+      }
+      state.inventory.push(itemId);
+
+      // Get acceptance message
+      const message =
+        npc.acceptMessage ||
+        npc.giveMessages?.[itemId] ||
+        `${npc.name} accepts the item gratefully.`;
+
+      // Check for state changes triggered by this gift
+      const stateChanges = npc.giftEffects?.[itemId] || {};
+
+      // Determine relationship change
+      const relationshipChange = npc.giftRelationship?.[itemId] || 10;
+
+      return {
+        success: true,
+        accepted: true,
+        message,
+        relationshipChange,
+        stateChanges,
+      };
+    } else {
+      // NPC refuses the item
+      const message =
+        npc.refuseMessage ||
+        npc.refuseMessages?.[itemId] ||
+        `${npc.name} doesn't want that.`;
+
+      return {
+        success: false,
+        accepted: false,
+        message,
+      };
+    }
+  }
+
+  /**
    * Update all NPCs
    * @param {number} deltaTime - Time since last update
    */

@@ -9,9 +9,9 @@ Based on analysis of decompiled source code from King's Quest 4, Space Quest 3, 
 ```sciScript
 (method (handleEvent event)
     (if (== (event type?) saidEvent)
-        (cond 
+        (cond
             ((Said 'look>')
-                (cond 
+                (cond
                     ((Said '/grass')
                         (Print 1 0))
                     ((Said '/brook')
@@ -34,7 +34,7 @@ Based on analysis of decompiled source code from King's Quest 4, Space Quest 3, 
 ```sciScript
 ;; Space Quest 3 - Complex sci-fi commands
 ((Said 'enter,go,(sit[<down,in]),get/chair<passenger')
-    (cond 
+    (cond
         ((== sittingInCockpit TRUE) (Print 14 10))
         (twoGuysOnBoard (Print 14 11))
         (else (Print 14 12))
@@ -42,9 +42,9 @@ Based on analysis of decompiled source code from King's Quest 4, Space Quest 3, 
 )
 
 ((Said 'replace,use,fix,place,insert,drop,afix,cable/[/cavity,compartment,deck,console,generator,cable]>')
-    (cond 
+    (cond
         ((Said '/generator')
-            (cond 
+            (cond
                 ((InRoom iReactor) (Print 14 73))
                 ((not (ego has: iReactor)) (DontHave))
                 ((== sittingInCockpit FALSE) (self setScript: reactorScript))
@@ -92,7 +92,7 @@ Based on analysis of decompiled source code from King's Quest 4, Space Quest 3, 
 
 ```sciScript
 ;; Police Quest 2 - Military/procedural commands
-((or 
+((or
     (Said 'exit,exit')
     (Said 'go<below')
     (Said 'climb<down/ladder'))
@@ -103,7 +103,7 @@ Based on analysis of decompiled source code from King's Quest 4, Space Quest 3, 
     (client setScript: binocularScript)
 )
 
-((or 
+((or
     (Said 'get,(look[<at])/binoculars')
     (Said 'binoculars<use'))
     (self setScript: lookBinocsScript self seconds: 0)
@@ -203,6 +203,7 @@ Based on analysis of decompiled source code from King's Quest 4, Space Quest 3, 
 ### 4. Ambient Sounds (Implied)
 
 While not explicitly shown in these examples, the Sound class supports:
+
 - Priority-based sound management
 - Looping for ambient sounds
 - Multiple simultaneous sounds

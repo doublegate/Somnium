@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somnium World Editor</title>
+  <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+  <div id="editor-container">
+    <!-- Top Menu Bar -->
+    <div id="editor-menu-bar">
+      <div class="editor-menu">
+        <div class="menu-item" data-menu="file">File</div>
+        <div class="menu-dropdown" data-menu="file">
+          <button class="menu-option" data-action="new-world">New World</button>
+          <button class="menu-option" data-action="open-world">Open World</button>
+          <button class="menu-option" data-action="save-world">Save World</button>
+          <button class="menu-option" data-action="export-world">Export JSON</button>
+          <button class="menu-option" data-action="import-world">Import JSON</button>
+        </div>
+      </div>
+
+      <div class="editor-menu">
+        <div class="menu-item" data-menu="edit">Edit</div>
+        <div class="menu-dropdown" data-menu="edit">
+          <button class="menu-option" data-action="undo">Undo</button>
+          <button class="menu-option" data-action="redo">Redo</button>
+          <button class="menu-option" data-action="copy">Copy</button>
+          <button class="menu-option" data-action="paste">Paste</button>
+        </div>
+      </div>
+
+      <div class="editor-menu">
+        <div class="menu-item" data-menu="view">View</div>
+        <div class="menu-dropdown" data-menu="view">
+          <button class="menu-option" data-action="toggle-grid">Toggle Grid</button>
+          <button class="menu-option" data-action="zoom-in">Zoom In</button>
+          <button class="menu-option" data-action="zoom-out">Zoom Out</button>
+          <button class="menu-option" data-action="reset-view">Reset View</button>
+        </div>
+      </div>
+
+      <div class="editor-menu">
+        <div class="menu-item" data-action="test-world">Test World</div>
+      </div>
+    </div>
+
+    <!-- Main Editor Layout -->
+    <div id="editor-main">
+      <!-- Left Sidebar - Object Palette -->
+      <div id="editor-sidebar-left">
+        <div class="sidebar-section">
+          <h3>Palette</h3>
+          <div class="palette-tabs">
+            <button class="palette-tab active" data-tab="rooms">Rooms</button>
+            <button class="palette-tab" data-tab="objects">Objects</button>
+            <button class="palette-tab" data-tab="items">Items</button>
+            <button class="palette-tab" data-tab="npcs">NPCs</button>
+          </div>
+
+          <div class="palette-content" data-content="rooms">
+            <button class="palette-item" data-action="create-room">
+              <span class="palette-icon">🏠</span>
+              <span class="palette-label">New Room</span>
+            </button>
+            <div id="rooms-list" class="palette-list"></div>
+          </div>
+
+          <div class="palette-content hidden" data-content="objects">
+            <button class="palette-item" data-action="create-object">
+              <span class="palette-icon">📦</span>
+              <span class="palette-label">New Object</span>
+            </button>
+            <div id="objects-list" class="palette-list"></div>
+          </div>
+
+          <div class="palette-content hidden" data-content="items">
+            <button class="palette-item" data-action="create-item">
+              <span class="palette-icon">💎</span>
+              <span class="palette-label">New Item</span>
+            </button>
+            <div id="items-list" class="palette-list"></div>
+          </div>
+
+          <div class="palette-content hidden" data-content="npcs">
+            <button class="palette-item" data-action="create-npc">
+              <span class="palette-icon">👤</span>
+              <span class="palette-label">New NPC</span>
+            </button>
+            <div id="npcs-list" class="palette-list"></div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>Graphics Tools</h3>
+          <div class="graphics-tools">
+            <button class="tool-btn active" data-tool="select">
+              <span>🔍</span> Select
+            </button>
+            <button class="tool-btn" data-tool="rectangle">
+              <span>▭</span> Rectangle
+            </button>
+            <button class="tool-btn" data-tool="circle">
+              <span>●</span> Circle
+            </button>
+            <button class="tool-btn" data-tool="polygon">
+              <span>▲</span> Polygon
+            </button>
+            <button class="tool-btn" data-tool="line">
+              <span>╱</span> Line
+            </button>
+          </div>
+
+          <div class="color-picker">
+            <label>Color:</label>
+            <select id="ega-color-select">
+              <option value="#000000">Black</option>
+              <option value="#0000AA">Blue</option>
+              <option value="#00AA00">Green</option>
+              <option value="#00AAAA">Cyan</option>
+              <option value="#AA0000">Red</option>
+              <option value="#AA00AA">Magenta</option>
+              <option value="#AA5500">Brown</option>
+              <option value="#AAAAAA">Light Gray</option>
+              <option value="#555555">Dark Gray</option>
+              <option value="#5555FF">Light Blue</option>
+              <option value="#55FF55">Light Green</option>
+              <option value="#55FFFF">Light Cyan</option>
+              <option value="#FF5555">Light Red</option>
+              <option value="#FF55FF">Light Magenta</option>
+              <option value="#FFFF55">Yellow</option>
+              <option value="#FFFFFF">White</option>
+            </select>
+          </div>
+
+          <div class="fill-checkbox">
+            <label>
+              <input type="checkbox" id="fill-shape"> Filled
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Canvas Area -->
+      <div id="editor-canvas-area">
+        <div id="editor-toolbar">
+          <span id="current-room-label">Room: None</span>
+          <span id="zoom-level">Zoom: 100%</span>
+          <span id="cursor-position">X: 0, Y: 0</span>
+        </div>
+
+        <canvas id="editor-canvas" width="640" height="400"></canvas>
+
+        <div id="editor-status-bar">
+          <span id="editor-status">Ready</span>
+        </div>
+      </div>
+
+      <!-- Right Sidebar - Properties Panel -->
+      <div id="editor-sidebar-right">
+        <div class="sidebar-section">
+          <h3>Properties</h3>
+          <div id="properties-panel">
+            <p class="no-selection">No object selected</p>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>Room Connections</h3>
+          <div id="connections-panel">
+            <p>Select a room to edit connections</p>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>World Settings</h3>
+          <div id="world-settings">
+            <div class="setting-group">
+              <label>World Title:</label>
+              <input type="text" id="world-title" placeholder="My Adventure">
+            </div>
+            <div class="setting-group">
+              <label>Author:</label>
+              <input type="text" id="world-author" placeholder="Your Name">
+            </div>
+            <div class="setting-group">
+              <label>Description:</label>
+              <textarea id="world-description" rows="3" placeholder="A thrilling adventure..."></textarea>
+            </div>
+            <div class="setting-group">
+              <label>Genre:</label>
+              <select id="world-genre">
+                <option value="fantasy">Fantasy</option>
+                <option value="scifi">Sci-Fi</option>
+                <option value="mystery">Mystery</option>
+                <option value="horror">Horror</option>
+                <option value="comedy">Comedy</option>
+                <option value="adventure">Adventure</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+
+  <!-- New Room Modal -->
+  <div id="new-room-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Create New Room</h2>
+      <div class="form-group">
+        <label>Room ID:</label>
+        <input type="text" id="room-id-input" placeholder="room_1">
+      </div>
+      <div class="form-group">
+        <label>Room Name:</label>
+        <input type="text" id="room-name-input" placeholder="Starting Room">
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea id="room-desc-input" rows="3" placeholder="You are in a..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Background Color:</label>
+        <select id="room-bg-color">
+          <option value="#000000">Black</option>
+          <option value="#0000AA" selected>Blue</option>
+          <option value="#00AA00">Green</option>
+          <option value="#555555">Dark Gray</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" data-action="confirm-room">Create</button>
+        <button class="btn-secondary" data-action="cancel-modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Object Properties Modal -->
+  <div id="object-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Object Properties</h2>
+      <div class="form-group">
+        <label>Object ID:</label>
+        <input type="text" id="obj-id-input" placeholder="table">
+      </div>
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="obj-name-input" placeholder="wooden table">
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea id="obj-desc-input" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="obj-can-take"> Can Take
+        </label>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="obj-can-open"> Can Open
+        </label>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="obj-scenery"> Scenery
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" data-action="save-object">Save</button>
+        <button class="btn-secondary" data-action="cancel-modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NPC Modal -->
+  <div id="npc-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>NPC Properties</h2>
+      <div class="form-group">
+        <label>NPC ID:</label>
+        <input type="text" id="npc-id-input" placeholder="merchant">
+      </div>
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="npc-name-input" placeholder="Friendly Merchant">
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea id="npc-desc-input" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Greeting:</label>
+        <textarea id="npc-greeting-input" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Can Trade:</label>
+        <input type="checkbox" id="npc-can-trade">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" data-action="save-npc">Save</button>
+        <button class="btn-secondary" data-action="cancel-modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/WorldEditor.js"></script>
+</body>
+</html>

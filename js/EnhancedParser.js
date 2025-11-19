@@ -10,10 +10,10 @@ import { expandDirection } from './vocabulary.js';
 export class EnhancedParser extends Parser {
   constructor(vocabulary = {}) {
     super(vocabulary);
-    
+
     // Initialize Sierra-style pattern collection
     this.saidPatterns = new SaidPatternCollection();
-    
+
     // Multi-word verb preprocessing
     this.initializeMultiWordVerbs();
   }
@@ -41,7 +41,7 @@ export class EnhancedParser extends Parser {
       'pick lock': 'unlock',
       'listen to': 'listen',
       'think about': 'think',
-      'search for': 'search'
+      'search for': 'search',
     };
   }
 
@@ -58,7 +58,10 @@ export class EnhancedParser extends Parser {
     }
 
     // Handle special cases (again, g)
-    if (input.trim().toLowerCase() === 'again' || input.trim().toLowerCase() === 'g') {
+    if (
+      input.trim().toLowerCase() === 'again' ||
+      input.trim().toLowerCase() === 'g'
+    ) {
       if (this.lastCommand) {
         return this.lastCommand;
       }
@@ -72,12 +75,15 @@ export class EnhancedParser extends Parser {
     let cleanInput = input.trim().toLowerCase();
 
     // Try Sierra-style pattern matching first
-    const patternMatch = this.saidPatterns.findMatch(cleanInput, this.vocabulary);
-    
+    const patternMatch = this.saidPatterns.findMatch(
+      cleanInput,
+      this.vocabulary
+    );
+
     if (patternMatch) {
       // Convert pattern match to command structure
       const command = this.convertPatternToCommand(patternMatch);
-      
+
       // Validate the command
       const validation = this.validateCommand(command);
       if (!validation.valid) {
@@ -114,7 +120,7 @@ export class EnhancedParser extends Parser {
    */
   convertPatternToCommand(patternMatch) {
     const { action, captures } = patternMatch;
-    
+
     const command = {
       verb: this.mapActionToVerb(action),
       directObject: null,
@@ -123,7 +129,7 @@ export class EnhancedParser extends Parser {
       modifiers: [],
       resolvedDirectObject: null,
       resolvedIndirectObject: null,
-      action: action // Store original action for CommandExecutor
+      action: action, // Store original action for CommandExecutor
     };
 
     // Map captures to command fields
@@ -145,7 +151,9 @@ export class EnhancedParser extends Parser {
 
     if (captures.container || captures.vendor) {
       command.indirectObject = captures.container || captures.vendor;
-      command.resolvedIndirectObject = this.resolveObject(command.indirectObject);
+      command.resolvedIndirectObject = this.resolveObject(
+        command.indirectObject
+      );
     }
 
     if (captures.spell) {
@@ -180,50 +188,50 @@ export class EnhancedParser extends Parser {
    */
   mapActionToVerb(action) {
     const actionVerbMap = {
-      'GIVE': 'give',
-      'WAVE_WAND': 'wave',
-      'PLAY_INSTRUMENT': 'play',
-      'DIG': 'dig',
-      'INSERT': 'put',
-      'SCAN': 'examine',
-      'PUSH_BUTTON': 'push',
-      'ORDER': 'order',
-      'CAST': 'cast',
-      'THROW': 'throw',
-      'ASK_ABOUT': 'ask',
-      'CLIMB': 'climb',
-      'SET_CONTROL': 'set',
-      'INSPECT': 'examine',
-      'SALUTE': 'salute',
-      'DIVE': 'dive',
-      'TAKE': 'take',
-      'DROP': 'drop',
-      'EXAMINE': 'examine',
-      'LOOK_IN': 'search',
-      'ACTIVATE': 'activate',
-      'DEACTIVATE': 'deactivate',
-      'ENTER': 'enter',
-      'EXIT': 'exit',
-      'SLEEP': 'sleep',
-      'STAND': 'stand',
-      'SIT': 'sit',
-      'WAKE': 'wake',
-      'WEAR': 'wear',
-      'REMOVE': 'remove',
-      'UNLOCK': 'unlock',
-      'LOCK': 'lock',
-      'TALK': 'talk',
-      'USE': 'use',
-      'OPEN': 'open',
-      'CLOSE': 'close',
-      'READ': 'read',
-      'EAT': 'eat',
-      'DRINK': 'drink',
-      'SWIM': 'swim',
-      'KISS': 'kiss',
-      'BUY': 'buy',
-      'SELL': 'sell',
-      'GO': 'go'
+      GIVE: 'give',
+      WAVE_WAND: 'wave',
+      PLAY_INSTRUMENT: 'play',
+      DIG: 'dig',
+      INSERT: 'put',
+      SCAN: 'examine',
+      PUSH_BUTTON: 'push',
+      ORDER: 'order',
+      CAST: 'cast',
+      THROW: 'throw',
+      ASK_ABOUT: 'ask',
+      CLIMB: 'climb',
+      SET_CONTROL: 'set',
+      INSPECT: 'examine',
+      SALUTE: 'salute',
+      DIVE: 'dive',
+      TAKE: 'take',
+      DROP: 'drop',
+      EXAMINE: 'examine',
+      LOOK_IN: 'search',
+      ACTIVATE: 'activate',
+      DEACTIVATE: 'deactivate',
+      ENTER: 'enter',
+      EXIT: 'exit',
+      SLEEP: 'sleep',
+      STAND: 'stand',
+      SIT: 'sit',
+      WAKE: 'wake',
+      WEAR: 'wear',
+      REMOVE: 'remove',
+      UNLOCK: 'unlock',
+      LOCK: 'lock',
+      TALK: 'talk',
+      USE: 'use',
+      OPEN: 'open',
+      CLOSE: 'close',
+      READ: 'read',
+      EAT: 'eat',
+      DRINK: 'drink',
+      SWIM: 'swim',
+      KISS: 'kiss',
+      BUY: 'buy',
+      SELL: 'sell',
+      GO: 'go',
     };
 
     return actionVerbMap[action] || action.toLowerCase();
@@ -236,12 +244,14 @@ export class EnhancedParser extends Parser {
   expandAbbreviations(input) {
     // First handle multi-word verb mappings
     let processed = input;
-    
-    for (const [multiWord, canonical] of Object.entries(this.multiWordMappings)) {
+
+    for (const [multiWord, canonical] of Object.entries(
+      this.multiWordMappings
+    )) {
       const regex = new RegExp(`\\b${multiWord}\\b`, 'g');
       processed = processed.replace(regex, canonical);
     }
-    
+
     // Then handle regular abbreviations
     return super.expandAbbreviations(processed);
   }
@@ -262,17 +272,17 @@ export class EnhancedParser extends Parser {
    */
   debugPatterns(input) {
     const results = [];
-    
+
     for (const pattern of this.saidPatterns.patterns) {
       const result = pattern.matches(input, this.vocabulary);
       results.push({
         pattern: pattern.originalPattern,
         action: pattern.action,
         matched: result.matched,
-        captures: result.matched ? result.captures : null
+        captures: result.matched ? result.captures : null,
       });
     }
-    
+
     return results;
   }
 }

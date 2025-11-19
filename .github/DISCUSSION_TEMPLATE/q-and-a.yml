@@ -1,0 +1,78 @@
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Ask a Question!
+
+        Have a question about Somnium? Check the [documentation](https://github.com/doublegate/Somnium/tree/main/docs) first, then ask away!
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Getting Started/Installation
+        - Playing the Game
+        - Creating Worlds (Editor)
+        - Multiplayer
+        - Server Setup/Deployment
+        - API/Development
+        - Troubleshooting
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What do you want to know?
+      placeholder: "How do I...?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any additional information that might help us answer your question?
+      placeholder: |
+        - What I've already tried:
+        - My setup:
+        - Related documentation I've read:
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (If Relevant)
+      description: Your setup details (browser, OS, version, etc.)
+      placeholder: |
+        - Browser: Chrome 120
+        - OS: Windows 11
+        - Somnium Version: 2.0.0
+        - Server: Running locally / GitHub Pages
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Error Messages (If Applicable)
+      description: Copy and paste any error messages you're seeing
+      render: shell
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before Posting Checklist
+      options:
+        - label: I've searched existing discussions/issues
+        - label: I've read the relevant documentation
+        - label: I've checked the troubleshooting guide
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **We're here to help!** 🤝 Community members and maintainers will respond as soon as possible.
