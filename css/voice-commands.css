@@ -1,0 +1,514 @@
+/**
+ * Voice Commands UI Styles
+ * Visual feedback for voice recognition
+ * Version: 2.0.0
+ */
+
+/* ========================================
+   Voice Button
+   ======================================== */
+
+.voice-button {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0000aa 0%, #5555ff 100%);
+  border: 3px solid #5555ff;
+  color: #ffff55;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 170, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-button:hover {
+  background: linear-gradient(135deg, #5555ff 0%, #aaaaff 100%);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(85, 85, 255, 0.5);
+}
+
+.voice-button:active {
+  transform: scale(0.95);
+}
+
+.voice-button.listening {
+  background: linear-gradient(135deg, #ff0000 0%, #ff5555 100%);
+  border-color: #ff5555;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.voice-button.disabled {
+  background: #555;
+  border-color: #777;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.voice-button.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(255, 85, 85, 0.8);
+  }
+}
+
+/* Microphone icon */
+.voice-button::before {
+  content: '🎤';
+  font-size: 28px;
+}
+
+.voice-button.listening::before {
+  animation: mic-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes mic-pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* ========================================
+   Voice Feedback Panel
+   ======================================== */
+
+.voice-feedback {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #5555ff;
+  border-radius: 12px;
+  padding: 15px 20px;
+  min-width: 300px;
+  max-width: 500px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 170, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.voice-feedback.active {
+  opacity: 1;
+  visibility: visible;
+  bottom: 120px;
+}
+
+.voice-feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.voice-feedback-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ff0000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.voice-feedback-icon::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+.voice-feedback-transcript {
+  color: #ffffff;
+  font-family: 'VGA', monospace;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.voice-feedback-transcript.interim {
+  color: #aaaaaa;
+  font-style: italic;
+}
+
+.voice-feedback-confidence {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.voice-feedback-confidence-label {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 12px;
+}
+
+.voice-feedback-confidence-bar {
+  flex: 1;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.voice-feedback-confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff5555 0%, #55ff55 100%);
+  transition: width 0.3s ease;
+}
+
+.voice-feedback-alternatives {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #333;
+}
+
+.voice-feedback-alternatives-title {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.voice-feedback-alternative {
+  color: #aaaaaa;
+  font-family: 'VGA', monospace;
+  font-size: 12px;
+  padding: 2px 0;
+}
+
+/* ========================================
+   Voice Status Indicator
+   ======================================== */
+
+.voice-status {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #5555ff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-family: 'VGA', monospace;
+  font-size: 12px;
+  color: #55ffff;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.voice-status.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.voice-status.error {
+  border-color: #ff5555;
+  color: #ff5555;
+}
+
+.voice-status.success {
+  border-color: #55ff55;
+  color: #55ff55;
+}
+
+.voice-status-icon {
+  margin-right: 5px;
+}
+
+/* ========================================
+   Voice Settings Panel
+   ======================================== */
+
+.voice-settings {
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #5555ff;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.voice-settings h3 {
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 16px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.voice-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.voice-setting-label {
+  color: #ffffff;
+  font-family: 'VGA', monospace;
+  font-size: 14px;
+}
+
+.voice-setting-description {
+  color: #aaaaaa;
+  font-family: 'VGA', monospace;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.voice-setting-control {
+  min-width: 200px;
+}
+
+.voice-setting-control select {
+  width: 100%;
+  background: #000;
+  border: 1px solid #5555ff;
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.voice-setting-control input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* ========================================
+   Voice Stats
+   ======================================== */
+
+.voice-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.voice-stat-card {
+  background: rgba(0, 0, 170, 0.1);
+  border: 1px solid #5555ff;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.voice-stat-value {
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.voice-stat-label {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 11px;
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+
+/* ========================================
+   Voice Help Modal
+   ======================================== */
+
+.voice-help-modal {
+  background: rgba(0, 0, 0, 0.98);
+  border: 3px solid #5555ff;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  margin: 50px auto;
+}
+
+.voice-help-title {
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.voice-help-section {
+  margin-bottom: 20px;
+}
+
+.voice-help-section h4 {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.voice-help-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.voice-help-section li {
+  color: #ffffff;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  padding: 5px 0;
+  padding-left: 20px;
+}
+
+.voice-help-section li::before {
+  content: '▸ ';
+  color: #5555ff;
+  margin-right: 5px;
+}
+
+.voice-help-example {
+  background: rgba(0, 0, 170, 0.1);
+  border-left: 3px solid #5555ff;
+  padding: 10px;
+  margin: 10px 0;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  color: #55ff55;
+}
+
+/* ========================================
+   Mobile Optimizations
+   ======================================== */
+
+@media (max-width: 768px) {
+  .voice-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .voice-feedback {
+    min-width: 90%;
+    max-width: 90%;
+    bottom: 80px;
+  }
+
+  .voice-feedback.active {
+    bottom: 100px;
+  }
+
+  .voice-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .voice-settings {
+    padding: 15px;
+  }
+
+  .voice-setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .voice-setting-control {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+.voice-button:focus {
+  outline: 3px solid #ffff55;
+  outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .voice-button,
+  .voice-feedback,
+  .voice-status {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: high) {
+  .voice-button {
+    border-width: 4px;
+  }
+
+  .voice-feedback,
+  .voice-settings {
+    border-width: 3px;
+  }
+}
+
+/* ========================================
+   Loading/Processing State
+   ======================================== */
+
+.voice-processing {
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-processing::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
