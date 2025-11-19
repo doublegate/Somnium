@@ -5,8 +5,12 @@
  * Usage: node scripts/generate-icons.js [source-image.png]
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Icon sizes required for PWA
 const ICON_SIZES = [72, 96, 128, 144, 152, 192, 384, 512];
@@ -68,45 +72,8 @@ ICON_SIZES.forEach(size => {
 console.log('');
 console.log('[Icon Generator] Placeholder SVG icons generated!');
 console.log('[Icon Generator] Replace them with PNG versions for production.');
-
-// Create a simple Node.js icon generator using Canvas if available
-try {
-  const { createCanvas } = require('canvas');
-
-  console.log('');
-  console.log('[Icon Generator] Canvas library detected! Generating PNG icons...');
-  console.log('');
-
-  ICON_SIZES.forEach(size => {
-    const canvas = createCanvas(size, size);
-    const ctx = canvas.getContext('2d');
-
-    // Background
-    ctx.fillStyle = '#0000AA';
-    ctx.fillRect(0, 0, size, size);
-
-    // Text
-    ctx.fillStyle = '#FFFF55';
-    ctx.font = `bold ${size / 6}px monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('S', size / 2, size / 2);
-
-    // Save
-    const buffer = canvas.toBuffer('image/png');
-    const pngPath = path.join(ICON_DIR, `icon-${size}x${size}.png`);
-    fs.writeFileSync(pngPath, buffer);
-    console.log(`✓ Generated ${pngPath}`);
-  });
-
-  console.log('');
-  console.log('[Icon Generator] PNG icons generated successfully!');
-} catch (error) {
-  console.log('');
-  console.log('[Icon Generator] Canvas library not found.');
-  console.log('[Icon Generator] Install with: npm install canvas');
-  console.log('[Icon Generator] Or use placeholders and replace manually.');
-}
-
+console.log('');
+console.log('[Icon Generator] For PNG generation, use ImageMagick or online tools.');
+console.log('[Icon Generator] SVG icons will work in most modern browsers.');
 console.log('');
 console.log('[Icon Generator] Done!');
