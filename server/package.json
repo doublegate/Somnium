@@ -1,0 +1,35 @@
+{
+  "name": "somnium-server",
+  "version": "2.0.0",
+  "description": "Backend servers for Somnium multiplayer and cloud services",
+  "main": "api-server.js",
+  "scripts": {
+    "start": "node api-server.js",
+    "start:multiplayer": "node multiplayer-server.js",
+    "start:all": "concurrently \"npm run start\" \"npm run start:multiplayer\"",
+    "dev": "concurrently \"nodemon api-server.js\" \"nodemon multiplayer-server.js\"",
+    "test": "jest"
+  },
+  "keywords": [
+    "somnium",
+    "multiplayer",
+    "websocket",
+    "game-server"
+  ],
+  "author": "Somnium Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "ws": "^8.14.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "concurrently": "^8.2.2",
+    "jest": "^30.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

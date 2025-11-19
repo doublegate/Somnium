@@ -115,3 +115,6 @@ docs/.doctrees/
 
 # Claude
 .claude/settings.local.json
+
+# GitHub workflows (must be added manually due to permissions)
+.github/

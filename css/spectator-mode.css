@@ -1,0 +1,642 @@
+/**
+ * Spectator Mode UI Styles
+ * Visual design for spectating multiplayer games
+ * Version: 2.0.0
+ */
+
+/* ========================================
+   Spectator Overlay
+   ======================================== */
+
+.spectator-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+}
+
+.spectator-header {
+  background: linear-gradient(180deg, #0000aa 0%, #000055 100%);
+  border-bottom: 3px solid #5555ff;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spectator-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spectator-icon {
+  width: 32px;
+  height: 32px;
+  background: #ff5555;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.spectator-icon::before {
+  content: '👁';
+  font-size: 18px;
+}
+
+.spectator-title h2 {
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 18px;
+  margin: 0;
+}
+
+.spectator-session-info {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 12px;
+}
+
+.spectator-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.spectator-btn {
+  background: #0000aa;
+  border: 2px solid #5555ff;
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spectator-btn:hover {
+  background: #5555ff;
+  transform: translateY(-1px);
+}
+
+.spectator-btn:active {
+  transform: translateY(0);
+}
+
+.spectator-btn.danger {
+  background: #aa0000;
+  border-color: #ff5555;
+}
+
+.spectator-btn.danger:hover {
+  background: #ff5555;
+}
+
+/* ========================================
+   Spectator Main Content
+   ======================================== */
+
+.spectator-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.spectator-game-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  border-right: 2px solid #333;
+}
+
+.spectator-game-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.spectator-game-canvas canvas {
+  max-width: 100%;
+  max-height: 100%;
+  border: 2px solid #5555ff;
+  box-shadow: 0 0 20px rgba(85, 85, 255, 0.3);
+}
+
+.spectator-game-status {
+  background: rgba(0, 0, 170, 0.2);
+  border-top: 1px solid #5555ff;
+  padding: 15px;
+  display: flex;
+  gap: 20px;
+}
+
+.spectator-status-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.spectator-status-label {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.spectator-status-value {
+  color: #ffffff;
+  font-family: 'VGA', monospace;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* ========================================
+   Spectator Sidebar
+   ======================================== */
+
+.spectator-sidebar {
+  width: 350px;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid #333;
+}
+
+.spectator-sidebar-tabs {
+  display: flex;
+  background: #000;
+  border-bottom: 2px solid #333;
+}
+
+.spectator-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-right: 1px solid #333;
+  color: #aaaaaa;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spectator-tab:last-child {
+  border-right: none;
+}
+
+.spectator-tab:hover {
+  background: rgba(85, 85, 255, 0.1);
+  color: #ffffff;
+}
+
+.spectator-tab.active {
+  background: #0000aa;
+  color: #ffff55;
+  border-bottom: 2px solid #ffff55;
+}
+
+.spectator-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+/* ========================================
+   Player List Tab
+   ======================================== */
+
+.spectator-players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spectator-player-card {
+  background: rgba(0, 0, 170, 0.1);
+  border: 1px solid #5555ff;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spectator-player-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0000aa 0%, #5555ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffff55;
+  font-size: 18px;
+  font-weight: bold;
+  border: 2px solid #5555ff;
+}
+
+.spectator-player-info {
+  flex: 1;
+}
+
+.spectator-player-name {
+  color: #ffffff;
+  font-family: 'VGA', monospace;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.spectator-player-status {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.spectator-player-badges {
+  display: flex;
+  gap: 5px;
+}
+
+.spectator-badge {
+  background: #ff5555;
+  color: #fff;
+  font-family: 'VGA', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.spectator-badge.host {
+  background: #ffaa00;
+}
+
+.spectator-badge.active {
+  background: #55ff55;
+}
+
+/* ========================================
+   Chat Tab
+   ======================================== */
+
+.spectator-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.spectator-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spectator-chat-message {
+  background: rgba(0, 0, 0, 0.4);
+  border-left: 3px solid #5555ff;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.spectator-chat-message.spectator-msg {
+  border-left-color: #ff5555;
+}
+
+.spectator-chat-message.system-msg {
+  border-left-color: #55ff55;
+  background: rgba(0, 170, 0, 0.1);
+}
+
+.spectator-chat-author {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.spectator-chat-author.spectator {
+  color: #ff8888;
+}
+
+.spectator-chat-author::before {
+  content: '▸';
+  color: #5555ff;
+}
+
+.spectator-chat-text {
+  color: #ffffff;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.spectator-chat-time {
+  color: #777;
+  font-family: 'VGA', monospace;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.spectator-chat-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.spectator-chat-input {
+  flex: 1;
+  background: #000;
+  border: 2px solid #5555ff;
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.spectator-chat-input:focus {
+  outline: none;
+  border-color: #ffff55;
+}
+
+.spectator-chat-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spectator-chat-send {
+  background: #0000aa;
+  border: 2px solid #5555ff;
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spectator-chat-send:hover:not(:disabled) {
+  background: #5555ff;
+}
+
+.spectator-chat-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   Stats Tab
+   ======================================== */
+
+.spectator-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.spectator-stat-card {
+  background: rgba(0, 0, 170, 0.1);
+  border: 1px solid #5555ff;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.spectator-stat-label {
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.spectator-stat-value {
+  color: #ffff55;
+  font-family: 'VGA', monospace;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.spectator-stat-unit {
+  color: #aaaaaa;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.spectator-stat-bar {
+  margin-top: 10px;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.spectator-stat-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0000aa 0%, #5555ff 100%);
+  transition: width 0.3s ease;
+}
+
+/* ========================================
+   Spectator Badge (Floating Indicator)
+   ======================================== */
+
+.spectator-floating-badge {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: rgba(255, 0, 0, 0.9);
+  border: 2px solid #ff5555;
+  border-radius: 8px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 4999;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+}
+
+.spectator-floating-badge::before {
+  content: '👁';
+  font-size: 16px;
+}
+
+.spectator-floating-badge-text {
+  color: #fff;
+  font-family: 'VGA', monospace;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.spectator-floating-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+/* ========================================
+   Mobile Optimizations
+   ======================================== */
+
+@media (max-width: 992px) {
+  .spectator-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .spectator-title h2 {
+    font-size: 16px;
+  }
+
+  .spectator-controls {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .spectator-btn {
+    width: 100%;
+  }
+
+  .spectator-main {
+    flex-direction: column;
+  }
+
+  .spectator-sidebar {
+    width: 100%;
+    max-height: 50vh;
+    border-left: none;
+    border-top: 2px solid #333;
+  }
+
+  .spectator-game-status {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .spectator-floating-badge {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+/* ========================================
+   Loading State
+   ======================================== */
+
+.spectator-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #55ffff;
+  font-family: 'VGA', monospace;
+}
+
+.spectator-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #333;
+  border-top-color: #5555ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spectator-loading-text {
+  font-size: 14px;
+  animation: pulse-text 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+
+.spectator-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #777;
+  font-family: 'VGA', monospace;
+  text-align: center;
+}
+
+.spectator-empty-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.3;
+}
+
+.spectator-empty-text {
+  font-size: 14px;
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .spectator-icon,
+  .spectator-loading-spinner,
+  .spectator-loading-text {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .spectator-btn,
+  .spectator-player-card,
+  .spectator-stat-card {
+    border-width: 3px;
+  }
+}
