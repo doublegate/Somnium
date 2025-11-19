@@ -1,0 +1,108 @@
+title: "[Show & Tell] "
+labels: ["show-and-tell"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Share Your World!
+
+        Show off your custom world creations, interesting adventures, or cool discoveries in Somnium!
+
+  - type: input
+    id: world-name
+    attributes:
+      label: World Name
+      description: What's your world called?
+      placeholder: "The Dragon's Lair"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: world-genre
+    attributes:
+      label: Genre
+      description: What genre is your world?
+      options:
+        - Fantasy
+        - Sci-Fi
+        - Mystery/Detective
+        - Horror
+        - Comedy
+        - Historical
+        - Modern/Contemporary
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Tell us about your world! What makes it special?
+      placeholder: |
+        This is a dark fantasy dungeon crawler where players must navigate...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty Level
+      options:
+        - Beginner-Friendly
+        - Intermediate
+        - Advanced
+        - Expert
+
+  - type: input
+    id: rooms
+    attributes:
+      label: Number of Rooms
+      description: How many rooms does your world have?
+      placeholder: "10"
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Key Features
+      description: What are the highlights? (puzzles, NPCs, unique mechanics, etc.)
+      placeholder: |
+        - 3 multi-step puzzles
+        - 5 unique NPCs with dialogue trees
+        - Custom ambient soundscapes
+        - Hidden easter eggs
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Share screenshots or recordings! (Drag and drop images here)
+
+  - type: input
+    id: world-file
+    attributes:
+      label: World File Link (Optional)
+      description: Link to your world JSON file (GitHub Gist, Pastebin, etc.)
+      placeholder: "https://gist.github.com/..."
+
+  - type: textarea
+    id: tips
+    attributes:
+      label: Tips for Players
+      description: Any hints or suggestions for people trying your world?
+      placeholder: "Make sure to talk to the wizard before entering the cave!"
+
+  - type: checkboxes
+    id: testing
+    attributes:
+      label: Testing Status
+      options:
+        - label: I've playtested this world completely
+        - label: All puzzles are solvable
+        - label: No game-breaking bugs
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Thank you for sharing your creation with the community!** 🎮

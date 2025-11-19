@@ -11,11 +11,11 @@ export class StateAnimator {
     this.stateTime = 0;
     this.stateFrame = 0;
     this.transitionCallbacks = new Map();
-    
+
     // Animation speed control
     this.animationSpeed = 1.0;
     this.frameDuration = 0;
-    
+
     // State history for debugging
     this.stateHistory = [];
     this.maxHistory = 10;
@@ -35,7 +35,7 @@ export class StateAnimator {
       duration: config.duration || Infinity,
       nextState: config.nextState || null,
       priority: config.priority || 0,
-      interruptible: config.interruptible !== false
+      interruptible: config.interruptible !== false,
     });
   }
 
@@ -45,100 +45,89 @@ export class StateAnimator {
   initializeCharacterStates() {
     // Idle state - character standing still
     this.defineState('idle', {
-      loops: [
-        { loop: 0, cels: [0], cycleTime: 1000 }
-      ],
+      loops: [{ loop: 0, cels: [0], cycleTime: 1000 }],
       transitions: {
-        'walk': { condition: () => this.view.isMoving },
-        'sit': { condition: () => this.view.wantsToSit },
-        'pickup': { condition: () => this.view.currentAction === 'take' },
-        'talk': { condition: () => this.view.isTalking }
-      }
+        walk: { condition: () => this.view.isMoving },
+        sit: { condition: () => this.view.wantsToSit },
+        pickup: { condition: () => this.view.currentAction === 'take' },
+        talk: { condition: () => this.view.isTalking },
+      },
     });
 
     // Walking states for 8 directions (KQ4/SQ3 style)
     const walkStates = {
-      'walk_north': { loop: 3, direction: 'north' },
-      'walk_south': { loop: 2, direction: 'south' },
-      'walk_east': { loop: 0, direction: 'east' },
-      'walk_west': { loop: 1, direction: 'west' },
-      'walk_northeast': { loop: 4, direction: 'northeast' },
-      'walk_northwest': { loop: 5, direction: 'northwest' },
-      'walk_southeast': { loop: 6, direction: 'southeast' },
-      'walk_southwest': { loop: 7, direction: 'southwest' }
+      walk_north: { loop: 3, direction: 'north' },
+      walk_south: { loop: 2, direction: 'south' },
+      walk_east: { loop: 0, direction: 'east' },
+      walk_west: { loop: 1, direction: 'west' },
+      walk_northeast: { loop: 4, direction: 'northeast' },
+      walk_northwest: { loop: 5, direction: 'northwest' },
+      walk_southeast: { loop: 6, direction: 'southeast' },
+      walk_southwest: { loop: 7, direction: 'southwest' },
     };
 
     for (const [stateName, config] of Object.entries(walkStates)) {
       this.defineState(stateName, {
-        loops: [
-          { loop: config.loop, cels: [0, 1, 2, 3], cycleTime: 150 }
-        ],
+        loops: [{ loop: config.loop, cels: [0, 1, 2, 3], cycleTime: 150 }],
         transitions: {
-          'idle': { condition: () => !this.view.isMoving },
+          idle: { condition: () => !this.view.isMoving },
           // Transition to other walk directions
           ...Object.keys(walkStates).reduce((acc, name) => {
             if (name !== stateName) {
-              acc[name] = { 
-                condition: () => this.view.isMoving && 
-                  this.view.direction === walkStates[name].direction 
+              acc[name] = {
+                condition: () =>
+                  this.view.isMoving &&
+                  this.view.direction === walkStates[name].direction,
               };
             }
             return acc;
-          }, {})
-        }
+          }, {}),
+        },
       });
     }
 
     // Pick up animation (from KQ4)
     this.defineState('pickup', {
-      loops: [
-        { loop: 8, cels: [0, 1, 2, 3, 4], cycleTime: 200 }
-      ],
+      loops: [{ loop: 8, cels: [0, 1, 2, 3, 4], cycleTime: 200 }],
       duration: 1000,
       nextState: 'idle',
       interruptible: false,
       onExit: () => {
         this.view.currentAction = null;
         this.view.onActionComplete?.('pickup');
-      }
+      },
     });
 
     // Sitting states (from SQ3 bar scene)
     this.defineState('sit_down', {
-      loops: [
-        { loop: 9, cels: [0, 1, 2, 3], cycleTime: 200 }
-      ],
+      loops: [{ loop: 9, cels: [0, 1, 2, 3], cycleTime: 200 }],
       duration: 800,
       nextState: 'sitting',
-      interruptible: false
+      interruptible: false,
     });
 
     this.defineState('sitting', {
-      loops: [
-        { loop: 10, cels: [0], cycleTime: 1000 }
-      ],
+      loops: [{ loop: 10, cels: [0], cycleTime: 1000 }],
       transitions: {
-        'stand_up': { condition: () => !this.view.wantsToSit }
-      }
+        stand_up: { condition: () => !this.view.wantsToSit },
+      },
     });
 
     this.defineState('stand_up', {
-      loops: [
-        { loop: 9, cels: [3, 2, 1, 0], cycleTime: 200 }
-      ],
+      loops: [{ loop: 9, cels: [3, 2, 1, 0], cycleTime: 200 }],
       duration: 800,
       nextState: 'idle',
-      interruptible: false
+      interruptible: false,
     });
 
     // Talking animation (multiple loops for variety)
     this.defineState('talk', {
       loops: [
         { loop: 11, cels: [0, 1, 2, 1], cycleTime: 150 },
-        { loop: 12, cels: [0, 1, 2, 3, 2, 1], cycleTime: 120 }
+        { loop: 12, cels: [0, 1, 2, 3, 2, 1], cycleTime: 120 },
       ],
       transitions: {
-        'idle': { condition: () => !this.view.isTalking }
+        idle: { condition: () => !this.view.isTalking },
       },
       onFrame: (frame) => {
         // Sync mouth movement with dialogue
@@ -146,39 +135,33 @@ export class StateAnimator {
           const syllableIndex = Math.floor(this.stateTime / 150) % 4;
           this.view.mouthFrame = syllableIndex;
         }
-      }
+      },
     });
 
     // Death animation (from various Sierra games)
     this.defineState('death', {
-      loops: [
-        { loop: 13, cels: [0, 1, 2, 3, 4, 5], cycleTime: 300 }
-      ],
+      loops: [{ loop: 13, cels: [0, 1, 2, 3, 4, 5], cycleTime: 300 }],
       duration: 1800,
       interruptible: false,
       priority: 100, // Highest priority
       onExit: () => {
         this.view.isDead = true;
         this.view.onDeath?.();
-      }
+      },
     });
 
     // Swimming states (from KQ4)
     this.defineState('swim', {
-      loops: [
-        { loop: 14, cels: [0, 1, 2, 3], cycleTime: 250 }
-      ],
+      loops: [{ loop: 14, cels: [0, 1, 2, 3], cycleTime: 250 }],
       transitions: {
-        'idle': { condition: () => !this.view.inWater },
-        'drown': { condition: () => this.view.oxygen <= 0 }
-      }
+        idle: { condition: () => !this.view.inWater },
+        drown: { condition: () => this.view.oxygen <= 0 },
+      },
     });
 
     // Combat states (from QFG1)
     this.defineState('attack', {
-      loops: [
-        { loop: 15, cels: [0, 1, 2, 3, 4], cycleTime: 100 }
-      ],
+      loops: [{ loop: 15, cels: [0, 1, 2, 3, 4], cycleTime: 100 }],
       duration: 500,
       nextState: 'combat_ready',
       interruptible: false,
@@ -187,27 +170,23 @@ export class StateAnimator {
         if (frame === 3) {
           this.view.onAttackFrame?.();
         }
-      }
+      },
     });
 
     this.defineState('dodge', {
-      loops: [
-        { loop: 16, cels: [0, 1, 2, 1, 0], cycleTime: 150 }
-      ],
+      loops: [{ loop: 16, cels: [0, 1, 2, 1, 0], cycleTime: 150 }],
       duration: 750,
       nextState: 'combat_ready',
-      interruptible: false
+      interruptible: false,
     });
 
     this.defineState('combat_ready', {
-      loops: [
-        { loop: 17, cels: [0, 1], cycleTime: 500 }
-      ],
+      loops: [{ loop: 17, cels: [0, 1], cycleTime: 500 }],
       transitions: {
-        'attack': { condition: () => this.view.wantsToAttack },
-        'dodge': { condition: () => this.view.wantsToDodge },
-        'idle': { condition: () => !this.view.inCombat }
-      }
+        attack: { condition: () => this.view.wantsToAttack },
+        dodge: { condition: () => this.view.wantsToDodge },
+        idle: { condition: () => !this.view.inCombat },
+      },
     });
   }
 
@@ -219,19 +198,19 @@ export class StateAnimator {
       this.changeState('idle');
       return;
     }
-    
+
     const state = this.states.get(this.currentState);
     if (!state) return;
-    
+
     // Update state time
     this.stateTime += deltaTime * this.animationSpeed;
-    
+
     // Check duration-based transitions
     if (this.stateTime >= state.duration && state.nextState) {
       this.changeState(state.nextState);
       return;
     }
-    
+
     // Check conditional transitions
     for (const [nextState, transition] of Object.entries(state.transitions)) {
       if (transition.condition()) {
@@ -240,12 +219,12 @@ export class StateAnimator {
         if (!state.interruptible && nextStateObj.priority <= state.priority) {
           continue;
         }
-        
+
         this.changeState(nextState);
         return;
       }
     }
-    
+
     // Update animation frame
     this.updateAnimation(state, deltaTime);
   }
@@ -255,24 +234,24 @@ export class StateAnimator {
    */
   updateAnimation(state, deltaTime) {
     if (!state.loops || state.loops.length === 0) return;
-    
+
     // Select loop (can have multiple for variety)
     const loopIndex = this.view.animationVariant || 0;
     const loop = state.loops[loopIndex % state.loops.length];
-    
+
     if (!loop.cels || loop.cels.length === 0) return;
-    
+
     // Update frame duration
     this.frameDuration += deltaTime * this.animationSpeed;
-    
+
     if (this.frameDuration >= loop.cycleTime) {
       this.frameDuration = 0;
       this.stateFrame = (this.stateFrame + 1) % loop.cels.length;
-      
+
       // Call frame callback
       state.onFrame?.(this.stateFrame);
     }
-    
+
     // Apply to view
     this.view.setLoop(loop.loop);
     this.view.setCel(loop.cels[this.stateFrame]);
@@ -283,41 +262,43 @@ export class StateAnimator {
    */
   changeState(newStateName) {
     if (this.currentState === newStateName) return;
-    
+
     const oldState = this.states.get(this.currentState);
     const newState = this.states.get(newStateName);
-    
+
     if (!newState) {
       console.warn(`State '${newStateName}' not defined`);
       return;
     }
-    
+
     // Exit old state
     if (oldState) {
       oldState.onExit();
-      
+
       // Add to history
       this.stateHistory.push({
         state: this.currentState,
         duration: this.stateTime,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
-      
+
       if (this.stateHistory.length > this.maxHistory) {
         this.stateHistory.shift();
       }
     }
-    
+
     // Enter new state
     this.currentState = newStateName;
     this.stateTime = 0;
     this.stateFrame = 0;
     this.frameDuration = 0;
-    
+
     newState.onEnter();
-    
+
     // Trigger transition callbacks
-    const callback = this.transitionCallbacks.get(`${oldState?.name}->${newState.name}`);
+    const callback = this.transitionCallbacks.get(
+      `${oldState?.name}->${newState.name}`
+    );
     if (callback) {
       callback();
     }
@@ -347,13 +328,13 @@ export class StateAnimator {
   getCurrentStateInfo() {
     const state = this.states.get(this.currentState);
     if (!state) return null;
-    
+
     return {
       name: this.currentState,
       time: this.stateTime,
       frame: this.stateFrame,
       interruptible: state.interruptible,
-      priority: state.priority
+      priority: state.priority,
     };
   }
 

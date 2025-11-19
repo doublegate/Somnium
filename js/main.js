@@ -1,26 +1,31 @@
 /**
  * Somnium - Main Entry Point
  *
- * This file initializes the game and sets up the main menu.
- * The actual game engine modules will be imported and initialized here.
+ * Initializes the game and wires up all UI interactions
  */
 
-// Import game modules
 import logger from './logger.js';
 import { GameManager } from './GameManager.js';
+import { UIManager } from './UIManager.js';
+import { SaveGameManager } from './SaveGameManager.js';
 
-// Global game manager instance
+// Global instances
 let gameManager = null;
+let uiManager = null;
+let saveGameManager = null;
 
 // Main initialization
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   logger.info('Somnium v0.0.1 - Initializing...');
 
-  // Check for API configuration
-  if (!window.API_CONFIG) {
-    logger.error('API configuration not found. Please create js/config.js');
-    return;
-  }
+  // Load accessibility preferences
+  loadHighContrastPreference();
+
+  // Wait for config to load
+  await waitForConfig();
+
+  // Initialize UI Manager
+  uiManager = new UIManager();
 
   // Initialize UI handlers
   initializeUI();
@@ -32,96 +37,273 @@ document.addEventListener('DOMContentLoaded', () => {
       fpsCounter.textContent = `FPS: ${event.detail.fps}`;
     }
   });
+
+  logger.info('Somnium ready');
 });
+
+/**
+ * Wait for API config to load
+ */
+async function waitForConfig() {
+  return new Promise((resolve) => {
+    const checkConfig = () => {
+      if (window.API_CONFIG) {
+        logger.info('Configuration loaded');
+        resolve();
+      } else {
+        setTimeout(checkConfig, 100);
+      }
+    };
+    checkConfig();
+  });
+}
 
 /**
  * Initialize UI event handlers
  */
 function initializeUI() {
   // Main menu buttons
-  const newGameBtn = document.getElementById('new-game-btn');
-  const loadGameBtn = document.getElementById('load-game-btn');
-  const aboutBtn = document.getElementById('about-btn');
-
-  // Modal elements
-  const themeModal = document.getElementById('theme-modal');
-  const aboutModal = document.getElementById('about-modal');
-  const errorModal = document.getElementById('error-modal');
-
-  // Theme selection
-  const startAdventureBtn = document.getElementById('start-adventure-btn');
-  const cancelThemeBtn = document.getElementById('cancel-theme-btn');
-  const themeInput = document.getElementById('theme-input');
-
-  // About modal
-  const closeAboutBtn = document.getElementById('close-about-btn');
-
-  // Error modal
-  const closeErrorBtn = document.getElementById('close-error-btn');
-
-  // New Game
-  newGameBtn.addEventListener('click', () => {
-    themeModal.classList.remove('hidden');
-    themeInput.focus();
+  document.getElementById('new-game-btn').addEventListener('click', () => {
+    uiManager.showThemeModal();
   });
 
-  // Load Game
-  loadGameBtn.addEventListener('click', () => {
-    // TODO: Implement load game functionality
-    showError('Load game functionality coming soon!');
+  document.getElementById('load-game-btn').addEventListener('click', () => {
+    // Create a temporary SaveGameManager to show available saves
+    const tempSaveManager = new SaveGameManager(null);
+    uiManager.showLoadGameModal(tempSaveManager, async (slot) => {
+      try {
+        // Hide main menu
+        uiManager.hideMainMenu();
+        uiManager.showLoadingScreen('Loading game...');
+
+        // Create minimal game manager for loading
+        const canvas = document.getElementById('game-canvas');
+        const config = {
+          apiKey: window.API_CONFIG.apiKey,
+          apiEndpoint: window.API_CONFIG.apiEndpoint,
+          model: window.API_CONFIG.model || 'gpt-3.5-turbo',
+          debugMode: window.API_CONFIG.debugMode || false,
+        };
+
+        gameManager = new GameManager(canvas, config);
+        window.gameManager = gameManager; // Expose for achievement sounds
+        gameManager.displayMessage = (message) => {
+          uiManager.addOutputText(message, 'game');
+        };
+
+        // Set up achievement notification listener
+        gameManager.eventManager.on('achievementUnlocked', (data) => {
+          uiManager.showAchievementNotification(data.achievement);
+        });
+
+        saveGameManager = new SaveGameManager(gameManager);
+
+        // Load the game
+        await saveGameManager.loadFromSlot(slot);
+
+        // Hide loading screen
+        uiManager.hideLoadingScreen();
+
+        // Show game UI
+        uiManager.showGameUI();
+
+        // Display loaded game info
+        const currentRoom = gameManager.gameState.getCurrentRoom();
+        const metadata = gameManager.gameState.gameJSON?.metadata || {};
+
+        uiManager.addOutputText('Game loaded successfully!', 'system');
+        uiManager.addOutputText('');
+        uiManager.addOutputText(currentRoom.description, 'description');
+        uiManager.addOutputText('');
+        uiManager.updateTitle(metadata.title || 'Somnium');
+
+        // Enable auto-save if configured
+        if (window.API_CONFIG.autoSave !== false) {
+          saveGameManager.enableAutoSave();
+        }
+
+        // Enable debug mode if configured
+        if (config.debugMode) {
+          document.getElementById('debug-info').classList.remove('hidden');
+        }
+
+        // Focus input
+        uiManager.focusInput();
+      } catch (error) {
+        logger.error('Failed to load game:', error);
+        uiManager.hideLoadingScreen();
+        uiManager.showError(`Failed to load game: ${error.message}`);
+        uiManager.showMainMenu();
+      }
+    });
   });
 
-  // About
-  aboutBtn.addEventListener('click', () => {
-    aboutModal.classList.remove('hidden');
+  document.getElementById('about-btn').addEventListener('click', () => {
+    uiManager.showAboutModal();
   });
 
-  // Start Adventure
-  startAdventureBtn.addEventListener('click', () => {
-    const theme = themeInput.value.trim() || null;
-    themeModal.classList.add('hidden');
-    startNewGame(theme);
+  // Theme modal
+  document
+    .getElementById('start-adventure-btn')
+    .addEventListener('click', async () => {
+      const theme = document.getElementById('theme-input').value.trim() || null;
+      await startNewGame(theme);
+    });
+
+  document.getElementById('cancel-theme-btn').addEventListener('click', () => {
+    uiManager.hideThemeModal();
   });
 
-  // Cancel Theme
-  cancelThemeBtn.addEventListener('click', () => {
-    themeModal.classList.add('hidden');
-    themeInput.value = '';
-  });
-
-  // Close About
-  closeAboutBtn.addEventListener('click', () => {
-    aboutModal.classList.add('hidden');
-  });
-
-  // Close Error
-  closeErrorBtn.addEventListener('click', () => {
-    errorModal.classList.add('hidden');
-  });
-
-  // Enter key in theme input
-  themeInput.addEventListener('keypress', (e) => {
+  // Theme input Enter key
+  document.getElementById('theme-input').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-      startAdventureBtn.click();
+      document.getElementById('start-adventure-btn').click();
     }
   });
 
-  // Menu bar handlers
-  initializeMenuBar();
-}
+  // About modal
+  const closeAboutBtn = document.getElementById('close-about-btn');
+  closeAboutBtn.addEventListener('click', () => {
+    uiManager.hideAboutModal();
+  });
+  closeAboutBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideAboutModal();
+    }
+  });
 
-/**
- * Initialize menu bar functionality
- */
-function initializeMenuBar() {
-  const menuItems = document.querySelectorAll('.menu-item');
+  // Error modal
+  const closeErrorBtn = document.getElementById('close-error-btn');
+  closeErrorBtn.addEventListener('click', () => {
+    uiManager.hideErrorModal();
+  });
+  closeErrorBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideErrorModal();
+    }
+  });
 
-  menuItems.forEach((item) => {
+  // Save/Load modals
+  const closeSaveBtn = document.getElementById('close-save-btn');
+  closeSaveBtn.addEventListener('click', () => {
+    uiManager.hideSaveGameModal();
+  });
+  closeSaveBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideSaveGameModal();
+    }
+  });
+
+  const closeLoadBtn = document.getElementById('close-load-btn');
+  closeLoadBtn.addEventListener('click', () => {
+    uiManager.hideLoadGameModal();
+  });
+  closeLoadBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideLoadGameModal();
+    }
+  });
+
+  // Volume modal
+  const closeVolumeBtn = document.getElementById('close-volume-btn');
+  closeVolumeBtn.addEventListener('click', () => {
+    uiManager.hideVolumeModal();
+  });
+  closeVolumeBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideVolumeModal();
+    }
+  });
+
+  // Achievement gallery modal
+  const closeAchievementBtn = document.getElementById('close-achievement-btn');
+  closeAchievementBtn.addEventListener('click', () => {
+    uiManager.hideAchievementGallery();
+  });
+  closeAchievementBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      uiManager.hideAchievementGallery();
+    }
+  });
+
+  // Menu bar items
+  document.querySelectorAll('.menu-item').forEach((item) => {
     item.addEventListener('click', (e) => {
-      const menuName = e.target.getAttribute('data-menu');
-      // TODO: Implement dropdown menus
-      logger.debug(`Menu clicked: ${menuName}`);
+      const menu = e.target.getAttribute('data-menu');
+      handleMenuClick(menu);
     });
+
+    // Keyboard support for menu items
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const menu = e.target.getAttribute('data-menu');
+        handleMenuClick(menu);
+      }
+    });
+  });
+
+  // Global keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Escape key closes modals
+    if (e.key === 'Escape') {
+      closeTopModal();
+    }
+
+    // Alt+key shortcuts for menu bar (only when game is running)
+    if (e.altKey && !e.ctrlKey && !e.shiftKey && gameManager) {
+      switch (e.key.toLowerCase()) {
+        case 'f':
+          e.preventDefault();
+          handleMenuClick('file');
+          break;
+        case 'g':
+          e.preventDefault();
+          handleMenuClick('game');
+          break;
+        case 's':
+          e.preventDefault();
+          handleMenuClick('sound');
+          break;
+        case 'h':
+          e.preventDefault();
+          handleMenuClick('help');
+          break;
+      }
+    }
+  });
+
+  // Text input
+  const textInput = document.getElementById('text-input');
+  textInput.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter' && gameManager) {
+      const command = textInput.value.trim();
+      if (command) {
+        // Add to history
+        uiManager.addToHistory(command);
+
+        // Display command
+        uiManager.addOutputText(`> ${command}`, 'command');
+
+        // Clear input
+        uiManager.clearInput();
+
+        // Process command
+        await gameManager.handlePlayerInput(command);
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      uiManager.historyUp();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      uiManager.historyDown();
+    }
   });
 }
 
@@ -130,120 +312,576 @@ function initializeMenuBar() {
  * @param {string|null} theme - The theme for the adventure
  */
 async function startNewGame(theme) {
-  logger.info('Starting new game with theme:', theme || 'random');
-
-  // Hide main menu
-  document.getElementById('main-menu').classList.add('hidden');
-
-  // Show loading screen
-  const loadingScreen = document.getElementById('loading-screen');
-  loadingScreen.classList.remove('hidden');
-
   try {
+    logger.info('Starting new game with theme:', theme || 'random');
+
+    uiManager.hideThemeModal();
+    uiManager.hideMainMenu();
+    uiManager.showLoadingScreen('Generating your unique adventure...');
+
     // Get the game canvas
     const canvas = document.getElementById('game-canvas');
 
-    // Initialize game manager
-    gameManager = new GameManager(canvas, {
+    // Create game configuration
+    const config = {
       apiKey: window.API_CONFIG.apiKey,
       apiEndpoint: window.API_CONFIG.apiEndpoint,
-      moderationEnabled: window.API_CONFIG.moderationEnabled || false,
+      model: window.API_CONFIG.model || 'gpt-3.5-turbo',
+      moderationEndpoint: window.API_CONFIG.moderationEndpoint,
       debugMode: window.API_CONFIG.debugMode || false,
+      useSierraParser: window.API_CONFIG.useSierraParser !== false,
+      usePriorityRenderer: window.API_CONFIG.usePriorityRenderer !== false,
+    };
+
+    // Initialize game manager
+    gameManager = new GameManager(canvas, config);
+    window.gameManager = gameManager; // Expose for achievement sounds
+
+    // Override displayMessage to use UI
+    gameManager.displayMessage = (message) => {
+      uiManager.addOutputText(message, 'game');
+    };
+
+    // Set up achievement notification listener
+    gameManager.eventManager.on('achievementUnlocked', (data) => {
+      uiManager.showAchievementNotification(data.achievement);
     });
 
-    // Start new game
-    await gameManager.startNewGame(theme);
+    // Create save game manager
+    saveGameManager = new SaveGameManager(gameManager);
+
+    // Enable auto-save if configured
+    if (window.API_CONFIG.autoSave !== false) {
+      saveGameManager.enableAutoSave();
+    }
+
+    // Determine if we should use AI or static world
+    const useStatic = !config.apiKey || config.apiKey === 'your-api-key-here';
+
+    if (useStatic) {
+      uiManager.updateLoadingMessage('Loading test world...');
+    } else {
+      uiManager.updateLoadingMessage('AI is crafting your adventure...');
+    }
+
+    // Start the game
+    await gameManager.startNewGame(theme, {
+      useStatic,
+      worldType: useStatic ? 'small' : undefined,
+    });
 
     // Hide loading screen
-    loadingScreen.classList.add('hidden');
+    uiManager.hideLoadingScreen();
 
-    // Show game canvas
-    const gameContainer = document.getElementById('game-container');
-    gameContainer.style.display = 'block';
+    // Show game UI
+    uiManager.showGameUI();
 
-    // Show debug info if in debug mode
-    if (window.API_CONFIG.debugMode) {
+    // Display welcome message
+    const currentRoom = gameManager.gameState.getCurrentRoom();
+    const metadata = gameManager.gameState.gameJSON?.metadata || {};
+
+    uiManager.addOutputText(
+      '╔════════════════════════════════════════╗',
+      'title'
+    );
+    uiManager.addOutputText(
+      `  ${metadata.title || 'Somnium'}`.padEnd(42) + '║',
+      'title'
+    );
+    uiManager.addOutputText(
+      '╚════════════════════════════════════════╝',
+      'title'
+    );
+    uiManager.addOutputText('');
+
+    if (metadata.mockData) {
+      uiManager.addOutputText(
+        '[ Running in OFFLINE MODE - Using test world ]',
+        'system'
+      );
+      uiManager.addOutputText('');
+    }
+
+    uiManager.addOutputText(currentRoom.description, 'description');
+    uiManager.addOutputText('');
+    uiManager.addOutputText(
+      'Type "look" to examine your surroundings, or "help" for commands.',
+      'hint'
+    );
+
+    // Update title
+    uiManager.updateTitle(metadata.title || 'Somnium');
+
+    // Enable debug mode if configured
+    if (config.debugMode) {
       document.getElementById('debug-info').classList.remove('hidden');
     }
 
-    // Set up input handler
-    setupGameInput();
+    // Focus input
+    uiManager.focusInput();
+
+    logger.info('Game started successfully');
   } catch (error) {
     logger.error('Failed to start game:', error);
-    loadingScreen.classList.add('hidden');
-    showError('Failed to start game. Please check your API configuration.');
+    uiManager.hideLoadingScreen();
+    uiManager.showError(`Failed to start game: ${error.message}`);
+    uiManager.showMainMenu();
   }
 }
 
 /**
- * Show an error message
- * @param {string} message - The error message to display
+ * Handle menu bar clicks
+ * @param {string} menu - Menu identifier
  */
-function showError(message) {
-  const errorModal = document.getElementById('error-modal');
-  const errorMessage = document.getElementById('error-message');
+function handleMenuClick(menu) {
+  if (!gameManager) {
+    uiManager.showError('No game is currently running');
+    return;
+  }
 
-  errorMessage.textContent = message;
-  errorModal.classList.remove('hidden');
+  switch (menu) {
+    case 'file':
+      showFileMenu();
+      break;
+    case 'game':
+      showGameMenu();
+      break;
+    case 'speed':
+      showSpeedMenu();
+      break;
+    case 'sound':
+      showSoundMenu();
+      break;
+    case 'help':
+      showHelpMenu();
+      break;
+  }
 }
 
 /**
- * Set up game input handling
+ * Show file menu
  */
-function setupGameInput() {
-  const inputLine = document.querySelector('.input-line');
-  const commandInput = inputLine.querySelector('#command-input');
+function showFileMenu() {
+  const menu = [
+    { label: 'Save Game', action: () => saveGame() },
+    { label: 'Load Game', action: () => loadGame() },
+    { label: 'Quit to Main Menu', action: () => quitToMenu() },
+  ];
+  uiManager.showDropdownMenu(menu);
+}
 
-  // Show input line
-  inputLine.style.display = 'flex';
+/**
+ * Show game menu
+ */
+function showGameMenu() {
+  const menu = [
+    { label: 'Restart', action: () => restartGame() },
+    { label: 'Inventory', action: () => showInventory() },
+    { label: 'Achievements', action: () => showAchievements() },
+    { label: 'About', action: () => uiManager.showAboutModal() },
+  ];
+  uiManager.showDropdownMenu(menu);
+}
 
-  // Focus on input
-  commandInput.focus();
+/**
+ * Show speed menu
+ */
+function showSpeedMenu() {
+  const menu = [
+    { label: 'Very Slow (1)', action: () => gameManager.setSpeed(1) },
+    { label: 'Slow (2)', action: () => gameManager.setSpeed(2) },
+    { label: 'Normal (3)', action: () => gameManager.setSpeed(3) },
+    { label: 'Fast (4)', action: () => gameManager.setSpeed(4) },
+    { label: 'Very Fast (5)', action: () => gameManager.setSpeed(5) },
+  ];
+  uiManager.showDropdownMenu(menu);
+}
 
-  // Handle command submission
-  commandInput.addEventListener('keypress', async (e) => {
-    if (e.key === 'Enter') {
-      const command = commandInput.value.trim();
-      if (command && gameManager) {
-        // Clear input
-        commandInput.value = '';
+/**
+ * Show sound menu
+ */
+function showSoundMenu() {
+  const menu = [
+    { label: 'Volume Control', action: () => showVolumeControl() },
+    { label: 'Sound On/Off', action: () => toggleSound() },
+    { label: 'About', action: () => uiManager.showAboutModal() },
+  ];
+  uiManager.showDropdownMenu(menu);
+}
 
-        // Display command in text window
-        displayGameText(`> ${command}`);
+/**
+ * Show help menu
+ */
+function showHelpMenu() {
+  const isHighContrast = document.body.classList.contains('high-contrast');
+  const menu = [
+    { label: 'How to Play', action: () => showHelp() },
+    { label: 'Commands', action: () => showCommands() },
+    { label: isHighContrast ? '✓ High Contrast Mode' : 'High Contrast Mode', action: () => toggleHighContrast() },
+    { label: 'About', action: () => uiManager.showAboutModal() },
+  ];
+  uiManager.showDropdownMenu(menu);
+}
 
-        // Process command
-        await gameManager.handlePlayerInput(command);
+/**
+ * Save current game
+ */
+function saveGame() {
+  if (!saveGameManager) return;
+
+  try {
+    uiManager.showSaveGameModal(saveGameManager, (slot, saveName) => {
+      try {
+        saveGameManager.saveToSlot(slot, saveName);
+        uiManager.addOutputText('Game saved successfully.', 'system');
+      } catch (error) {
+        uiManager.showError(`Failed to save game: ${error.message}`);
+      }
+    });
+  } catch (error) {
+    uiManager.showError(`Failed to show save menu: ${error.message}`);
+  }
+}
+
+/**
+ * Load a saved game
+ */
+async function loadGame() {
+  if (!saveGameManager) return;
+
+  try {
+    uiManager.showLoadGameModal(saveGameManager, async (slot) => {
+      try {
+        await saveGameManager.loadFromSlot(slot);
+        uiManager.addOutputText('Game loaded successfully.', 'system');
+
+        // Refresh display
+        const currentRoom = gameManager.gameState.getCurrentRoom();
+        uiManager.addOutputText('');
+        uiManager.addOutputText(currentRoom.description, 'description');
+      } catch (error) {
+        uiManager.showError(`Failed to load game: ${error.message}`);
+      }
+    });
+  } catch (error) {
+    uiManager.showError(`Failed to show load menu: ${error.message}`);
+  }
+}
+
+/**
+ * Quit to main menu
+ */
+function quitToMenu() {
+  if (
+    uiManager.confirm(
+      'Are you sure you want to quit? Unsaved progress will be lost.'
+    )
+  ) {
+    if (gameManager) {
+      gameManager.stopGame();
+      gameManager = null;
+    }
+    if (saveGameManager) {
+      saveGameManager.disableAutoSave();
+      saveGameManager = null;
+    }
+    uiManager.hideGameUI();
+    uiManager.showMainMenu();
+  }
+}
+
+/**
+ * Restart current game
+ */
+async function restartGame() {
+  if (
+    !uiManager.confirm(
+      'Are you sure you want to restart? All progress will be lost.'
+    )
+  ) {
+    return;
+  }
+
+  try {
+    // Save the current theme and world type
+    const currentTheme =
+      gameManager.gameState.gameJSON?.metadata?.theme || null;
+    const useStatic =
+      gameManager.gameState.gameJSON?.metadata?.mockData || false;
+
+    // Stop the current game
+    if (gameManager) {
+      gameManager.stopGame();
+    }
+
+    // Disable auto-save
+    if (saveGameManager) {
+      saveGameManager.disableAutoSave();
+    }
+
+    // Clear the output
+    uiManager.clearOutput();
+
+    // Show loading screen
+    uiManager.showLoadingScreen('Restarting adventure...');
+
+    // Wait a moment for cleanup
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Start new game with same theme
+    await startNewGame(currentTheme);
+  } catch (error) {
+    logger.error('Failed to restart game:', error);
+    uiManager.showError(`Failed to restart: ${error.message}`);
+  }
+}
+
+/**
+ * Show inventory
+ */
+function showInventory() {
+  if (!gameManager) return;
+
+  const inventory = gameManager.gameState.getInventory();
+  if (inventory.length === 0) {
+    uiManager.addOutputText("You aren't carrying anything.", 'game');
+  } else {
+    uiManager.addOutputText('You are carrying:', 'game');
+    inventory.forEach((item) => {
+      uiManager.addOutputText(`  - ${item.name}`, 'game');
+    });
+  }
+}
+
+/**
+ * Show achievements gallery
+ */
+function showAchievements() {
+  if (!gameManager || !gameManager.gameProgression) {
+    uiManager.showError('No game is currently running');
+    return;
+  }
+
+  uiManager.showAchievementGallery(gameManager.gameProgression);
+}
+
+/**
+ * Show volume control modal
+ */
+function showVolumeControl() {
+  if (!gameManager) {
+    uiManager.showError('No game is currently running');
+    return;
+  }
+
+  uiManager.showVolumeModal(gameManager.soundManager);
+}
+
+/**
+ * Toggle sound on/off
+ */
+function toggleSound() {
+  if (!gameManager) return;
+
+  // Simple mute toggle
+  const currentVolume = gameManager.soundManager.masterVolume;
+  if (currentVolume > 0) {
+    gameManager.soundManager.setMasterVolume(0);
+    uiManager.addOutputText('Sound muted.', 'system');
+  } else {
+    gameManager.soundManager.setMasterVolume(
+      window.API_CONFIG.masterVolume || 0.7
+    );
+    uiManager.addOutputText('Sound enabled.', 'system');
+  }
+}
+
+/**
+ * Show help information
+ */
+function showHelp() {
+  uiManager.clearOutput();
+  uiManager.addOutputText(
+    '╔════════════════════════════════════════╗',
+    'title'
+  );
+  uiManager.addOutputText('  HOW TO PLAY'.padEnd(42) + '║', 'title');
+  uiManager.addOutputText(
+    '╚════════════════════════════════════════╝',
+    'title'
+  );
+  uiManager.addOutputText('');
+  uiManager.addOutputText(
+    'Somnium is a text adventure game. Type commands to interact with the world.',
+    'game'
+  );
+  uiManager.addOutputText('');
+  uiManager.addOutputText('Common commands:', 'game');
+  uiManager.addOutputText('  look - Examine your surroundings', 'game');
+  uiManager.addOutputText('  take [item] - Pick up an item', 'game');
+  uiManager.addOutputText('  use [item] - Use an item', 'game');
+  uiManager.addOutputText(
+    '  go [direction] - Move (north, south, east, west)',
+    'game'
+  );
+  uiManager.addOutputText('  talk to [character] - Speak with someone', 'game');
+  uiManager.addOutputText('  inventory - See what you are carrying', 'game');
+  uiManager.addOutputText('');
+  uiManager.addOutputText('Type "commands" for a full list.', 'hint');
+}
+
+/**
+ * Show available commands
+ */
+function showCommands() {
+  uiManager.clearOutput();
+  uiManager.addOutputText(
+    '╔════════════════════════════════════════╗',
+    'title'
+  );
+  uiManager.addOutputText('  AVAILABLE COMMANDS'.padEnd(42) + '║', 'title');
+  uiManager.addOutputText(
+    '╚════════════════════════════════════════╝',
+    'title'
+  );
+  uiManager.addOutputText('');
+
+  const commands = [
+    'look, examine, l',
+    'take, get, grab',
+    'drop, put down',
+    'use, activate',
+    'open, close',
+    'go [direction], n/s/e/w/up/down',
+    'talk to [character]',
+    'give [item] to [character]',
+    'ask [character] about [topic]',
+    'inventory, inv, i',
+    'save, load',
+    'help, ?',
+  ];
+
+  commands.forEach((cmd) => {
+    uiManager.addOutputText(`  ${cmd}`, 'game');
+  });
+  uiManager.addOutputText('');
+  uiManager.addOutputText('The parser understands many synonyms!', 'hint');
+}
+
+/**
+ * Toggle high contrast mode
+ */
+function toggleHighContrast() {
+  const body = document.body;
+  const isEnabled = body.classList.toggle('high-contrast');
+
+  // Save preference to localStorage
+  localStorage.setItem('highContrastMode', isEnabled ? 'true' : 'false');
+
+  // Notify user
+  if (gameManager) {
+    uiManager.addOutputText(
+      isEnabled ? 'High contrast mode enabled.' : 'High contrast mode disabled.',
+      'system'
+    );
+  }
+
+  logger.info(`High contrast mode ${isEnabled ? 'enabled' : 'disabled'}`);
+}
+
+/**
+ * Load high contrast mode preference
+ */
+function loadHighContrastPreference() {
+  const preference = localStorage.getItem('highContrastMode');
+  if (preference === 'true') {
+    document.body.classList.add('high-contrast');
+    logger.info('High contrast mode loaded from preferences');
+  }
+}
+
+/**
+ * Close the topmost open modal
+ */
+function closeTopModal() {
+  // Check modals in reverse order of typical opening
+  const modals = [
+    { id: 'achievement-modal', closeFn: () => uiManager.hideAchievementGallery() },
+    { id: 'volume-modal', closeFn: () => uiManager.hideVolumeModal() },
+    { id: 'save-modal', closeFn: () => uiManager.hideSaveGameModal() },
+    { id: 'load-modal', closeFn: () => uiManager.hideLoadGameModal() },
+    { id: 'error-modal', closeFn: () => uiManager.hideErrorModal() },
+    { id: 'about-modal', closeFn: () => uiManager.hideAboutModal() },
+    { id: 'theme-modal', closeFn: () => uiManager.hideThemeModal() },
+  ];
+
+  for (const modal of modals) {
+    const element = document.getElementById(modal.id);
+    if (element && !element.classList.contains('hidden')) {
+      modal.closeFn();
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Set up tab trapping for a modal
+ * @param {HTMLElement} modal - Modal element
+ */
+function setupModalTabTrap(modal) {
+  const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const focusableElements = modal.querySelectorAll(focusableSelector);
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+
+  const trapFocus = (e) => {
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey) {
+      // Shift+Tab: If on first element, go to last
+      if (document.activeElement === firstFocusable) {
+        e.preventDefault();
+        lastFocusable.focus();
+      }
+    } else {
+      // Tab: If on last element, go to first
+      if (document.activeElement === lastFocusable) {
+        e.preventDefault();
+        firstFocusable.focus();
       }
     }
-  });
+  };
 
-  // Listen for game messages
-  window.addEventListener('game-message', (e) => {
-    displayGameText(e.detail.message);
-  });
+  modal.addEventListener('keydown', trapFocus);
+
+  // Return cleanup function
+  return () => modal.removeEventListener('keydown', trapFocus);
 }
 
-/**
- * Display text in the game text window
- * @param {string} text - Text to display
- */
-function displayGameText(text) {
-  const textDisplay = document.getElementById('text-display');
+// Set up tab trapping for all modals on load
+document.addEventListener('DOMContentLoaded', () => {
+  const modalIds = [
+    'theme-modal',
+    'about-modal',
+    'error-modal',
+    'save-modal',
+    'load-modal',
+    'volume-modal',
+    'achievement-modal'
+  ];
 
-  // Add text line
-  const line = document.createElement('div');
-  line.className = 'text-line';
-  line.textContent = text;
-  textDisplay.appendChild(line);
+  modalIds.forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) {
+      setupModalTabTrap(modal);
+    }
+  });
+});
 
-  // Scroll to bottom
-  textDisplay.scrollTop = textDisplay.scrollHeight;
+// Export for debugging/testing
+window.getGameManager = () => gameManager;
+window.getUIManager = () => uiManager;
+window.getSaveGameManager = () => saveGameManager;
 
-  // Limit history to 100 lines
-  while (textDisplay.children.length > 100) {
-    textDisplay.removeChild(textDisplay.firstChild);
-  }
-}
-
-// Export for testing
-export { startNewGame, showError };
+export { startNewGame, uiManager, gameManager, saveGameManager };
