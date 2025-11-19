@@ -76,7 +76,13 @@ input:focus,
 }
 
 .skip-link:focus {
+  position: absolute;
   top: 0;
+  left: 0;
+  padding: 1em;
+  background: #000;
+  color: #fff;
+  z-index: 9999;
 }
 
 /* Accessibility - High Contrast Mode */

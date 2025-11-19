@@ -15,21 +15,32 @@
 import { logger } from './logger.js';
 
 export class AssetLibrary {
-  constructor() {
+  /**
+   * @param {Object} [options] - Optional configuration
+   * @param {Array<string>} [options.categories] - Custom asset categories
+   */
+  constructor(options = {}) {
     // Asset storage
     this.assets = new Map(); // assetId -> asset data
-    this.categories = {
-      graphics: new Set(),
-      audio: new Set(),
-      data: new Set(),
-      sprites: new Set(),
-      backgrounds: new Set(),
-      music: new Set(),
-      sfx: new Set(),
-      worlds: new Set(),
-      puzzles: new Set(),
-      dialogues: new Set(),
-    };
+    
+    // Configure categories (use custom or defaults)
+    const defaultCategories = [
+      'graphics',
+      'audio',
+      'data',
+      'sprites',
+      'backgrounds',
+      'music',
+      'sfx',
+      'worlds',
+      'puzzles',
+      'dialogues',
+    ];
+    const categoryNames = Array.isArray(options.categories) ? options.categories : defaultCategories;
+    this.categories = {};
+    for (const name of categoryNames) {
+      this.categories[name] = new Set();
+    }
 
     // Tagging system
     this.tags = new Map(); // tag -> Set of assetIds
@@ -59,7 +70,7 @@ export class AssetLibrary {
    * @returns {string} Asset ID
    */
   addAsset(asset) {
-    const assetId = asset.id || `asset_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const assetId = asset.id || `asset_${crypto.randomUUID()}`;
 
     const assetData = {
       id: assetId,

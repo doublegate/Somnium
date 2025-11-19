@@ -77,6 +77,7 @@ export class WorldEditor {
       showGrid: document.getElementById('showGrid'),
       snapToGrid: document.getElementById('snapToGrid'),
       autoLayout: document.getElementById('autoLayout'),
+      showHelp: document.getElementById('showHelp'),
       zoomIn: document.getElementById('zoomIn'),
       zoomOut: document.getElementById('zoomOut'),
       resetZoom: document.getElementById('resetZoom'),
@@ -107,6 +108,7 @@ export class WorldEditor {
       newWorldModal: document.getElementById('newWorldModal'),
       loadWorldModal: document.getElementById('loadWorldModal'),
       roomModal: document.getElementById('roomModal'),
+      helpModal: document.getElementById('helpModal'),
       worldFileInput: document.getElementById('worldFileInput'),
     };
   }
@@ -116,14 +118,23 @@ export class WorldEditor {
    */
   setupEventListeners() {
     // Toolbar actions
-    this.ui.newWorld.addEventListener('click', () => this.showModal('newWorldModal'));
-    this.ui.loadWorld.addEventListener('click', () => this.showModal('loadWorldModal'));
+    this.ui.newWorld.addEventListener('click', () =>
+      this.showModal('newWorldModal')
+    );
+    this.ui.loadWorld.addEventListener('click', () =>
+      this.showModal('loadWorldModal')
+    );
     this.ui.saveWorld.addEventListener('click', () => this.saveWorld());
     this.ui.exportWorld.addEventListener('click', () => this.exportWorld());
     this.ui.addRoom.addEventListener('click', () => this.addRoom());
-    this.ui.deleteRoom.addEventListener('click', () => this.deleteSelectedRoom());
+    this.ui.deleteRoom.addEventListener('click', () =>
+      this.deleteSelectedRoom()
+    );
     this.ui.validateWorld.addEventListener('click', () => this.validateWorld());
     this.ui.autoLayout.addEventListener('click', () => this.autoLayoutRooms());
+    this.ui.showHelp.addEventListener('click', () =>
+      this.showModal('helpModal')
+    );
 
     // Grid controls
     this.ui.showGrid.addEventListener('change', (e) => {
@@ -155,14 +166,22 @@ export class WorldEditor {
     });
 
     // Canvas interactions
-    this.canvas.addEventListener('mousedown', (e) => this.handleCanvasMouseDown(e));
-    this.canvas.addEventListener('mousemove', (e) => this.handleCanvasMouseMove(e));
+    this.canvas.addEventListener('mousedown', (e) =>
+      this.handleCanvasMouseDown(e)
+    );
+    this.canvas.addEventListener('mousemove', (e) =>
+      this.handleCanvasMouseMove(e)
+    );
     this.canvas.addEventListener('mouseup', (e) => this.handleCanvasMouseUp(e));
     this.canvas.addEventListener('wheel', (e) => this.handleCanvasWheel(e));
-    this.canvas.addEventListener('dblclick', (e) => this.handleCanvasDoubleClick(e));
+    this.canvas.addEventListener('dblclick', (e) =>
+      this.handleCanvasDoubleClick(e)
+    );
 
     // File input
-    this.ui.worldFileInput.addEventListener('change', (e) => this.loadWorldFile(e));
+    this.ui.worldFileInput.addEventListener('change', (e) =>
+      this.loadWorldFile(e)
+    );
 
     // Modal controls
     document.querySelectorAll('.modal-close').forEach((btn) => {
@@ -251,7 +270,7 @@ export class WorldEditor {
   /**
    * Handle canvas mouse up
    */
-  handleCanvasMouseUp(e) {
+  handleCanvasMouseUp(_e) {
     this.isDragging = false;
     this.isPanning = false;
     this.canvas.style.cursor = 'grab';
@@ -290,6 +309,9 @@ export class WorldEditor {
       this.selectedRoom = null;
       this.updateCanvas();
       this.updateRoomList();
+    } else if (e.key === 'F1' || e.key === '?') {
+      e.preventDefault();
+      this.showModal('helpModal');
     } else if (e.ctrlKey || e.metaKey) {
       switch (e.key) {
         case 's':
@@ -423,8 +445,10 @@ export class WorldEditor {
     this.ctx.lineWidth = 1 / this.zoom;
 
     // Calculate visible grid bounds
-    const startX = Math.floor(-this.panX / this.zoom / this.gridSize) * this.gridSize;
-    const startY = Math.floor(-this.panY / this.zoom / this.gridSize) * this.gridSize;
+    const startX =
+      Math.floor(-this.panX / this.zoom / this.gridSize) * this.gridSize;
+    const startY =
+      Math.floor(-this.panY / this.zoom / this.gridSize) * this.gridSize;
     const endX = startX + width / this.zoom + this.gridSize;
     const endY = startY + height / this.zoom + this.gridSize;
 
@@ -501,12 +525,20 @@ export class WorldEditor {
     this.ctx.font = `${14 / this.zoom}px monospace`;
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
-    this.ctx.fillText(room.name, room.x + room.width / 2, room.y + room.height / 2);
+    this.ctx.fillText(
+      room.name,
+      room.x + room.width / 2,
+      room.y + room.height / 2
+    );
 
     // Room ID (small text)
     this.ctx.fillStyle = '#AAAAAA';
     this.ctx.font = `${10 / this.zoom}px monospace`;
-    this.ctx.fillText(room.id, room.x + room.width / 2, room.y + room.height - 10);
+    this.ctx.fillText(
+      room.id,
+      room.x + room.width / 2,
+      room.y + room.height - 10
+    );
   }
 
   /**
@@ -543,8 +575,10 @@ export class WorldEditor {
    */
   updateRoomProperties() {
     if (!this.selectedRoom) {
-      this.ui.roomProperties.innerHTML = '<p class="text-muted">Select a room to edit properties</p>';
-      this.ui.roomExits.innerHTML = '<p class="text-muted">Select a room to edit exits</p>';
+      this.ui.roomProperties.innerHTML =
+        '<p class="text-muted">Select a room to edit properties</p>';
+      this.ui.roomExits.innerHTML =
+        '<p class="text-muted">Select a room to edit exits</p>';
       return;
     }
 
@@ -616,19 +650,23 @@ export class WorldEditor {
       this.updateRoomList();
     });
 
-    document.getElementById('propRoomDescription').addEventListener('change', (e) => {
-      room.description = e.target.value;
-    });
+    document
+      .getElementById('propRoomDescription')
+      .addEventListener('change', (e) => {
+        room.description = e.target.value;
+      });
 
     ['north', 'south', 'east', 'west'].forEach((dir) => {
-      document.getElementById(`exit${dir.charAt(0).toUpperCase() + dir.slice(1)}`).addEventListener('change', (e) => {
-        if (e.target.value) {
-          room.exits[dir] = e.target.value;
-        } else {
-          delete room.exits[dir];
-        }
-        this.updateCanvas();
-      });
+      document
+        .getElementById(`exit${dir.charAt(0).toUpperCase() + dir.slice(1)}`)
+        .addEventListener('change', (e) => {
+          if (e.target.value) {
+            room.exits[dir] = e.target.value;
+          } else {
+            delete room.exits[dir];
+          }
+          this.updateCanvas();
+        });
     });
   }
 
