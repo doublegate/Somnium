@@ -1,0 +1,93 @@
+title: "[Idea] "
+labels: ["enhancement", "idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Share Your Idea!
+
+        Have an idea for improving Somnium? We'd love to hear it!
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What area does your idea relate to?
+      options:
+        - Game Engine
+        - Multiplayer Features
+        - World Editor
+        - Parser/Commands
+        - Graphics/Sound
+        - User Interface
+        - Backend/Infrastructure
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Idea Description
+      description: Describe your idea in detail
+      placeholder: |
+        I think it would be great if Somnium had...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem This Solves
+      description: What problem or limitation does this idea address?
+      placeholder: "Currently, players can't..."
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: How would this improve the game or experience?
+      placeholder: |
+        - Better user experience
+        - More engaging gameplay
+        - Easier world creation
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or References
+      description: Are there similar features in other games or tools?
+      placeholder: "Similar to how Quest for Glory handled..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority (Your Opinion)
+      options:
+        - Nice to Have
+        - Would be Great
+        - Very Important
+        - Critical
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas (Optional)
+      description: Do you have thoughts on how this could be implemented?
+      placeholder: "This could work by..."
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd be willing to help implement this
+        - label: I can provide testing/feedback
+        - label: I can help with documentation
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Thank you for your suggestion!** We'll review all ideas and consider them for future releases. 💡
