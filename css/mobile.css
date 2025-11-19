@@ -1,0 +1,728 @@
+/**
+ * Mobile Responsive Styles for Somnium
+ * Provides touch-friendly UI and responsive layout for mobile devices
+ * Version: 2.0.0
+ */
+
+/* ========================================
+   Mobile Breakpoints
+   ======================================== */
+
+/*
+  Small phones: < 576px
+  Large phones: 576px - 768px
+  Tablets: 768px - 992px
+  Small desktops: 992px - 1200px
+  Large desktops: > 1200px
+*/
+
+/* ========================================
+   Base Mobile Optimizations
+   ======================================== */
+
+@media (max-width: 992px) {
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  /* Improve tap target size */
+  button,
+  input,
+  select,
+  textarea,
+  a {
+    min-height: 44px; /* iOS recommendation */
+    min-width: 44px;
+  }
+
+  /* Remove tap highlight color */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent zoom on focus (iOS) */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents iOS zoom */
+  }
+
+  /* Smooth scrolling */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ========================================
+   Game Container - Tablet & Mobile
+   ======================================== */
+
+@media (max-width: 992px) {
+  #game-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Canvas scales to fit screen width */
+  #game-canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* Text area takes remaining space */
+  #text-output-container {
+    flex: 1;
+    min-height: 300px;
+    max-height: 50vh;
+  }
+
+  #text-output {
+    max-height: calc(50vh - 100px);
+  }
+}
+
+/* ========================================
+   Menu Bar - Mobile Optimizations
+   ======================================== */
+
+@media (max-width: 768px) {
+  #menu-bar {
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  #menu-bar button {
+    flex: 1 1 calc(50% - 8px); /* 2 columns */
+    min-width: 120px;
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+
+  /* Hide less important buttons on small screens */
+  #menu-bar button.mobile-hide {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  #menu-bar button {
+    flex: 1 1 100%; /* Single column on very small screens */
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+
+/* ========================================
+   Text Input - Touch Optimizations
+   ======================================== */
+
+@media (max-width: 992px) {
+  #command-input-container {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  #command-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 14px;
+    border-radius: 8px;
+  }
+
+  /* Add mobile keyboard shortcuts */
+  .mobile-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 170, 0.1);
+    border-radius: 8px;
+  }
+
+  .mobile-shortcuts button {
+    flex: 1 1 auto;
+    min-width: 60px;
+    padding: 10px;
+    background: #0000AA;
+    color: #FFFF55;
+    border: 2px solid #5555FF;
+    border-radius: 4px;
+    font-family: 'VGA', monospace;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .mobile-shortcuts button:active {
+    background: #5555FF;
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================
+   Modals - Mobile Friendly
+   ======================================== */
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    margin: 20px auto;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .modal-body {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .modal-footer {
+    padding: 15px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-footer button {
+    width: 100%;
+    padding: 14px;
+  }
+}
+
+/* ========================================
+   Save/Load UI - Mobile Grid
+   ======================================== */
+
+@media (max-width: 768px) {
+  .save-slots-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 15px;
+  }
+
+  .save-slot {
+    padding: 15px;
+  }
+
+  .save-slot-name {
+    font-size: 16px;
+  }
+
+  .save-slot-meta {
+    font-size: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .save-slot-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .save-slot-actions button {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Volume Controls - Touch Sliders
+   ======================================== */
+
+@media (max-width: 768px) {
+  .volume-control {
+    margin-bottom: 20px;
+  }
+
+  .volume-control label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .volume-slider {
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  /* Larger thumb for touch */
+  .volume-slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .volume-value {
+    font-size: 16px;
+    min-width: 50px;
+  }
+}
+
+/* ========================================
+   Multiplayer Lobby - Mobile Layout
+   ======================================== */
+
+@media (max-width: 992px) {
+  .lobby-container {
+    padding: 15px;
+  }
+
+  .lobby-header h1 {
+    font-size: 24px;
+  }
+
+  .session-list {
+    grid-template-columns: 1fr; /* Single column */
+    gap: 15px;
+  }
+
+  .session-card {
+    padding: 15px;
+  }
+
+  .player-list {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .chat-container {
+    height: 300px;
+  }
+
+  .chat-input-container {
+    padding: 12px;
+  }
+
+  .chat-input {
+    font-size: 16px;
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   World Editor - Mobile Adaptations
+   ======================================== */
+
+@media (max-width: 992px) {
+  .editor-container {
+    flex-direction: column;
+  }
+
+  .editor-sidebar {
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .editor-canvas-container {
+    width: 100%;
+    height: 400px;
+  }
+
+  .editor-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .editor-toolbar button {
+    flex: 1 1 calc(25% - 8px);
+    min-width: 60px;
+    padding: 10px 5px;
+    font-size: 12px;
+  }
+
+  .property-panel {
+    padding: 12px;
+  }
+
+  .property-panel input,
+  .property-panel select {
+    font-size: 16px;
+    padding: 10px;
+  }
+}
+
+/* ========================================
+   Touch Controls Overlay
+   ======================================== */
+
+@media (max-width: 768px) and (hover: none) {
+  /* Virtual D-pad for movement */
+  .touch-controls {
+    display: flex;
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    z-index: 100;
+  }
+
+  .touch-dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-template-rows: repeat(3, 60px);
+    gap: 5px;
+  }
+
+  .touch-dpad button {
+    background: rgba(0, 0, 170, 0.7);
+    border: 2px solid #5555FF;
+    border-radius: 8px;
+    color: #FFFF55;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0;
+    min-width: auto;
+    min-height: auto;
+    backdrop-filter: blur(5px);
+  }
+
+  .touch-dpad button:active {
+    background: rgba(85, 85, 255, 0.9);
+    transform: scale(0.9);
+  }
+
+  /* Directional buttons placement */
+  .dpad-n {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .dpad-w {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .dpad-center {
+    grid-column: 2;
+    grid-row: 2;
+    background: rgba(170, 170, 170, 0.3);
+    cursor: default;
+  }
+
+  .dpad-e {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .dpad-s {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  /* Action buttons (take, look, use) */
+  .touch-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    z-index: 100;
+  }
+
+  .touch-actions button {
+    width: 70px;
+    height: 50px;
+    background: rgba(0, 170, 0, 0.7);
+    border: 2px solid #55FF55;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+  }
+
+  .touch-actions button:active {
+    background: rgba(85, 255, 85, 0.9);
+    transform: scale(0.9);
+  }
+}
+
+/* ========================================
+   Landscape Orientation Optimizations
+   ======================================== */
+
+@media (max-width: 992px) and (orientation: landscape) {
+  #game-container {
+    flex-direction: row;
+  }
+
+  #game-canvas {
+    width: 50%;
+    height: 100vh;
+  }
+
+  #text-output-container {
+    width: 50%;
+    height: 100vh;
+  }
+
+  .touch-controls {
+    bottom: 20px;
+  }
+
+  .touch-actions {
+    bottom: 20px;
+  }
+}
+
+/* ========================================
+   Small Phone Optimizations (< 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  h3 {
+    font-size: 16px;
+  }
+
+  /* Hide decorative elements */
+  .decorative {
+    display: none;
+  }
+
+  /* Reduce padding/margins */
+  .container {
+    padding: 10px;
+  }
+
+  /* Stack everything vertically */
+  .flex-row {
+    flex-direction: column !important;
+  }
+
+  /* Full width buttons */
+  button:not(.touch-dpad button):not(.touch-actions button) {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Print Styles (for documentation)
+   ======================================== */
+
+@media print {
+  /* Hide interactive elements */
+  #menu-bar,
+  #command-input-container,
+  .touch-controls,
+  .touch-actions,
+  .modal-backdrop,
+  .modal {
+    display: none !important;
+  }
+
+  /* Show only text content */
+  #text-output {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* Black and white */
+  * {
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  /* Page breaks */
+  .room-description {
+    page-break-after: avoid;
+  }
+}
+
+/* ========================================
+   Accessibility Enhancements for Mobile
+   ======================================== */
+
+@media (max-width: 992px) {
+  /* Focus indicators for keyboard navigation */
+  button:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 3px solid #FFFF55;
+    outline-offset: 2px;
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    button {
+      border-width: 3px;
+    }
+
+    .modal-content {
+      border-width: 3px;
+    }
+
+    input,
+    select,
+    textarea {
+      border-width: 2px;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-color: #000;
+      --text-color: #fff;
+      --border-color: #555;
+    }
+  }
+}
+
+/* ========================================
+   iOS-Specific Fixes
+   ======================================== */
+
+@supports (-webkit-touch-callout: none) {
+  /* iOS safe area insets */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Fix iOS input zoom */
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+
+  /* Prevent rubber-band scrolling */
+  #game-container {
+    overscroll-behavior: none;
+  }
+}
+
+/* ========================================
+   Android-Specific Fixes
+   ======================================== */
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Fix Android input rendering */
+  input,
+  select,
+  textarea {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Fix select dropdown */
+  select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFFF55" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+    padding-right: 35px;
+  }
+}
+
+/* ========================================
+   Foldable Device Support
+   ======================================== */
+
+@media (horizontal-viewport-segments: 2) {
+  /* Dual-screen / foldable devices */
+  #game-container {
+    grid-template-columns: env(viewport-segment-width 0 0) env(viewport-segment-width 1 0);
+  }
+
+  #game-canvas {
+    grid-column: 1;
+  }
+
+  #text-output-container {
+    grid-column: 2;
+  }
+}
+
+/* ========================================
+   Performance Optimizations for Mobile
+   ======================================== */
+
+@media (max-width: 992px) {
+  /* Use GPU acceleration for animations */
+  .animated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Reduce canvas updates on low-end devices */
+  @media (prefers-reduced-data: reduce) {
+    #game-canvas {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+  }
+
+  /* Disable shadows on low-end devices */
+  @media (prefers-reduced-transparency: reduce) {
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+  }
+}
+
+/* ========================================
+   Tablet-Specific Optimizations
+   ======================================== */
+
+@media (min-width: 768px) and (max-width: 992px) {
+  /* Two-column layout for tablets */
+  .save-slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .session-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Larger touch targets but not full-width */
+  button {
+    min-width: 120px;
+  }
+
+  /* Show more content */
+  #text-output {
+    max-height: 60vh;
+  }
+}

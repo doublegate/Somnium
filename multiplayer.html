@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somnium - Multiplayer Lobby</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/multiplayer.css">
+</head>
+<body>
+  <div id="multiplayer-container">
+    <!-- Connection Screen -->
+    <div id="connection-screen" class="screen active">
+      <div class="screen-content">
+        <h1>Somnium Multiplayer</h1>
+        <div class="connection-form">
+          <div class="form-group">
+            <label for="player-name">Player Name:</label>
+            <input type="text" id="player-name" placeholder="Enter your name" maxlength="20" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="server-url">Server URL:</label>
+            <input type="text" id="server-url" value="ws://localhost:8080" placeholder="ws://localhost:8080">
+          </div>
+          <button id="connect-btn" class="btn-primary btn-large">Connect</button>
+          <div id="connection-status" class="status-message"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lobby Screen -->
+    <div id="lobby-screen" class="screen">
+      <div class="screen-header">
+        <h1>Multiplayer Lobby</h1>
+        <div class="player-info">
+          <span id="current-player-name"></span>
+          <button id="disconnect-btn" class="btn-secondary">Disconnect</button>
+        </div>
+      </div>
+
+      <div class="lobby-content">
+        <!-- Session Actions -->
+        <div class="lobby-section">
+          <h2>Sessions</h2>
+          <div class="session-actions">
+            <button id="create-session-btn" class="btn-primary">Create Session</button>
+            <button id="refresh-sessions-btn" class="btn-secondary">Refresh</button>
+          </div>
+        </div>
+
+        <!-- Available Sessions -->
+        <div class="lobby-section">
+          <h3>Available Sessions</h3>
+          <div id="sessions-list" class="sessions-list">
+            <p class="no-sessions">No active sessions. Create one to get started!</p>
+          </div>
+        </div>
+
+        <!-- Current Session -->
+        <div id="current-session" class="lobby-section hidden">
+          <h3>Current Session</h3>
+          <div class="session-details">
+            <div class="session-info">
+              <p><strong>Session ID:</strong> <span id="session-id"></span></p>
+              <p><strong>Mode:</strong> <span id="session-mode"></span></p>
+              <p><strong>World:</strong> <span id="session-world"></span></p>
+            </div>
+            <div class="session-actions-inline">
+              <button id="leave-session-btn" class="btn-danger">Leave Session</button>
+              <button id="start-game-btn" class="btn-primary">Start Game</button>
+            </div>
+          </div>
+
+          <h4>Players (<span id="player-count">0</span>/<span id="max-players">4</span>)</h4>
+          <div id="players-list" class="players-list"></div>
+        </div>
+
+        <!-- Chat -->
+        <div class="lobby-section">
+          <h3>Chat</h3>
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200">
+            <button id="send-chat-btn" class="btn-primary">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Session Modal -->
+    <div id="create-session-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Create Multiplayer Session</h2>
+        <div class="form-group">
+          <label for="max-players-input">Max Players:</label>
+          <select id="max-players-input">
+            <option value="2">2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4" selected>4 Players</option>
+            <option value="6">6 Players</option>
+            <option value="8">8 Players</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="mode-input">Game Mode:</label>
+          <select id="mode-input">
+            <option value="coop" selected>Co-op (Shared Progress)</option>
+            <option value="competitive">Competitive (Race to Finish)</option>
+            <option value="shared">Shared World (Persistent)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="world-input">World:</label>
+          <select id="world-input">
+            <option value="enchanted-manor">The Enchanted Manor</option>
+            <option value="fantasy-quest">The Dragon's Crown</option>
+            <option value="detective-mystery">The Midnight Murder</option>
+            <option value="space-station">Station Erebus</option>
+            <option value="random">Random AI-Generated</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="private-session-input">
+            Private Session
+          </label>
+        </div>
+        <div class="form-group" id="password-group" style="display: none;">
+          <label for="password-input">Password:</label>
+          <input type="password" id="password-input" maxlength="20">
+        </div>
+        <div class="modal-actions">
+          <button id="confirm-create-btn" class="btn-primary">Create</button>
+          <button id="cancel-create-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Join Session Modal -->
+    <div id="join-session-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Join Session</h2>
+        <div class="form-group">
+          <label for="join-session-id">Session ID:</label>
+          <input type="text" id="join-session-id" readonly>
+        </div>
+        <div class="form-group" id="join-password-group" style="display: none;">
+          <label for="join-password-input">Password:</label>
+          <input type="password" id="join-password-input" maxlength="20">
+        </div>
+        <div class="modal-actions">
+          <button id="confirm-join-btn" class="btn-primary">Join</button>
+          <button id="cancel-join-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/multiplayer-lobby.js"></script>
+</body>
+</html>

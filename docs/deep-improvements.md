@@ -27,7 +27,7 @@ Sierra's parser uses a sophisticated pattern matching system that goes beyond si
 class SaidPattern {
   constructor(pattern) {
     // Convert Sierra-style pattern to regex
-    // Example: "look/examine/l [at] <object>" 
+    // Example: "look/examine/l [at] <object>"
     this.pattern = this.compileSaidPattern(pattern);
     this.captureGroups = [];
   }
@@ -38,7 +38,7 @@ class SaidPattern {
     // [] for optional words: "[the] key"
     // <> for word classes: "<object>"
     // * for wildcards: "* key"
-    
+
     let regex = pattern
       .replace(/\[([^\]]+)\]/g, '(?:$1)?') // Optional words
       .replace(/([^\/]+)\/([^\/\s]+)/g, '(?:$1|$2)') // Alternatives
@@ -47,7 +47,7 @@ class SaidPattern {
         return '(\\w+)'; // Capture word class
       })
       .replace(/\*/g, '.*'); // Wildcards
-      
+
     return new RegExp(`^${regex}$`, 'i');
   }
 
@@ -55,7 +55,7 @@ class SaidPattern {
     // First expand input using vocabulary synonyms
     const expanded = this.expandSynonyms(input, vocabulary);
     const match = expanded.match(this.pattern);
-    
+
     if (match) {
       const captures = {};
       this.captureGroups.forEach((group, index) => {
@@ -63,15 +63,18 @@ class SaidPattern {
       });
       return { matched: true, captures };
     }
-    
+
     return { matched: false };
   }
 
   expandSynonyms(input, vocabulary) {
-    return input.split(' ').map(word => {
-      const canonical = vocabulary.getCanonical(word);
-      return canonical || word;
-    }).join(' ');
+    return input
+      .split(' ')
+      .map((word) => {
+        const canonical = vocabulary.getCanonical(word);
+        return canonical || word;
+      })
+      .join(' ');
   }
 }
 
@@ -87,18 +90,24 @@ class EnhancedParser extends Parser {
     // From KQ4: Complex fairy tale commands
     this.addPattern('give/offer/hand [the] <item> [to] <character>', 'GIVE');
     this.addPattern('wave [the] [magic] wand [at] <target>', 'WAVE_WAND');
-    
+
     // From SQ3: Sci-fi interactions
-    this.addPattern('insert/put [the] <item> [in/into] [the] <container>', 'INSERT');
+    this.addPattern(
+      'insert/put [the] <item> [in/into] [the] <container>',
+      'INSERT'
+    );
     this.addPattern('scan/analyze <object> [with] [the] [scanner]', 'SCAN');
-    
+
     // From QFG1: Combat and RPG commands
     this.addPattern('cast [magic/spell] <spell> [at/on] <target>', 'CAST');
     this.addPattern('throw/hurl [the] <item> [at] <target>', 'THROW');
-    
+
     // From Iceman: Procedural commands
     this.addPattern('set [the] <control> [to] <value>', 'SET_CONTROL');
-    this.addPattern('check/inspect [the] <equipment> [for] [damage]', 'INSPECT');
+    this.addPattern(
+      'check/inspect [the] <equipment> [for] [damage]',
+      'INSPECT'
+    );
   }
 
   parse(input) {
@@ -110,11 +119,11 @@ class EnhancedParser extends Parser {
           action,
           ...result.captures,
           raw: input,
-          confidence: 1.0
+          confidence: 1.0,
         };
       }
     }
-    
+
     // Fall back to original parser
     return super.parse(input);
   }
@@ -150,19 +159,19 @@ class VocabularyEnhanced extends Vocabulary {
       'wake up': 'wake',
       'pick lock': 'unlock',
       'put on': 'wear',
-      'take off': 'remove'
+      'take off': 'remove',
     };
   }
 
   preprocessInput(input) {
     // Check for multi-word verbs before tokenization
     let processed = input.toLowerCase();
-    
+
     for (const [multiWord, canonical] of Object.entries(this.multiWordVerbs)) {
       const regex = new RegExp(`\\b${multiWord}\\b`, 'g');
       processed = processed.replace(regex, canonical);
     }
-    
+
     return processed;
   }
 }
@@ -176,34 +185,43 @@ From QFG1 and Iceman, we see commands that only work in specific contexts:
 class ContextualCommandExecutor extends CommandExecutor {
   validateContext(command) {
     const context = this.gameState.getContext();
-    
+
     switch (command.action) {
       case 'ORDER':
         // From SQ3: Must be sitting at bar
         if (!context.sitting || context.location !== 'bar') {
-          return { valid: false, message: "You need to be sitting at the bar." };
+          return {
+            valid: false,
+            message: 'You need to be sitting at the bar.',
+          };
         }
         break;
-        
+
       case 'DIVE':
         // From Iceman: Must be at proper depth
         if (context.depth < 50) {
-          return { valid: false, message: "Not deep enough to execute that maneuver." };
+          return {
+            valid: false,
+            message: 'Not deep enough to execute that maneuver.',
+          };
         }
         break;
-        
+
       case 'CAST':
         // From QFG1: Must have spell learned and mana
         const spell = command.spell;
         if (!this.gameState.hasSpell(spell)) {
-          return { valid: false, message: `You don't know the ${spell} spell.` };
+          return {
+            valid: false,
+            message: `You don't know the ${spell} spell.`,
+          };
         }
         if (this.gameState.mana < this.getSpellCost(spell)) {
-          return { valid: false, message: "Not enough mana." };
+          return { valid: false, message: 'Not enough mana.' };
         }
         break;
     }
-    
+
     return { valid: true };
   }
 }
@@ -228,17 +246,27 @@ class PriorityRenderer {
     // Based on KQ4's priority system
     const gradient = [];
     for (let y = 0; y < 200; y++) {
-      if (y < 48) gradient[y] = 4;       // Sky/background
-      else if (y < 60) gradient[y] = 5;  // Far distance
-      else if (y < 72) gradient[y] = 6;  // Mid-far
-      else if (y < 84) gradient[y] = 7;  // Mid distance
-      else if (y < 96) gradient[y] = 8;  // Mid-near
-      else if (y < 108) gradient[y] = 9; // Near distance
-      else if (y < 120) gradient[y] = 10; // Closer
-      else if (y < 132) gradient[y] = 11; // Close
-      else if (y < 144) gradient[y] = 12; // Very close
-      else if (y < 156) gradient[y] = 13; // Foreground
-      else gradient[y] = 14;              // Immediate foreground
+      if (y < 48)
+        gradient[y] = 4; // Sky/background
+      else if (y < 60)
+        gradient[y] = 5; // Far distance
+      else if (y < 72)
+        gradient[y] = 6; // Mid-far
+      else if (y < 84)
+        gradient[y] = 7; // Mid distance
+      else if (y < 96)
+        gradient[y] = 8; // Mid-near
+      else if (y < 108)
+        gradient[y] = 9; // Near distance
+      else if (y < 120)
+        gradient[y] = 10; // Closer
+      else if (y < 132)
+        gradient[y] = 11; // Close
+      else if (y < 144)
+        gradient[y] = 12; // Very close
+      else if (y < 156)
+        gradient[y] = 13; // Foreground
+      else gradient[y] = 14; // Immediate foreground
     }
     return gradient;
   }
@@ -247,13 +275,13 @@ class PriorityRenderer {
     // Clear buffers
     this.ctx.clearRect(0, 0, 320, 200);
     this.priorityBuffer.fill(0);
-    
+
     // Render background with priority info
     this.renderBackground(scene.background, scene.priorityMap);
-    
+
     // Sort sprites by priority
     const sortedSprites = this.sortSpritesByPriority(sprites);
-    
+
     // Render sprites respecting priority
     for (const sprite of sortedSprites) {
       this.renderSprite(sprite);
@@ -268,24 +296,24 @@ class PriorityRenderer {
       }
       if (a.fixedPriority) return -1;
       if (b.fixedPriority) return 1;
-      
+
       // Otherwise use Y position
       return a.y - b.y;
     });
   }
 
   renderSprite(sprite) {
-    const priority = sprite.fixedPriority ? 
-      sprite.priority : 
-      this.priorityGradient[Math.floor(sprite.y)];
-      
+    const priority = sprite.fixedPriority
+      ? sprite.priority
+      : this.priorityGradient[Math.floor(sprite.y)];
+
     // Only render pixels that have higher priority
     for (let sy = 0; sy < sprite.height; sy++) {
       for (let sx = 0; sx < sprite.width; sx++) {
         const px = sprite.x + sx;
         const py = sprite.y + sy;
         const bufferIndex = py * 320 + px;
-        
+
         if (this.priorityBuffer[bufferIndex] <= priority) {
           // Render pixel
           this.ctx.fillStyle = sprite.getPixel(sx, sy);
@@ -317,7 +345,7 @@ class StateAnimator {
       transitions: config.transitions || {},
       onEnter: config.onEnter || (() => {}),
       onExit: config.onExit || (() => {}),
-      duration: config.duration || Infinity
+      duration: config.duration || Infinity,
     });
   }
 
@@ -326,9 +354,9 @@ class StateAnimator {
     this.defineState('idle', {
       loops: [{ loop: 0, cels: [0], cycleTime: 1000 }],
       transitions: {
-        'walk': { condition: () => this.view.isMoving },
-        'pickup': { condition: () => this.view.currentAction === 'take' }
-      }
+        walk: { condition: () => this.view.isMoving },
+        pickup: { condition: () => this.view.currentAction === 'take' },
+      },
     });
 
     this.defineState('walk', {
@@ -336,29 +364,29 @@ class StateAnimator {
         { loop: 1, cels: [0, 1, 2, 3], cycleTime: 150 }, // Right
         { loop: 2, cels: [0, 1, 2, 3], cycleTime: 150 }, // Left
         { loop: 3, cels: [0, 1, 2, 3], cycleTime: 150 }, // Away
-        { loop: 4, cels: [0, 1, 2, 3], cycleTime: 150 }  // Toward
+        { loop: 4, cels: [0, 1, 2, 3], cycleTime: 150 }, // Toward
       ],
       transitions: {
-        'idle': { condition: () => !this.view.isMoving }
-      }
+        idle: { condition: () => !this.view.isMoving },
+      },
     });
 
     this.defineState('pickup', {
       loops: [{ loop: 5, cels: [0, 1, 2, 3, 4], cycleTime: 200 }],
       duration: 1000,
-      onExit: () => this.view.currentAction = null,
+      onExit: () => (this.view.currentAction = null),
       transitions: {
-        'idle': { condition: () => true } // Always return to idle
-      }
+        idle: { condition: () => true }, // Always return to idle
+      },
     });
   }
 
   update(deltaTime) {
     if (!this.currentState) return;
-    
+
     this.stateTime += deltaTime;
     const state = this.states.get(this.currentState);
-    
+
     // Check for state transitions
     for (const [nextState, transition] of Object.entries(state.transitions)) {
       if (transition.condition()) {
@@ -366,7 +394,7 @@ class StateAnimator {
         return;
       }
     }
-    
+
     // Check duration-based transitions
     if (this.stateTime >= state.duration) {
       const defaultTransition = Object.keys(state.transitions)[0];
@@ -374,7 +402,7 @@ class StateAnimator {
         this.changeState(defaultTransition);
       }
     }
-    
+
     // Update animation
     this.updateAnimation(state, deltaTime);
   }
@@ -382,12 +410,12 @@ class StateAnimator {
   changeState(newState) {
     const oldState = this.states.get(this.currentState);
     const nextState = this.states.get(newState);
-    
+
     if (oldState) oldState.onExit();
-    
+
     this.currentState = newState;
     this.stateTime = 0;
-    
+
     nextState.onEnter();
   }
 }
@@ -405,22 +433,22 @@ class DayNightSystem {
 
   setTimeOfDay(time) {
     if (this.currentTime === time) return;
-    
+
     this.currentTime = time;
     this.updateSceneGraphics();
   }
 
   updateSceneGraphics() {
     const scene = this.sceneRenderer.currentScene;
-    
+
     if (this.currentTime === 'night') {
       // KQ4 pattern: night graphics are room number + 100
       const nightOverlay = this.getNightOverlay(scene.id);
       this.sceneRenderer.applyOverlay(nightOverlay);
-      
+
       // Adjust palette for night colors
       this.sceneRenderer.setPalette(this.getNightPalette());
-      
+
       // Add moon/stars if outdoors
       if (scene.isOutdoor) {
         this.addCelestialBodies();
@@ -443,15 +471,15 @@ class DayNightSystem {
   generateNightOverlay() {
     const overlay = new ImageData(320, 200);
     const data = overlay.data;
-    
+
     for (let i = 0; i < data.length; i += 4) {
       // Apply blue-tinted darkness
-      data[i] = 0;     // R
+      data[i] = 0; // R
       data[i + 1] = 0; // G
       data[i + 2] = 20; // B
       data[i + 3] = 180; // A (transparency)
     }
-    
+
     return overlay;
   }
 }
@@ -476,13 +504,13 @@ class PrioritySoundManager extends SoundManager {
       doors: 5,
       combat: 8,
       magic: 7,
-      ui: 9
+      ui: 9,
     };
   }
 
   playSound(soundId, options = {}) {
     const priority = options.priority || this.getSoundPriority(soundId);
-    
+
     // Check if we need to interrupt lower priority sounds
     if (this.activeSounds.size >= this.maxChannels) {
       const lowestPriority = this.findLowestPrioritySound();
@@ -493,10 +521,10 @@ class PrioritySoundManager extends SoundManager {
         return null;
       }
     }
-    
+
     const sound = super.playSound(soundId, options);
     this.activeSounds.set(soundId, { sound, priority });
-    
+
     return sound;
   }
 
@@ -524,21 +552,21 @@ class SynchronizedSound {
 
   playSynchronized(soundId, cuePoints) {
     const sound = this.soundManager.playSound(soundId);
-    
+
     // Set up cue point handlers
-    cuePoints.forEach(cue => {
+    cuePoints.forEach((cue) => {
       const timer = setTimeout(() => {
         this.handleCue(cue);
       }, cue.time);
-      
+
       this.cueHandlers.set(soundId, timer);
     });
-    
+
     // Clean up on sound end
     sound.onended = () => {
       this.cleanup(soundId);
     };
-    
+
     return sound;
   }
 
@@ -546,19 +574,22 @@ class SynchronizedSound {
     switch (cue.type) {
       case 'animation':
         // Trigger sprite animation
-        this.gameManager.viewManager.triggerAnimation(cue.target, cue.animation);
+        this.gameManager.viewManager.triggerAnimation(
+          cue.target,
+          cue.animation
+        );
         break;
-        
+
       case 'state':
         // Change game state
         this.gameManager.gameState.setState(cue.state, cue.value);
         break;
-        
+
       case 'effect':
         // Trigger visual effect
         this.gameManager.sceneRenderer.showEffect(cue.effect);
         break;
-        
+
       case 'script':
         // Execute script function
         this.gameManager.scriptManager.execute(cue.script);
@@ -570,13 +601,23 @@ class SynchronizedSound {
   playSubmarineDive() {
     const cuePoints = [
       { time: 0, type: 'state', state: 'diving', value: true },
-      { time: 1000, type: 'animation', target: 'submarine', animation: 'dive_start' },
+      {
+        time: 1000,
+        type: 'animation',
+        target: 'submarine',
+        animation: 'dive_start',
+      },
       { time: 3000, type: 'effect', effect: 'bubbles' },
       { time: 5000, type: 'state', state: 'depth', value: 50 },
-      { time: 7000, type: 'animation', target: 'submarine', animation: 'dive_level' },
-      { time: 8000, type: 'state', state: 'diving', value: false }
+      {
+        time: 7000,
+        type: 'animation',
+        target: 'submarine',
+        animation: 'dive_level',
+      },
+      { time: 8000, type: 'state', state: 'diving', value: false },
     ];
-    
+
     this.playSynchronized('submarine_dive', cuePoints);
   }
 }
@@ -598,7 +639,7 @@ class AmbientSoundscape {
     this.scapes.set(name, {
       base: config.base, // Continuous background
       random: config.random || [], // Random occasional sounds
-      conditional: config.conditional || [] // Condition-based sounds
+      conditional: config.conditional || [], // Condition-based sounds
     });
   }
 
@@ -608,20 +649,20 @@ class AmbientSoundscape {
       base: {
         sound: 'ocean_waves',
         volume: 0.3,
-        loop: true
+        loop: true,
       },
       random: [
         { sound: 'seagull', probability: 0.1, minInterval: 10000 },
         { sound: 'ship_horn', probability: 0.05, minInterval: 30000 },
-        { sound: 'splash', probability: 0.15, minInterval: 5000 }
+        { sound: 'splash', probability: 0.15, minInterval: 5000 },
       ],
       conditional: [
         {
           sound: 'submarine_ping',
           condition: () => this.gameState.depth > 100,
-          interval: 5000
-        }
-      ]
+          interval: 5000,
+        },
+      ],
     });
 
     // From SQ3: Space soundscape
@@ -629,42 +670,42 @@ class AmbientSoundscape {
       base: {
         sound: 'space_ambience',
         volume: 0.2,
-        loop: true
+        loop: true,
       },
       random: [
         { sound: 'computer_beep', probability: 0.2, minInterval: 3000 },
-        { sound: 'distant_engine', probability: 0.1, minInterval: 15000 }
+        { sound: 'distant_engine', probability: 0.1, minInterval: 15000 },
       ],
       conditional: [
         {
           sound: 'alert_klaxon',
           condition: () => this.gameState.alert === true,
-          interval: 2000
-        }
-      ]
+          interval: 2000,
+        },
+      ],
     });
   }
 
   startScape(name) {
     this.stopCurrentScape();
-    
+
     const scape = this.scapes.get(name);
     if (!scape) return;
-    
+
     // Start base layer
     const baseSound = this.soundManager.playSound(scape.base.sound, {
       volume: scape.base.volume,
-      loop: scape.base.loop
+      loop: scape.base.loop,
     });
-    
+
     this.layers.set('base', baseSound);
-    
+
     // Start random sound scheduler
     this.scheduleRandomSounds(scape.random);
-    
+
     // Start conditional sound checker
     this.startConditionalChecker(scape.conditional);
-    
+
     this.activeScape = name;
   }
 }
@@ -687,38 +728,42 @@ class SceneResourceManager {
     if (this.cache.has(sceneId)) {
       return this.cache.get(sceneId);
     }
-    
+
     // Load scene manifest
-    const manifest = await fetch(`/scenes/${sceneId}/manifest.json`).then(r => r.json());
-    
+    const manifest = await fetch(`/scenes/${sceneId}/manifest.json`).then((r) =>
+      r.json()
+    );
+
     // Load all resources in parallel
     const resources = await Promise.all([
       this.loadGraphics(manifest.graphics),
       this.loadSounds(manifest.sounds),
-      this.loadScripts(manifest.scripts)
+      this.loadScripts(manifest.scripts),
     ]);
-    
+
     const scene = {
       id: sceneId,
       graphics: resources[0],
       sounds: resources[1],
       scripts: resources[2],
-      manifest
+      manifest,
     };
-    
+
     this.cache.set(sceneId, scene);
-    
+
     // Predictive preloading
     this.preloadAdjacentScenes(manifest.exits);
-    
+
     return scene;
   }
 
   preloadAdjacentScenes(exits) {
     // Preload connected rooms in background
-    const preloadIds = Object.values(exits).filter(id => id && !this.cache.has(id));
-    
-    preloadIds.forEach(id => {
+    const preloadIds = Object.values(exits).filter(
+      (id) => id && !this.cache.has(id)
+    );
+
+    preloadIds.forEach((id) => {
       if (!this.loadingQueue.includes(id)) {
         this.loadingQueue.push(id);
         // Load with low priority
@@ -729,8 +774,11 @@ class SceneResourceManager {
 
   // Memory management
   pruneCache(currentSceneId, maxDistance = 3) {
-    const reachableScenes = this.findReachableScenes(currentSceneId, maxDistance);
-    
+    const reachableScenes = this.findReachableScenes(
+      currentSceneId,
+      maxDistance
+    );
+
     for (const [sceneId, scene] of this.cache) {
       if (!reachableScenes.has(sceneId)) {
         this.cache.delete(sceneId);
@@ -752,27 +800,27 @@ class GameLogicWorker {
     this.parser = new EnhancedParser();
     this.commandExecutor = new ContextualCommandExecutor();
     this.eventManager = new EventManager();
-    
+
     this.initializeMessageHandlers();
   }
 
   initializeMessageHandlers() {
     self.onmessage = (e) => {
       const { type, payload } = e.data;
-      
+
       switch (type) {
         case 'INIT':
           this.initialize(payload);
           break;
-          
+
         case 'COMMAND':
           this.processCommand(payload);
           break;
-          
+
         case 'UPDATE':
           this.update(payload.deltaTime);
           break;
-          
+
         case 'SAVE':
           this.saveGame(payload.slot);
           break;
@@ -783,7 +831,7 @@ class GameLogicWorker {
   async processCommand(input) {
     // Parse command
     const command = this.parser.parse(input);
-    
+
     // Validate context
     const validation = this.commandExecutor.validateContext(command);
     if (!validation.valid) {
@@ -791,22 +839,22 @@ class GameLogicWorker {
         type: 'COMMAND_RESULT',
         payload: {
           success: false,
-          message: validation.message
-        }
+          message: validation.message,
+        },
       });
       return;
     }
-    
+
     // Execute command
     const result = await this.commandExecutor.execute(command);
-    
+
     // Update render state
     this.sendRenderState();
-    
+
     // Send command result
     this.postMessage({
       type: 'COMMAND_RESULT',
-      payload: result
+      payload: result,
     });
   }
 
@@ -818,13 +866,13 @@ class GameLogicWorker {
       overlays: this.gameState.overlays,
       ui: {
         score: this.gameState.score,
-        inventory: this.gameState.inventory.getVisible()
-      }
+        inventory: this.gameState.inventory.getVisible(),
+      },
     };
-    
+
     this.postMessage({
       type: 'RENDER_STATE',
-      payload: renderState
+      payload: renderState,
     });
   }
 }
@@ -841,14 +889,14 @@ const SceneEditor = () => {
   const [scene, setScene] = useState(null);
   const [selectedTool, setSelectedTool] = useState('select');
   const [priorityView, setPriorityView] = useState(false);
-  
+
   const tools = {
     select: SelectTool,
     line: LineTool,
     rect: RectangleTool,
     polygon: PolygonTool,
     fill: FillTool,
-    priority: PriorityTool
+    priority: PriorityTool,
   };
 
   const CurrentTool = tools[selectedTool];
@@ -856,8 +904,8 @@ const SceneEditor = () => {
   return (
     <div className="scene-editor">
       <Toolbar>
-        {Object.keys(tools).map(tool => (
-          <ToolButton 
+        {Object.keys(tools).map((tool) => (
+          <ToolButton
             key={tool}
             active={selectedTool === tool}
             onClick={() => setSelectedTool(tool)}
@@ -866,21 +914,21 @@ const SceneEditor = () => {
           </ToolButton>
         ))}
       </Toolbar>
-      
-      <Canvas 
-        width={320} 
+
+      <Canvas
+        width={320}
         height={200}
         scale={3}
         onDraw={(ctx, coords) => CurrentTool.draw(ctx, coords, scene)}
         showPriority={priorityView}
       />
-      
+
       <PropertiesPanel>
         <SceneProperties scene={scene} onChange={setScene} />
         <LayerList layers={scene?.layers} />
         <ExitEditor exits={scene?.exits} />
       </PropertiesPanel>
-      
+
       <StatusBar>
         <Coordinates />
         <CurrentColor />
@@ -902,29 +950,34 @@ if (import.meta.hot) {
 ## 5. Implementation Plan
 
 ### Phase 1: Parser Enhancement (Week 1)
+
 1. **Day 1-2**: Implement SaidPattern class and pattern compiler
-2. **Day 3-4**: Integrate multi-word verb support and vocabulary preprocessing  
+2. **Day 3-4**: Integrate multi-word verb support and vocabulary preprocessing
 3. **Day 5**: Add context validation system
 4. **Day 6-7**: Create comprehensive test suite with examples from Sierra games
 
 ### Phase 2: Graphics System (Week 2)
+
 1. **Day 1-2**: Implement priority-based renderer
 2. **Day 3-4**: Create state-based animation system
 3. **Day 5**: Add day/night cycle support
 4. **Day 6-7**: Optimize rendering performance and add debugging tools
 
 ### Phase 3: Sound Enhancement (Week 3)
+
 1. **Day 1-2**: Implement priority-based sound system
 2. **Day 3-4**: Add synchronized sound effects with cue points
 3. **Day 5-6**: Create ambient soundscape system
 4. **Day 7**: Integration testing with graphics system
 
 ### Phase 4: Modern Architecture (Week 4)
+
 1. **Day 1-2**: Implement resource management with predictive loading
 2. **Day 3-4**: Set up Web Worker architecture
 3. **Day 5-7**: Create scene editor tool
 
 ### Phase 5: Integration and Polish (Week 5)
+
 1. **Day 1-2**: Integrate all systems
 2. **Day 3-4**: Performance optimization
 3. **Day 5-6**: Create migration guide for existing content
