@@ -1,6 +1,6 @@
 # Somnium
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/doublegate/Somnium/releases/tag/v2.0.0)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/doublegate/Somnium/releases/tag/v2.1.0)
 [![Tests](https://img.shields.io/badge/tests-444%20passing-brightgreen.svg)](https://github.com/doublegate/Somnium/actions)
 [![Coverage](https://img.shields.io/badge/coverage-61.64%25-yellow.svg)](https://github.com/doublegate/Somnium)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -58,11 +58,25 @@ An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era
 
 ### 🛠️ World Creation Tools
 
-- **Visual World Editor**: Create custom adventures with the built-in editor
-  - Drag-and-drop room design
-  - Vector graphics drawing tools
-  - NPC and item placement
-  - Puzzle and event scripting
+- **Visual World Editor** (`editors/world-editor.html`): Professional drag-and-drop world designer
+  - Interactive canvas with zoom (25%-200%) and pan controls
+  - Drag-and-drop room positioning with auto-layout algorithm
+  - Real-time validation for room connections and item placement
+  - Export to JSON format for direct game loading
+  - Visual connection management with exit editing
+  - Grid overlay and snap-to-grid options
+- **Puzzle Builder** (`editors/puzzle-builder.html`): Flowchart-style puzzle designer
+  - 6 node types: item, action, sequence, condition, combine, trigger
+  - Visual dependency graph with auto-arranged hierarchical layout
+  - Testing mode for step-by-step puzzle simulation
+  - Solution path validation and auto-calculation
+  - Export puzzles directly to game format
+- **Dialogue Tree Editor** (`editors/dialogue-editor.html`): NPC conversation designer
+  - 6 node types: greeting, question, response, branch, trade, end
+  - Branching dialogue with conditions and state tracking
+  - Emotion system (neutral, happy, sad, angry, surprised, fearful)
+  - Live preview and interactive playthrough mode
+  - Export dialogue trees to game-ready JSON
 - **World Templates**: Jump-start your creativity with professional templates
   - Medieval Castle (5-room fantasy adventure)
   - Mysterious Dungeon (4-room dungeon crawler)
@@ -73,6 +87,72 @@ An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era
   - Helpful guide NPC with comprehensive dialogue
   - Practice movement, items, puzzles, and commands
   - Earn achievements for completing the tutorial
+
+### 🗂️ v2.1 Asset Library System
+
+- **Comprehensive Asset Management**: Organize all game resources in one place
+  - Multi-category organization (graphics, audio, dialogue, worlds, puzzles)
+  - Advanced keyword search with real-time filtering
+  - Tag-based categorization with auto-tagging
+  - Usage tracking and analytics (creation date, last used, usage count)
+  - Bulk operations (export, delete, tag)
+  - Recent items quick access (last 10 used assets)
+- **Asset Metadata**: Rich information for every asset
+  - Size tracking and storage statistics
+  - Creation and modification timestamps
+  - Usage analytics across your worlds
+  - Custom tagging for easy organization
+- **Integration**: Seamlessly works with all editors
+  - Import assets from World Editor, Puzzle Builder, Dialogue Editor
+  - Export assets to game-ready formats
+  - Share assets between different projects
+
+### 🤖 v2.1 Enhanced AI Systems
+
+- **Enhanced World Generator**: Multi-phase AI generation with quality controls
+  - 5-phase pipeline: Structure → Rooms → NPCs → Items → Puzzles
+  - Automatic retry logic (up to 3 attempts per phase)
+  - Auto-fix common issues (missing IDs, broken references)
+  - Enhanced room generation with rich descriptions
+  - NPC personality and dialogue integration
+  - Puzzle difficulty balancing
+- **World Validator**: Comprehensive validation for world data
+  - Graph algorithms for connectivity checking (DFS, cycle detection)
+  - 6 validation categories: structure, rooms, NPCs, items, puzzles, events
+  - Error severity levels (error, warning, info)
+  - Reachability analysis for all rooms and items
+  - Puzzle solvability verification
+  - NPC dialogue tree completeness checking
+
+### 🏆 v2.1 Expanded Achievements System
+
+- **50+ Achievements**: Comprehensive achievement tracking across 8 categories
+  - **Exploration**: Discover locations, secrets, and hidden areas
+  - **Combat**: Battle victories and combat mastery
+  - **Social**: NPC interactions and relationship milestones
+  - **Collection**: Item collecting and treasure hunting
+  - **Puzzle**: Puzzle-solving achievements
+  - **Speed**: Time-based challenges
+  - **Secret**: Hidden achievements for dedicated players
+  - **Meta**: Game completion and special milestones
+- **Rarity System**: 4 tiers with XP rewards
+  - Common (10 XP) - Basic gameplay achievements
+  - Rare (25 XP) - Moderate challenge achievements
+  - Epic (50 XP) - Difficult achievements
+  - Legendary (100 XP) - Extremely rare achievements
+- **Progress Tracking**: Incremental progress for complex achievements
+- **Event-Driven**: Automatic checking and unlocking during gameplay
+
+### 🤝 v2.1 Social Features
+
+- **Friend System**: Real-time friend management and messaging
+  - Add/remove friends with username search
+  - Online status tracking (online, offline, away, busy)
+  - Real-time messaging with WebSocket delivery
+  - Typing indicators and read receipts
+  - Message history with timestamps
+  - Friend list with status indicators
+  - Block/unblock functionality
 
 ### 🔧 Developer Features
 
@@ -312,9 +392,37 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ## Status
 
-🚀 **VERSION 2.0.0 RELEASED!** 🚀
+🚀 **VERSION 2.1.0 RELEASED!** 🚀
 
-Somnium v2.0.0 is **production-ready** with multiplayer, cloud features, and comprehensive testing! All development phases complete, including backend infrastructure and deployment automation.
+Somnium v2.1.0 is **production-ready** with comprehensive content creation tools, enhanced AI systems, and expanded social features! Building on v2.0's multiplayer foundation with powerful visual editors and asset management.
+
+### What's New in v2.1.0
+
+**🎨 Content Creation Suite:**
+- ✅ Visual World Editor with drag-and-drop room designer (~1000 lines)
+- ✅ Puzzle Builder with flowchart-style node editor (~800 lines)
+- ✅ Dialogue Tree Editor for NPC conversations (~1000 lines)
+- ✅ Asset Library System for comprehensive asset management (~700 lines)
+
+**🤖 Enhanced AI & Validation:**
+- ✅ EnhancedWorldGenerator with 5-phase pipeline and retry logic (~500 lines)
+- ✅ WorldValidator with graph algorithms and comprehensive validation (~550 lines)
+- ✅ Auto-fix common world generation issues
+- ✅ Puzzle solvability verification
+
+**🏆 Expanded Features:**
+- ✅ 50+ achievements across 8 categories with rarity tiers (~650 lines)
+- ✅ Friend System with real-time messaging and status tracking (~650 lines)
+- ✅ Production PNG icon generation using Sharp library (12 icons)
+
+**📊 v2.1.0 Metrics:**
+- 11,000+ lines of new code
+- 4 major backend modules
+- 3 complete visual editors with HTML/CSS/JS
+- 1 comprehensive asset management system
+- Full backward compatibility with v2.0 saves
+
+See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical details.
 
 ### What's New in v2.0.0
 
@@ -390,24 +498,31 @@ Somnium v2.0.0 is **production-ready** with multiplayer, cloud features, and com
 
 ### Release Information
 
-- **Version**: 2.0.0
-- **Release Date**: June 18, 2025
+- **Version**: 2.1.0
+- **Release Date**: November 19, 2025
 - **Changelog**: See [CHANGELOG.md](CHANGELOG.md) for complete release notes
-- **Download**: [Latest Release](https://github.com/doublegate/Somnium/releases/tag/v2.0.0)
+- **Download**: [Latest Release](https://github.com/doublegate/Somnium/releases/tag/v2.1.0)
 - **Live Demo**: [Play Online](https://doublegate.github.io/Somnium/)
 - **Multiplayer**: [Join Lobby](https://doublegate.github.io/Somnium/multiplayer.html)
-- **Editor**: [Create Worlds](https://doublegate.github.io/Somnium/editor.html)
+- **Visual Editors**:
+  - [World Editor](https://doublegate.github.io/Somnium/editors/world-editor.html)
+  - [Puzzle Builder](https://doublegate.github.io/Somnium/editors/puzzle-builder.html)
+  - [Dialogue Editor](https://doublegate.github.io/Somnium/editors/dialogue-editor.html)
 
 ### What's Next?
 
-v2.0.0 is production-ready with multiplayer and cloud features! Future enhancements:
-- Mobile app versions (iOS/Android)
-- Voice command support
-- VR/AR integration
-- Advanced world editor features (terrain tools, lighting effects)
-- Community marketplace for custom worlds
-- Leaderboards and competitive tournaments
-- Mod support and plugin system
+v2.1.0 brings professional content creation tools! Future enhancements for v2.2+:
+- **Mobile Optimization**: Touch-optimized editors for tablets and mobile devices
+- **Collaborative Editing**: Real-time co-editing of worlds with multiple users
+- **Advanced Editor Features**:
+  - Terrain brushes and lighting effects in World Editor
+  - Visual scripting system for complex game logic
+  - Animation timeline editor for cutscenes
+- **Marketplace Features**: Community hub for sharing and selling custom content
+- **Voice & Accessibility**: Voice command support and screen reader compatibility
+- **VR/AR Integration**: Immersive world creation and gameplay
+- **AI Enhancements**: Style transfer for consistent world aesthetics
+- **Mod Support**: Plugin system for community extensions
 
 See [Deferred Implementations](docs/deferred-impl.md) for the full roadmap.
 

@@ -5,6 +5,296 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-19
+
+### 🎨 MAJOR RELEASE - CONTENT CREATION SUITE
+
+Somnium v2.1.0 introduces comprehensive visual content creation tools, enhanced AI systems with validation, expanded achievement system, and social features. This release empowers creators with professional-grade editors while maintaining full backward compatibility with v2.0 saves.
+
+---
+
+## Visual Content Creation Tools
+
+### World Editor (`editors/world-editor.html` - 1000+ lines)
+
+Professional drag-and-drop world designer with real-time validation:
+
+**Interactive Canvas**
+- Zoom controls (25% to 200%) with mouse wheel support
+- Pan navigation with drag-to-move
+- Grid overlay with snap-to-grid option
+- Visual room positioning with drag-and-drop
+- Auto-layout algorithm using force-directed graph
+- Real-time connection visualization
+
+**Room Management**
+- Add/remove rooms with visual feedback
+- Edit room properties (name, description, graphics)
+- Visual exit connections with arrow indicators
+- Room validation (unreachable rooms, missing exits)
+- Bulk room operations
+
+**Export & Integration**
+- Export to game-ready JSON format
+- Import existing worlds for editing
+- Validation before export
+- Direct integration with game engine
+
+### Puzzle Builder (`editors/puzzle-builder.html` - 800+ lines)
+
+Flowchart-style puzzle designer with dependency management:
+
+**Node Types**
+- **Item Nodes**: Required inventory items
+- **Action Nodes**: Player actions to perform
+- **Sequence Nodes**: Multi-step sequences
+- **Condition Nodes**: State-based requirements
+- **Combine Nodes**: Item combination puzzles
+- **Trigger Nodes**: Event-based triggers
+
+**Visual Features**
+- Hierarchical auto-layout using Dagre algorithm
+- Drag-and-drop node positioning
+- Visual dependency connections
+- Node validation and error highlighting
+- Solution path calculation
+
+**Testing & Validation**
+- Interactive testing mode
+- Step-by-step simulation
+- Solution path verification
+- Reachability analysis
+- Export to game format
+
+### Dialogue Tree Editor (`editors/dialogue-editor.html` - 1000+ lines)
+
+NPC conversation designer with branching dialogue:
+
+**Dialogue Nodes**
+- **Greeting**: Initial NPC greetings
+- **Question**: NPC questions to player
+- **Response**: NPC responses to player choices
+- **Branch**: Conditional dialogue paths
+- **Trade**: Item trading sequences
+- **End**: Conversation endings
+
+**Features**
+- Visual tree representation with zoom/pan
+- Emotion system (neutral, happy, sad, angry, surprised, fearful)
+- Player response options with branching
+- Condition-based dialogue gating
+- Live preview of conversations
+- Interactive playthrough mode
+
+**Validation**
+- Orphaned node detection
+- Incomplete path warnings
+- Missing response validation
+- Export to game-ready JSON
+
+---
+
+## Asset Library System
+
+### AssetLibrary.js (700+ lines)
+
+Comprehensive asset management with search, tagging, and usage tracking:
+
+**Core Features**
+- Multi-category organization (graphics, audio, dialogue, worlds, puzzles)
+- Advanced keyword search with real-time filtering
+- Tag-based categorization with auto-tagging
+- Usage tracking and analytics
+- Bulk operations (export, delete, tag)
+- Recent items quick access (last 10 used)
+
+**Asset Metadata**
+- Size tracking and storage statistics
+- Creation and modification timestamps
+- Usage count across projects
+- Last used tracking
+- Custom user tags
+- Asset relationships
+
+**Integration**
+- Import from World Editor, Puzzle Builder, Dialogue Editor
+- Export to game-ready formats
+- Asset sharing between projects
+- Automatic cleanup of unused assets
+
+---
+
+## Enhanced AI Systems
+
+### EnhancedWorldGenerator.js (500+ lines)
+
+Multi-phase AI world generation with quality controls:
+
+**5-Phase Generation Pipeline**
+1. **Structure Phase**: Generate world layout and connections
+2. **Rooms Phase**: Create detailed room descriptions and graphics
+3. **NPCs Phase**: Generate characters with personalities
+4. **Items Phase**: Create items and objects
+5. **Puzzles Phase**: Design puzzles with balanced difficulty
+
+**Quality Control**
+- Retry logic (up to 3 attempts per phase)
+- Auto-fix common issues (missing IDs, broken references)
+- Validation between phases
+- Progress tracking and logging
+- Fallback to simplified generation
+
+**Features**
+- Enhanced room generation with rich descriptions
+- NPC personality integration
+- Puzzle difficulty balancing
+- Theme consistency enforcement
+- Graph-based world structure validation
+
+### WorldValidator.js (550+ lines)
+
+Comprehensive validation for world data:
+
+**Validation Categories**
+1. **Structure**: World metadata, room count, ID uniqueness
+2. **Rooms**: Descriptions, graphics, exit validity
+3. **NPCs**: Dialogue trees, personality, item references
+4. **Items**: Properties, locations, puzzle integration
+5. **Puzzles**: Steps, solutions, required items
+6. **Events**: Triggers, conditions, actions
+
+**Graph Algorithms**
+- Depth-First Search (DFS) for room reachability
+- Cycle detection in puzzle dependencies
+- Path finding for item accessibility
+- Dead-end detection
+
+**Error Reporting**
+- Error severity levels (error, warning, info)
+- Detailed error messages with locations
+- Fix suggestions for common issues
+- Validation summary with statistics
+
+---
+
+## Expanded Features
+
+### ExpandedAchievements.js (650+ lines)
+
+50+ achievements across 8 categories with rarity tiers:
+
+**Achievement Categories**
+- **Exploration** (8 achievements): Discover locations, secrets, hidden areas
+- **Combat** (7 achievements): Battle victories, combat mastery
+- **Social** (7 achievements): NPC interactions, relationship milestones
+- **Collection** (8 achievements): Item collecting, treasure hunting
+- **Puzzle** (7 achievements): Puzzle-solving achievements
+- **Speed** (6 achievements): Time-based challenges
+- **Secret** (5 achievements): Hidden achievements for dedicated players
+- **Meta** (4 achievements): Game completion, special milestones
+
+**Rarity System**
+- **Common** (10 XP): Basic gameplay achievements
+- **Rare** (25 XP): Moderate challenge achievements
+- **Epic** (50 XP): Difficult achievements
+- **Legendary** (100 XP): Extremely rare achievements
+
+**Features**
+- Incremental progress tracking
+- Event-driven automatic checking
+- Achievement notifications
+- Statistics tracking (unlock date, progress percentage)
+- Save/load persistence
+
+### FriendSystem.js (650+ lines)
+
+Real-time friend management and messaging:
+
+**Friend Management**
+- Add/remove friends with username search
+- Friend request system
+- Block/unblock functionality
+- Friend list with online status
+
+**Online Status Tracking**
+- Real-time status updates (online, offline, away, busy)
+- Last seen timestamps
+- Automatic status detection
+- Manual status setting
+
+**Messaging System**
+- Real-time message delivery via WebSocket
+- Typing indicators
+- Read receipts
+- Message history with timestamps
+- Offline message queuing
+- Message notifications
+
+**Integration**
+- WebSocket client for real-time communication
+- Fallback to polling if WebSocket unavailable
+- Persistent message storage
+- Cross-device synchronization
+
+---
+
+## Production Assets
+
+### PNG Icon Generation
+
+Real production-quality icons using Sharp library:
+
+**Icon Generation** (`scripts/create-source-icon.js`)
+- SVG source icon with EGA-styled retro aesthetic
+- "Somnium" branding with moon/castle imagery
+- Professional design suitable for app stores
+
+**Icon Processing** (`scripts/generate-icons.js`)
+- Sharp library for high-quality PNG generation
+- 12 icon sizes generated:
+  - Web: 16x16, 32x32, 192x192, 512x512
+  - iOS: 120x120, 152x152, 167x167, 180x180
+  - Android: 72x72, 96x96, 144x144, 384x384
+- Optimized PNG compression
+- Automatic output to `assets/icons/`
+
+---
+
+## Technical Improvements
+
+### Code Quality
+- 11,000+ lines of new code
+- ES6 module architecture throughout
+- Comprehensive JSDoc comments
+- Consistent code style with Prettier
+- Zero ESLint warnings
+
+### Integration
+- Full backward compatibility with v2.0 saves
+- Seamless editor integration with game engine
+- Asset Library integration across all tools
+- Real-time validation feedback
+
+### Documentation
+- Complete v2.1 features documentation
+- Editor usage guides
+- API reference for new modules
+- Migration guide from v2.0
+
+---
+
+## Statistics
+
+- **4 major backend modules**: AssetLibrary, EnhancedWorldGenerator, WorldValidator, ExpandedAchievements
+- **3 complete visual editors**: World Editor, Puzzle Builder, Dialogue Editor
+- **1 social system**: FriendSystem with real-time messaging
+- **11,000+ lines of new code**
+- **Full backward compatibility** with v2.0 saves
+
+See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical details.
+
+---
+
 ## [2.0.0] - 2025-06-18
 
 ### 🚀 MAJOR RELEASE - MULTIPLAYER & CLOUD FEATURES
