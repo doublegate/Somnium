@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Somnium - World Editor</title>
+    <link rel="stylesheet" href="../css/world-editor.css" />
+  </head>
+  <body>
+    <div class="editor-container">
+      <!-- Top Toolbar -->
+      <header class="toolbar">
+        <div class="toolbar-section">
+          <button id="newWorld" class="btn btn-primary" title="New World">
+            <span>📄</span> New
+          </button>
+          <button id="loadWorld" class="btn" title="Load World">
+            <span>📂</span> Load
+          </button>
+          <button id="saveWorld" class="btn" title="Save World">
+            <span>💾</span> Save
+          </button>
+          <button id="exportWorld" class="btn" title="Export JSON">
+            <span>📤</span> Export
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <button id="addRoom" class="btn btn-success" title="Add Room">
+            <span>➕</span> Add Room
+          </button>
+          <button id="deleteRoom" class="btn btn-danger" title="Delete Room">
+            <span>🗑️</span> Delete
+          </button>
+          <button id="validateWorld" class="btn" title="Validate World">
+            <span>✓</span> Validate
+          </button>
+        </div>
+
+        <div class="toolbar-section">
+          <label>
+            <input type="checkbox" id="showGrid" checked /> Show Grid
+          </label>
+          <label>
+            <input type="checkbox" id="snapToGrid" checked /> Snap to Grid
+          </label>
+          <button id="autoLayout" class="btn" title="Auto Layout">
+            <span>🔄</span> Auto Layout
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <div class="editor-main">
+        <!-- Left Sidebar - World Properties -->
+        <aside class="sidebar sidebar-left">
+          <div class="panel">
+            <h3>World Properties</h3>
+            <div class="form-group">
+              <label for="worldTitle">Title:</label>
+              <input type="text" id="worldTitle" placeholder="My Adventure" />
+            </div>
+            <div class="form-group">
+              <label for="worldDescription">Description:</label>
+              <textarea
+                id="worldDescription"
+                rows="3"
+                placeholder="A thrilling adventure..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="worldGenre">Genre:</label>
+              <select id="worldGenre">
+                <option value="fantasy">Fantasy</option>
+                <option value="sci-fi">Science Fiction</option>
+                <option value="mystery">Mystery</option>
+                <option value="horror">Horror</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="worldDifficulty">Difficulty:</label>
+              <select id="worldDifficulty">
+                <option value="easy">Easy</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Room List</h3>
+            <div id="roomList" class="room-list"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Templates</h3>
+            <button id="loadTemplate" class="btn btn-block">
+              Load Template
+            </button>
+            <select id="templateSelect" class="form-control">
+              <option value="">Choose a template...</option>
+              <option value="castle">Castle Adventure</option>
+              <option value="dungeon">Dungeon Crawler</option>
+              <option value="mansion">Haunted Mansion</option>
+              <option value="spaceship">Space Station</option>
+            </select>
+          </div>
+        </aside>
+
+        <!-- Center Canvas - Visual Room Layout -->
+        <div class="canvas-container">
+          <div class="canvas-toolbar">
+            <button id="zoomIn" class="btn-icon" title="Zoom In">
+              <span>🔍+</span>
+            </button>
+            <button id="zoomOut" class="btn-icon" title="Zoom Out">
+              <span>🔍−</span>
+            </button>
+            <button id="resetZoom" class="btn-icon" title="Reset Zoom">
+              <span>↺</span>
+            </button>
+            <span id="zoomLevel" class="zoom-indicator">100%</span>
+          </div>
+          <canvas id="worldCanvas" width="1200" height="800"></canvas>
+          <div class="canvas-overlay">
+            <div id="minimap" class="minimap"></div>
+          </div>
+        </div>
+
+        <!-- Right Sidebar - Room Properties -->
+        <aside class="sidebar sidebar-right">
+          <div class="panel">
+            <h3>Room Properties</h3>
+            <div id="roomProperties" class="properties-form">
+              <p class="text-muted">Select a room to edit properties</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Exits</h3>
+            <div id="roomExits" class="exits-form">
+              <p class="text-muted">Select a room to edit exits</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Objects & Items</h3>
+            <div id="roomObjects" class="objects-list">
+              <button id="addObject" class="btn btn-block btn-sm">
+                Add Object
+              </button>
+              <button id="addItem" class="btn btn-block btn-sm">
+                Add Item
+              </button>
+              <div id="objectsList"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bottom Panel - Validation & Console -->
+      <footer class="bottom-panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="validation">Validation</button>
+          <button class="tab" data-tab="console">Console</button>
+          <button class="tab" data-tab="stats">Statistics</button>
+        </div>
+        <div class="tab-content">
+          <div id="validation" class="tab-panel active">
+            <div id="validationResults">
+              <p class="text-muted">No validation results yet</p>
+            </div>
+          </div>
+          <div id="console" class="tab-panel">
+            <div id="consoleOutput" class="console-output"></div>
+          </div>
+          <div id="stats" class="tab-panel">
+            <div id="statsDisplay" class="stats-display">
+              <div class="stat-item">
+                <span class="stat-label">Rooms:</span>
+                <span id="statRooms" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Items:</span>
+                <span id="statItems" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">NPCs:</span>
+                <span id="statNPCs" class="stat-value">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Puzzles:</span>
+                <span id="statPuzzles" class="stat-value">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="newWorldModal" class="modal">
+      <div class="modal-content">
+        <h2>Create New World</h2>
+        <p>This will clear the current world. Continue?</p>
+        <div class="modal-actions">
+          <button id="confirmNew" class="btn btn-primary">Create</button>
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loadWorldModal" class="modal">
+      <div class="modal-content">
+        <h2>Load World</h2>
+        <input type="file" id="worldFileInput" accept=".json" />
+        <div class="modal-actions">
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="roomModal" class="modal">
+      <div class="modal-content modal-large">
+        <h2 id="roomModalTitle">Room Details</h2>
+        <div class="form-group">
+          <label>Room ID:</label>
+          <input type="text" id="modalRoomId" readonly />
+        </div>
+        <div class="form-group">
+          <label>Name:</label>
+          <input type="text" id="modalRoomName" />
+        </div>
+        <div class="form-group">
+          <label>Description:</label>
+          <textarea id="modalRoomDescription" rows="4"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button id="saveRoomModal" class="btn btn-primary">Save</button>
+          <button class="btn modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/editors/WorldEditor.js"></script>
+  </body>
+</html>
