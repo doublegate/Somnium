@@ -1,13 +1,14 @@
 /**
  * PWA Icon Generator Script
- * Generates all required icon sizes from a source image
+ * Generates all required icon sizes from a source image using sharp
  *
- * Usage: node scripts/generate-icons.js [source-image.png]
+ * Usage: node scripts/generate-icons.js
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +17,7 @@ const __dirname = path.dirname(__filename);
 const ICON_SIZES = [72, 96, 128, 144, 152, 192, 384, 512];
 
 const ICON_DIR = path.join(__dirname, '..', 'assets', 'icons');
+const SOURCE_ICON = path.join(ICON_DIR, 'source-icon-512x512.png');
 
 // Create icons directory if it doesn't exist
 if (!fs.existsSync(ICON_DIR)) {
@@ -23,57 +25,115 @@ if (!fs.existsSync(ICON_DIR)) {
 }
 
 console.log('[Icon Generator] PWA Icon Generator');
-console.log('[Icon Generator] ====================');
-console.log('');
-console.log('This script requires a source image to generate icons.');
-console.log('');
-console.log('Manual Steps:');
-console.log('1. Create a 512x512px PNG image for your app icon');
-console.log('2. Save it as assets/icons/icon-512x512.png');
-console.log('3. Use an online tool to generate other sizes:');
-console.log('   - https://realfavicongenerator.net/');
-console.log('   - https://www.pwabuilder.com/imageGenerator');
-console.log('');
-console.log('Required sizes:');
-ICON_SIZES.forEach(size => {
-  console.log(`  - ${size}x${size}`);
-});
-console.log('');
-console.log('Or use ImageMagick to generate automatically:');
-console.log('');
-console.log('# Install ImageMagick');
-console.log('# Ubuntu: sudo apt-get install imagemagick');
-console.log('# Mac: brew install imagemagick');
-console.log('');
-console.log('# Generate all sizes');
-ICON_SIZES.forEach(size => {
-  console.log(`convert assets/icons/source.png -resize ${size}x${size} assets/icons/icon-${size}x${size}.png`);
-});
-console.log('');
+console.log('[Icon Generator] ====================\n');
 
-// Generate placeholder SVG icons
-const generatePlaceholderSVG = (size) => {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" fill="#0000AA"/>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#FFFF55" font-family="monospace" font-size="${size / 8}">Somnium</text>
-</svg>`;
-};
+// Check if source icon exists
+if (!fs.existsSync(SOURCE_ICON)) {
+  console.log('[Icon Generator] Source icon not found!');
+  console.log('[Icon Generator] Creating source icon first...\n');
 
-console.log('[Icon Generator] Generating placeholder SVG icons...');
-console.log('');
+  // Import and run create-source-icon
+  import('./create-source-icon.js').then(() => {
+    // Wait a bit for file to be created
+    setTimeout(() => {
+      generateAllIcons();
+    }, 1000);
+  });
+} else {
+  generateAllIcons();
+}
 
-ICON_SIZES.forEach(size => {
-  const svgContent = generatePlaceholderSVG(size);
-  const svgPath = path.join(ICON_DIR, `placeholder-icon-${size}x${size}.svg`);
-  fs.writeFileSync(svgPath, svgContent);
-  console.log(`✓ Generated ${svgPath}`);
-});
+async function generateAllIcons() {
+  console.log('[Icon Generator] Generating PNG icons from source...\n');
 
-console.log('');
-console.log('[Icon Generator] Placeholder SVG icons generated!');
-console.log('[Icon Generator] Replace them with PNG versions for production.');
-console.log('');
-console.log('[Icon Generator] For PNG generation, use ImageMagick or online tools.');
-console.log('[Icon Generator] SVG icons will work in most modern browsers.');
-console.log('');
-console.log('[Icon Generator] Done!');
+  let successCount = 0;
+  let errorCount = 0;
+
+  for (const size of ICON_SIZES) {
+    try {
+      const outputPath = path.join(ICON_DIR, `icon-${size}x${size}.png`);
+
+      await sharp(SOURCE_ICON)
+        .resize(size, size, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'cover',
+        })
+        .png({
+          quality: 100,
+          compressionLevel: 9,
+        })
+        .toFile(outputPath);
+
+      console.log(`✓ Generated icon-${size}x${size}.png`);
+      successCount++;
+    } catch (error) {
+      console.error(`✗ Failed to generate icon-${size}x${size}.png:`, error.message);
+      errorCount++;
+    }
+  }
+
+  // Generate Apple Touch Icon (180x180)
+  try {
+    const appleTouchPath = path.join(ICON_DIR, 'apple-touch-icon.png');
+    await sharp(SOURCE_ICON)
+      .resize(180, 180, {
+        kernel: sharp.kernel.lanczos3,
+        fit: 'cover',
+      })
+      .png({ quality: 100 })
+      .toFile(appleTouchPath);
+
+    console.log('✓ Generated apple-touch-icon.png (180x180)');
+    successCount++;
+  } catch (error) {
+    console.error('✗ Failed to generate apple-touch-icon.png:', error.message);
+    errorCount++;
+  }
+
+  // Generate favicon (32x32, 16x16)
+  try {
+    const favicon32Path = path.join(ICON_DIR, 'favicon-32x32.png');
+    await sharp(SOURCE_ICON)
+      .resize(32, 32, {
+        kernel: sharp.kernel.lanczos3,
+        fit: 'cover',
+      })
+      .png({ quality: 100 })
+      .toFile(favicon32Path);
+
+    console.log('✓ Generated favicon-32x32.png');
+    successCount++;
+  } catch (error) {
+    console.error('✗ Failed to generate favicon-32x32.png:', error.message);
+    errorCount++;
+  }
+
+  try {
+    const favicon16Path = path.join(ICON_DIR, 'favicon-16x16.png');
+    await sharp(SOURCE_ICON)
+      .resize(16, 16, {
+        kernel: sharp.kernel.lanczos3,
+        fit: 'cover',
+      })
+      .png({ quality: 100 })
+      .toFile(favicon16Path);
+
+    console.log('✓ Generated favicon-16x16.png');
+    successCount++;
+  } catch (error) {
+    console.error('✗ Failed to generate favicon-16x16.png:', error.message);
+    errorCount++;
+  }
+
+  console.log('\n[Icon Generator] ====================');
+  console.log(`[Icon Generator] Success: ${successCount} icons generated`);
+  if (errorCount > 0) {
+    console.log(`[Icon Generator] Errors: ${errorCount} icons failed`);
+  }
+  console.log('[Icon Generator] Done!\n');
+
+  console.log('Next steps:');
+  console.log('1. Update manifest.json to reference these icons');
+  console.log('2. Add <link> tags to index.html for favicons');
+  console.log('3. Test PWA installation on mobile devices\n');
+}
