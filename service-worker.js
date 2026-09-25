@@ -137,7 +137,10 @@ async function networkFirst(request) {
 
     return response;
   } catch (error) {
-    console.error('[ServiceWorker] Network request failed, trying cache:', error);
+    console.error(
+      '[ServiceWorker] Network request failed, trying cache:',
+      error
+    );
 
     const cached = await caches.match(request);
     if (cached) {
@@ -211,7 +214,9 @@ self.addEventListener('periodicsync', (event) => {
 
 async function syncCloudSaves() {
   try {
-    console.log('[ServiceWorker] Periodic sync: checking for cloud save updates');
+    console.log(
+      '[ServiceWorker] Periodic sync: checking for cloud save updates'
+    );
 
     const response = await fetch('/api/saves/check-updates', {
       method: 'GET',
@@ -263,9 +268,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   if (event.action === 'open' || !event.action) {
-    event.waitUntil(
-      clients.openWindow(event.notification.data.url || '/')
-    );
+    event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
   }
 });
 

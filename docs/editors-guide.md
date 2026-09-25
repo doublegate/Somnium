@@ -55,11 +55,13 @@ All editors export to game-ready JSON format and integrate with the Asset Librar
 #### Sidebars
 
 **Left Sidebar - World Properties**:
+
 - World name and description
 - Theme selection
 - Global settings
 
 **Right Sidebar - Room Properties** (when room selected):
+
 - Room name and description
 - Graphics configuration
 - Exit connections
@@ -106,6 +108,7 @@ Each room can have custom vector graphics:
 ```
 
 **Supported Primitive Types**:
+
 - `rect`: Rectangles with width/height
 - `polygon`: Multi-point shapes
 - `circle`: Circles with radius
@@ -115,6 +118,7 @@ Each room can have custom vector graphics:
 ### Validation
 
 Click "Validate" to check for:
+
 - ✅ Unreachable rooms (rooms with no path from starting room)
 - ✅ Missing exits (dead ends)
 - ✅ Broken connections (exits pointing to non-existent rooms)
@@ -135,10 +139,8 @@ Exported JSON structure:
       "id": "room_1",
       "name": "Entrance Hall",
       "description": "A grand entrance...",
-      "graphics": { /* ... */ },
-      "exits": [
-        { "direction": "north", "targetRoom": "room_2" }
-      ],
+      "graphics": {/* ... */},
+      "exits": [{ "direction": "north", "targetRoom": "room_2" }],
       "objects": [],
       "items": []
     }
@@ -280,6 +282,7 @@ Event trigger:
 4. View solution path
 
 **Testing Features**:
+
 - Step-by-step progression
 - Visual highlighting of current step
 - Dependency validation
@@ -288,6 +291,7 @@ Event trigger:
 ### Validation
 
 Checks for:
+
 - ✅ Orphaned nodes (no connections)
 - ✅ Circular dependencies
 - ✅ Missing required items
@@ -345,6 +349,7 @@ Checks for:
 #### Node Templates
 
 Quick-add buttons for common node types:
+
 - **👋 Greeting**: Opening dialogue
 - **❓ Question**: NPC asks player
 - **💬 Response**: NPC responds to player
@@ -355,6 +360,7 @@ Quick-add buttons for common node types:
 #### Right Sidebar - Node Properties
 
 Selected node editing:
+
 - Node text (what NPC says)
 - Emotion selection
 - Player response options
@@ -465,6 +471,7 @@ Conversation conclusion:
 ### Emotion System
 
 Available emotions (affects NPC portrait display):
+
 - **😐 Neutral**: Default expression
 - **😊 Happy**: Pleased, friendly
 - **😢 Sad**: Disappointed, melancholic
@@ -498,6 +505,7 @@ Responses can have conditions:
 ```
 
 **Condition Types**:
+
 - `hasItem`: Player has specific item
 - `completedQuest`: Quest completed
 - `relationship`: NPC relationship level
@@ -508,6 +516,7 @@ Responses can have conditions:
 #### Preview Mode (Bottom Panel)
 
 Shows real-time preview of selected node:
+
 - NPC portrait with emotion
 - Dialogue text
 - Available player responses
@@ -515,6 +524,7 @@ Shows real-time preview of selected node:
 #### Playthrough Mode (Modal)
 
 Full interactive conversation:
+
 1. Click "Play Dialogue" button
 2. Read NPC greeting
 3. Select player responses
@@ -522,6 +532,7 @@ Full interactive conversation:
 5. Test all branching paths
 
 **Testing Features**:
+
 - Full conversation flow
 - Typing indicators
 - Emotion changes
@@ -531,6 +542,7 @@ Full interactive conversation:
 ### Validation
 
 Checks for:
+
 - ✅ Orphaned nodes (unreachable dialogue)
 - ✅ Missing player responses
 - ✅ Dead ends (no path to end node)
@@ -662,12 +674,14 @@ All three editors integrate with the Asset Library system.
 ### Browser Compatibility
 
 **Supported Browsers**:
+
 - Chrome 80+
 - Firefox 75+
 - Safari 13+
 - Edge 80+
 
 **Known Issues**:
+
 - Safari may have canvas rendering delays (use Chrome/Firefox for best performance)
 - Internet Explorer not supported (use modern browser)
 
@@ -695,6 +709,7 @@ Use `up` and `down` exits to create vertical navigation (dungeons, towers, caves
 
 **Dynamic Objects**:
 Objects can have state changes triggered by puzzles:
+
 ```javascript
 {
   "id": "gate",
@@ -717,6 +732,7 @@ Different rewards based on how puzzle is solved (time, hints used, etc.).
 
 **Dynamic Dialogue**:
 Use game state conditions to change dialogue based on player actions:
+
 ```javascript
 {
   "conditions": [

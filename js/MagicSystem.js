@@ -152,8 +152,7 @@ export class MagicSystem {
           damageType: 'ice',
           areaOfEffect: true,
           statusEffect: 'freeze',
-          description:
-            'Freezing storm that damages and freezes all enemies.',
+          description: 'Freezing storm that damages and freezes all enemies.',
           castTime: 3,
         },
       ],
@@ -665,7 +664,9 @@ export class MagicSystem {
       this.schools[school].level++;
       this.schools[school].experience -= expForNextLevel;
 
-      logger.info(`${school} magic leveled up to ${this.schools[school].level}!`);
+      logger.info(
+        `${school} magic leveled up to ${this.schools[school].level}!`
+      );
 
       this.eventManager.triggerEvent('magicLevelUp', {
         school,

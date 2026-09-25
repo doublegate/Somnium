@@ -48,9 +48,7 @@ export class AdvancedPuzzles {
       riddle: {
         type: 'riddle',
         validate: (answer, solution) => {
-          return (
-            answer.toLowerCase().trim() === solution.toLowerCase().trim()
-          );
+          return answer.toLowerCase().trim() === solution.toLowerCase().trim();
         },
       },
       combinationLock: {
@@ -515,10 +513,7 @@ export class AdvancedPuzzles {
       const newCol = emptyCol + move.col;
 
       // Swap
-      [
-        shuffled[emptyRow][emptyCol],
-        shuffled[newRow][newCol],
-      ] = [
+      [shuffled[emptyRow][emptyCol], shuffled[newRow][newCol]] = [
         shuffled[newRow][newCol],
         shuffled[emptyRow][emptyCol],
       ];

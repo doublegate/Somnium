@@ -58,6 +58,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > You can use shortcuts: 'n' for north, 's' for south, 'e' for east, 'w' for west.
 >
 > To interact with objects, use commands like:
+>
 > - 'examine fountain' to look closely
 > - 'take key' to pick up items
 > - 'use key on door' to use items
@@ -88,6 +89,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > Happy adventuring! Every playthrough is unique - enjoy your journey!"
 
 **[End Card]**
+
 - Links to multiplayer tutorial
 - Links to world creation tutorial
 - Discord/community links
@@ -116,6 +118,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Opening editor]
 >
 > The editor has four world templates to choose from:
+>
 > - Empty (blank canvas)
 > - Medieval Castle
 > - Mysterious Dungeon
@@ -130,6 +133,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 **[2:00-5:00] Creating Rooms**
 
 > "Our mystery will have three rooms:
+>
 > 1. Detective's Office (starting room)
 > 2. Crime Scene
 > 3. Evidence Locker
@@ -141,6 +145,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > For the graphics, we'll draw a simple office using vector primitives.
 >
 > [Show: Using editor to add:
+>
 > - Rectangle for desk
 > - Circle for lamp
 > - Polygons for file cabinets]
@@ -150,6 +155,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Creating 'crime_scene' and 'evidence_locker' rooms]
 >
 > Connect them with exits:
+>
 > - Office → north → Crime Scene
 > - Crime Scene → east → Evidence Locker
 >
@@ -160,16 +166,19 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > "Now the fun part - adding interactive elements!
 >
 > In the office, let's add:
+>
 > 1. A desk (object) that can be examined
 > 2. A notebook (item) that can be taken
 > 3. A safe (locked object) that requires a key
 >
 > [Show: Adding each element with properties:
+>
 > - Desk: examinable, description
 > - Notebook: takeable, contains clues
 > - Safe: locked, requires 'brass_key']
 >
 > In the crime scene, add:
+>
 > - Magnifying glass (item, takeable)
 > - Footprints (object, examinable)
 > - Hidden brass key (revealed by examining footprints)
@@ -183,6 +192,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Adding NPC named 'Officer Walsh']
 >
 > Configure the dialogue tree:
+>
 > - Greeting: 'Good morning, detective!'
 > - Topics:
 >   - 'case' → tells about the mystery
@@ -198,6 +208,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 **[11:00-13:00] Adding a Puzzle**
 
 > "For the puzzle, players must:
+>
 > 1. Examine footprints to find the hidden key
 > 2. Take the key
 > 3. Use the key on the safe in the office
@@ -206,6 +217,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Configuring puzzle steps in editor]
 >
 > Set up rewards:
+>
 > - Finding key: +10 points
 > - Opening safe: +25 points
 > - Completing investigation: +50 points
@@ -221,6 +233,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Playing through the created world]
 >
 > Check that:
+>
 > - All exits work both ways
 > - Items can be taken
 > - Puzzles are solvable
@@ -237,6 +250,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > "Congratulations! You've created your first custom world.
 >
 > This is just the beginning - you can add:
+>
 > - More complex puzzles
 > - Multiple endings based on choices
 > - Ambient sounds and music
@@ -247,6 +261,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > Happy creating!"
 
 **[End Card]**
+
 - Link to advanced tutorial
 - Link to template showcase
 - Community showcase link
@@ -287,6 +302,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Opening create session modal]
 >
 > Fill in the details:
+>
 > - Session Name: 'Mystery Mansion' (players will see this)
 > - Max Players: 4 (2-8 supported)
 > - Game Mode: Choose from:
@@ -303,6 +319,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Selecting 'Medieval Castle' template]
 >
 > Privacy options:
+>
 > - Public: Anyone can join
 > - Private: Requires password
 >
@@ -315,6 +332,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 **[4:00-6:00] Inviting & Joining**
 
 > "To invite friends, share two things:
+>
 > 1. The Session ID (shown at the top)
 > 2. The password (if private)
 >
@@ -347,6 +365,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > [Show: Demonstrating movement, item interaction, chat]
 >
 > Chat commands:
+>
 > - Just type normally and press enter
 > - Messages appear for all players
 > - Use it to strategize!
@@ -358,18 +377,21 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > "Quick breakdown of the three modes:
 >
 > **Co-op Mode**:
+>
 > - Shared inventory
 > - Shared scoring
 > - Team victory condition
 > - Best for collaborative puzzles
 >
 > **Competitive Mode**:
+>
 > - Separate inventories
 > - Individual scoring
 > - First to finish wins
 > - Race to solve puzzles!
 >
 > **Shared World Mode**:
+>
 > - Persistent world
 > - Players can join/leave anytime
 > - Asynchronous play possible
@@ -380,6 +402,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > "And that's multiplayer in Somnium!
 >
 > Tips for a great experience:
+>
 > - Use voice chat (Discord/etc.) alongside in-game chat
 > - Save frequently (host can save for everyone)
 > - Communicate before making big decisions
@@ -390,6 +413,7 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 > Happy adventuring together!"
 
 **[End Card]**
+
 - Server setup tutorial link
 - Community Discord link
 - Multiplayer tips & tricks doc
@@ -403,9 +427,10 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 
 ### Script
 
-*(Detailed script covering: complex puzzles, branching storylines, custom scripts, optimization techniques, professional graphics design, advanced NPC behaviors)*
+_(Detailed script covering: complex puzzles, branching storylines, custom scripts, optimization techniques, professional graphics design, advanced NPC behaviors)_
 
 **Key Topics**:
+
 - Multi-step puzzle chains
 - Conditional events and triggers
 - Dynamic NPC schedules
@@ -422,9 +447,10 @@ Comprehensive scripts for creating video content about Somnium v2.0.
 
 ### Script
 
-*(Detailed script covering: server setup, environment configuration, PM2 deployment, Nginx reverse proxy, SSL setup, security hardening)*
+_(Detailed script covering: server setup, environment configuration, PM2 deployment, Nginx reverse proxy, SSL setup, security hardening)_
 
 **Key Topics**:
+
 - Installing Node.js and dependencies
 - Environment variable configuration
 - PM2 process management
@@ -476,6 +502,7 @@ OBS Studio Settings:
 **Tags**: somnium, text adventure, sierra games, retro gaming, game development, multiplayer adventure, world building, interactive fiction
 
 **Description Template**:
+
 ```
 Learn [topic] in Somnium v2.0!
 

@@ -149,9 +149,9 @@
     flex: 1 1 auto;
     min-width: 60px;
     padding: 10px;
-    background: #0000AA;
-    color: #FFFF55;
-    border: 2px solid #5555FF;
+    background: #0000aa;
+    color: #ffff55;
+    border: 2px solid #5555ff;
     border-radius: 4px;
     font-family: 'VGA', monospace;
     font-size: 14px;
@@ -159,7 +159,7 @@
   }
 
   .mobile-shortcuts button:active {
-    background: #5555FF;
+    background: #5555ff;
     transform: scale(0.95);
   }
 }
@@ -376,9 +376,9 @@
 
   .touch-dpad button {
     background: rgba(0, 0, 170, 0.7);
-    border: 2px solid #5555FF;
+    border: 2px solid #5555ff;
     border-radius: 8px;
-    color: #FFFF55;
+    color: #ffff55;
     font-size: 20px;
     font-weight: bold;
     padding: 0;
@@ -435,7 +435,7 @@
     width: 70px;
     height: 50px;
     background: rgba(0, 170, 0, 0.7);
-    border: 2px solid #55FF55;
+    border: 2px solid #55ff55;
     border-radius: 8px;
     color: white;
     font-size: 14px;
@@ -562,7 +562,7 @@
   input:focus,
   select:focus,
   textarea:focus {
-    outline: 3px solid #FFFF55;
+    outline: 3px solid #ffff55;
     outline-offset: 2px;
   }
 
@@ -661,7 +661,9 @@
 @media (horizontal-viewport-segments: 2) {
   /* Dual-screen / foldable devices */
   #game-container {
-    grid-template-columns: env(viewport-segment-width 0 0) env(viewport-segment-width 1 0);
+    grid-template-columns: env(viewport-segment-width 0 0) env(
+        viewport-segment-width 1 0
+      );
   }
 
   #game-canvas {

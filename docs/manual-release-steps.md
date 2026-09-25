@@ -9,12 +9,14 @@ Due to GitHub App permissions restrictions, some release steps must be completed
 The workflow file `.github/workflows/deploy.yml` has been created locally but cannot be pushed due to workflow permissions.
 
 **Action Required**:
+
 1. Copy the file `.github/workflows/deploy.yml` to the repository
 2. Commit and push it manually (not via the GitHub App)
 
 **Workflow File Location**: `.github/workflows/deploy.yml` (already exists in your local repository)
 
 **Workflow Content Summary**:
+
 - Automatically deploys to GitHub Pages on pushes to `main`
 - Runs all tests before deployment
 - Copies `config.template.js` as `config.js` for offline mode
@@ -22,6 +24,7 @@ The workflow file `.github/workflows/deploy.yml` has been created locally but ca
 - Uploads and deploys to GitHub Pages
 
 **Alternative**: You can also manually create this file in the GitHub web interface:
+
 1. Go to your repository on GitHub
 2. Navigate to `.github/workflows/`
 3. Click "Add file" → "Create new file"
@@ -34,6 +37,7 @@ The workflow file `.github/workflows/deploy.yml` has been created locally but ca
 A git tag `v1.0.0` has been created locally with comprehensive release notes, but cannot be pushed due to permissions.
 
 **Action Required**:
+
 1. Ensure you're on the correct branch (likely `main` after merging)
 2. Push the tag manually:
    ```bash
@@ -41,6 +45,7 @@ A git tag `v1.0.0` has been created locally with comprehensive release notes, bu
    ```
 
 **Tag Details**:
+
 - **Tag Name**: v1.0.0
 - **Type**: Annotated tag
 - **Message**: Comprehensive release notes (see tag message with `git tag -n100 v1.0.0`)
@@ -52,6 +57,7 @@ A git tag `v1.0.0` has been created locally with comprehensive release notes, bu
 After the tag is pushed, create a GitHub Release:
 
 **Action Required**:
+
 1. Go to your repository on GitHub
 2. Click "Releases" → "Draft a new release"
 3. Select tag: `v1.0.0` (should be available after step 2)
@@ -62,12 +68,14 @@ After the tag is pushed, create a GitHub Release:
 8. Click "Publish release"
 
 **Release Description Template**:
-```markdown
+
+````markdown
 🎉 **First production release of Somnium!** 🎉
 
 Somnium is a complete, production-ready AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era games (1988-1989).
 
 ## Quick Links
+
 - **[Play Online](https://doublegate.github.io/Somnium/)** - No installation required!
 - **[Changelog](https://github.com/doublegate/Somnium/blob/main/CHANGELOG.md)** - Complete release notes
 - **[Documentation](https://github.com/doublegate/Somnium/tree/main/docs)** - Setup guides and references
@@ -75,6 +83,7 @@ Somnium is a complete, production-ready AI-driven graphical text-adventure game 
 ## Highlights
 
 ✅ **All 5 Development Phases Complete**
+
 - Core Architecture (Phase 1)
 - Graphics and Sound Systems (Phase 2)
 - Parser and Game Logic (Phase 3)
@@ -82,6 +91,7 @@ Somnium is a complete, production-ready AI-driven graphical text-adventure game 
 - Polish and Sierra Enhancements (Phase 5)
 
 🎮 **Key Features**
+
 - AI-generated unique adventures (or offline with static worlds)
 - Authentic SCI0-era retro graphics (320×200, 16-color EGA)
 - Natural language parser (30+ commands, 100+ synonyms)
@@ -90,6 +100,7 @@ Somnium is a complete, production-ready AI-driven graphical text-adventure game 
 - Complete game mechanics (inventory, puzzles, NPCs, achievements)
 
 🔧 **Production Quality**
+
 - 444 tests passing (100% pass rate)
 - 61.64% code coverage
 - Zero ESLint/Prettier errors
@@ -98,10 +109,13 @@ Somnium is a complete, production-ready AI-driven graphical text-adventure game 
 ## Installation
 
 ### Play Online (Easiest)
+
 Visit https://doublegate.github.io/Somnium/ - works immediately in any modern browser!
 
 ### Local Setup (For AI-Generated Worlds)
+
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/doublegate/Somnium.git
    cd Somnium
@@ -110,6 +124,7 @@ Visit https://doublegate.github.io/Somnium/ - works immediately in any modern br
 2. Copy `js/config.template.js` to `js/config.js` and add your OpenAI API key
 
 3. Start a web server:
+
    ```bash
    npm start  # or npx http-server -c-1 .
    ```
@@ -125,6 +140,7 @@ See [CHANGELOG.md](https://github.com/doublegate/Somnium/blob/main/CHANGELOG.md)
 ## Credits
 
 Inspired by Sierra On-Line's legendary SCI0 engine and games:
+
 - King's Quest IV (1988)
 - Space Quest III (1989)
 - Quest for Glory I (1989)
@@ -132,8 +148,8 @@ Inspired by Sierra On-Line's legendary SCI0 engine and games:
 
 ---
 
-*Every adventure is unique. Every playthrough is a new dream. Welcome to Somnium.*
-```
+_Every adventure is unique. Every playthrough is a new dream. Welcome to Somnium._
+````
 
 ### 4. Enable GitHub Pages
 
@@ -152,6 +168,7 @@ See [docs/github-pages-setup.md](github-pages-setup.md) for detailed instruction
 After completing the above steps:
 
 1. Merge the current branch (`claude/complete-project-implementation-014kpZvuzw4n57qch6kRbNUH`) into `main`:
+
    ```bash
    git checkout main
    git merge claude/complete-project-implementation-014kpZvuzw4n57qch6kRbNUH
@@ -167,15 +184,18 @@ After completing the above steps:
 ## Summary
 
 ### Files Created/Modified (Already Committed)
+
 - ✅ `CHANGELOG.md` - Comprehensive v1.0.0 release notes
 - ✅ `README.md` - Updated with version badges and release info
 - ✅ `docs/github-pages-setup.md` - Deployment documentation
 
 ### Files Created Locally (Need Manual Addition)
+
 - 📝 `.github/workflows/deploy.yml` - GitHub Pages deployment workflow
 - 📝 Git tag `v1.0.0` - Annotated release tag with notes
 
 ### Manual Actions Required
+
 1. ⚠️ Add `.github/workflows/deploy.yml` to the repository
 2. ⚠️ Push the `v1.0.0` git tag
 3. ⚠️ Create GitHub Release from the tag
@@ -185,6 +205,7 @@ After completing the above steps:
 ## Verification
 
 After completing all steps, verify:
+
 - [ ] v1.0.0 tag exists on GitHub
 - [ ] GitHub Release page shows v1.0.0
 - [ ] GitHub Pages is deployed and accessible
@@ -194,6 +215,7 @@ After completing all steps, verify:
 ## Support
 
 If you encounter issues:
+
 - Check [docs/github-pages-setup.md](github-pages-setup.md) for troubleshooting
 - Review GitHub Actions logs in the Actions tab
 - Ensure all permissions are correctly configured

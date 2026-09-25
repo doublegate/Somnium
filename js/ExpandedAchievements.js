@@ -123,7 +123,8 @@ export class ExpandedAchievements {
         rarity: 'epic',
         hidden: false,
         condition: () =>
-          this.gameState.getScore() >= 100 && this.gameState.getStatistic('enemiesKilled') === 0,
+          this.gameState.getScore() >= 100 &&
+          this.gameState.getStatistic('enemiesKilled') === 0,
       },
       {
         id: 'critical_master',
@@ -187,7 +188,8 @@ export class ExpandedAchievements {
         hidden: false,
         incremental: true,
         progress: { current: 0, target: 10 },
-        condition: () => this.gameState.getStatistic('enchantmentsCreated') >= 10,
+        condition: () =>
+          this.gameState.getStatistic('enchantmentsCreated') >= 10,
       },
     ];
 
@@ -334,7 +336,8 @@ export class ExpandedAchievements {
         hidden: false,
         incremental: true,
         progress: { current: 0, target: 30 },
-        condition: () => this.gameState.getStatistic('dailyChallengesCompleted') >= 30,
+        condition: () =>
+          this.gameState.getStatistic('dailyChallengesCompleted') >= 30,
       },
     ];
 
@@ -356,7 +359,8 @@ export class ExpandedAchievements {
         category: 'misc',
         rarity: 'legendary',
         hidden: false,
-        condition: () => this.unlockedAchievements.size === this.achievements.size - 1,
+        condition: () =>
+          this.unlockedAchievements.size === this.achievements.size - 1,
       },
       {
         id: 'prestige_master',
@@ -386,7 +390,10 @@ export class ExpandedAchievements {
     for (const achievement of allAchievements) {
       achievements.set(achievement.id, achievement);
       if (achievement.incremental) {
-        this.achievementProgress.set(achievement.id, achievement.progress.current);
+        this.achievementProgress.set(
+          achievement.id,
+          achievement.progress.current
+        );
       }
     }
 
@@ -397,14 +404,30 @@ export class ExpandedAchievements {
    * Setup event listeners for automatic achievement checking
    */
   setupEventListeners() {
-    this.eventManager.addEventListener('combatEnd', () => this.checkAchievements());
-    this.eventManager.addEventListener('puzzleSolved', () => this.checkAchievements());
-    this.eventManager.addEventListener('itemFound', () => this.checkAchievements());
-    this.eventManager.addEventListener('spellLearned', () => this.checkAchievements());
-    this.eventManager.addEventListener('levelUp', () => this.checkAchievements());
-    this.eventManager.addEventListener('friendAdded', () => this.checkAchievements());
-    this.eventManager.addEventListener('worldShared', () => this.checkAchievements());
-    this.eventManager.addEventListener('speedrunComplete', () => this.checkAchievements());
+    this.eventManager.addEventListener('combatEnd', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('puzzleSolved', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('itemFound', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('spellLearned', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('levelUp', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('friendAdded', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('worldShared', () =>
+      this.checkAchievements()
+    );
+    this.eventManager.addEventListener('speedrunComplete', () =>
+      this.checkAchievements()
+    );
   }
 
   /**
@@ -570,7 +593,9 @@ export class ExpandedAchievements {
    * @returns {Array} Achievements in category
    */
   getAchievementsByCategory(category) {
-    return Array.from(this.achievements.values()).filter((a) => a.category === category);
+    return Array.from(this.achievements.values()).filter(
+      (a) => a.category === category
+    );
   }
 
   /**

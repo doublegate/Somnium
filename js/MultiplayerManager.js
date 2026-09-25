@@ -73,7 +73,9 @@ export class MultiplayerManager {
           if (this.reconnectCount < this.config.reconnectAttempts) {
             this.reconnect();
           } else {
-            this.emit('disconnected', { reason: 'Max reconnect attempts reached' });
+            this.emit('disconnected', {
+              reason: 'Max reconnect attempts reached',
+            });
           }
         };
       } catch (error) {
@@ -331,12 +333,18 @@ export class MultiplayerManager {
           break;
 
         case 'error':
-          this.logger.error('[MultiplayerManager] Server error:', message.error);
+          this.logger.error(
+            '[MultiplayerManager] Server error:',
+            message.error
+          );
           this.emit('error', message.error);
           break;
 
         default:
-          this.logger.warn('[MultiplayerManager] Unknown message type:', message.type);
+          this.logger.warn(
+            '[MultiplayerManager] Unknown message type:',
+            message.type
+          );
       }
     } catch (error) {
       this.logger.error('[MultiplayerManager] Message handling error:', error);
@@ -349,7 +357,9 @@ export class MultiplayerManager {
   handleHandshake(message) {
     this.playerId = message.playerId;
 
-    this.logger.log(`[MultiplayerManager] Assigned player ID: ${this.playerId}`);
+    this.logger.log(
+      `[MultiplayerManager] Assigned player ID: ${this.playerId}`
+    );
 
     // Flush message queue
     while (this.messageQueue.length > 0) {
@@ -444,7 +454,10 @@ export class MultiplayerManager {
         break;
 
       default:
-        this.logger.warn('[MultiplayerManager] Unknown action type:', action.type);
+        this.logger.warn(
+          '[MultiplayerManager] Unknown action type:',
+          action.type
+        );
     }
   }
 
@@ -624,7 +637,10 @@ export class MultiplayerManager {
   once(event, handler) {
     const wrappedHandler = (e) => {
       handler(e.detail);
-      window.removeEventListener(`somnium:multiplayer:${event}`, wrappedHandler);
+      window.removeEventListener(
+        `somnium:multiplayer:${event}`,
+        wrappedHandler
+      );
     };
 
     window.addEventListener(`somnium:multiplayer:${event}`, wrappedHandler);

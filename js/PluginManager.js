@@ -45,7 +45,14 @@ export class PluginManager {
    * @param {Object} pluginManifest - Plugin metadata and entry point
    */
   async registerPlugin(pluginManifest) {
-    const { id, name, version, author, entry, dependencies = [] } = pluginManifest;
+    const {
+      id,
+      name,
+      version,
+      author,
+      entry,
+      dependencies = [],
+    } = pluginManifest;
 
     // Validate manifest
     if (!id || !name || !entry) {
@@ -121,7 +128,10 @@ export class PluginManager {
 
       return instance;
     } catch (error) {
-      this.logger.error(`[PluginManager] Failed to load plugin ${pluginId}:`, error);
+      this.logger.error(
+        `[PluginManager] Failed to load plugin ${pluginId}:`,
+        error
+      );
       throw error;
     }
   }
@@ -163,23 +173,29 @@ export class PluginManager {
       emit: (event, data) => this.emitHook(event, data),
 
       // Game state access (read-only proxy)
-      getGameState: () => this.createReadOnlyProxy(this.gameManager.gameState.state),
+      getGameState: () =>
+        this.createReadOnlyProxy(this.gameManager.gameState.state),
 
       // Safe game operations
-      addOutputText: (text, type) => this.gameManager.uiManager.addOutputText(text, type),
+      addOutputText: (text, type) =>
+        this.gameManager.uiManager.addOutputText(text, type),
       playSound: (soundId) => this.gameManager.soundManager.playSound(soundId),
-      showNotification: (message) => this.showPluginNotification(pluginId, message),
+      showNotification: (message) =>
+        this.showPluginNotification(pluginId, message),
 
       // Parser extensions
-      registerCommand: (verb, handler) => this.registerCustomCommand(pluginId, verb, handler),
-      registerSynonym: (word, synonym) => this.registerSynonym(pluginId, word, synonym),
+      registerCommand: (verb, handler) =>
+        this.registerCustomCommand(pluginId, verb, handler),
+      registerSynonym: (word, synonym) =>
+        this.registerSynonym(pluginId, word, synonym),
 
       // Custom objects/items
       addCustomObject: (object) => this.addCustomObject(pluginId, object),
       addCustomItem: (item) => this.addCustomItem(pluginId, item),
 
       // Rendering hooks
-      registerRenderer: (renderer) => this.registerCustomRenderer(pluginId, renderer),
+      registerRenderer: (renderer) =>
+        this.registerCustomRenderer(pluginId, renderer),
 
       // Storage (scoped to plugin)
       storage: {
@@ -277,7 +293,10 @@ export class PluginManager {
           result = hookResult;
         }
       } catch (error) {
-        this.logger.error(`[PluginManager] Hook error in plugin ${pluginId}:`, error);
+        this.logger.error(
+          `[PluginManager] Hook error in plugin ${pluginId}:`,
+          error
+        );
       }
     }
 
@@ -299,7 +318,9 @@ export class PluginManager {
       handler,
     });
 
-    this.logger.log(`[PluginManager] Registered custom command: ${verb} (${pluginId})`);
+    this.logger.log(
+      `[PluginManager] Registered custom command: ${verb} (${pluginId})`
+    );
   }
 
   /**
@@ -381,7 +402,9 @@ export class PluginManager {
       }
     }
 
-    this.logger.log(`[PluginManager] Plugin ${pluginId} ${enabled ? 'enabled' : 'disabled'}`);
+    this.logger.log(
+      `[PluginManager] Plugin ${pluginId} ${enabled ? 'enabled' : 'disabled'}`
+    );
   }
 
   /**
@@ -413,7 +436,10 @@ export class PluginManager {
 
       this.logger.log(`[PluginManager] Unloaded plugin: ${plugin.name}`);
     } catch (error) {
-      this.logger.error(`[PluginManager] Error unloading plugin ${pluginId}:`, error);
+      this.logger.error(
+        `[PluginManager] Error unloading plugin ${pluginId}:`,
+        error
+      );
       throw error;
     }
   }

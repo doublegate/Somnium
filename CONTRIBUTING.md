@@ -45,6 +45,7 @@ By participating in this project, you agree to abide by our Code of Conduct:
 ### Areas We Need Help
 
 **Frontend (Game Engine)**:
+
 - **Advanced Features**: Voice commands, mobile responsive UI, VR/AR support
 - **World Templates**: Creating new pre-built world templates
 - **Accessibility**: Improving ARIA labels, keyboard navigation, screen reader support
@@ -52,6 +53,7 @@ By participating in this project, you agree to abide by our Code of Conduct:
 - **Performance**: Optimizing rendering loop, reducing memory usage
 
 **Backend (v2.0 Servers)**:
+
 - **Multiplayer Features**: Spectator mode, tournament system, advanced matchmaking
 - **Cloud Features**: Database migration (file storage → PostgreSQL), Redis caching
 - **API Development**: New endpoints, rate limiting improvements, WebSocket scaling
@@ -59,11 +61,13 @@ By participating in this project, you agree to abide by our Code of Conduct:
 - **Performance**: Load testing, optimization, horizontal scaling
 
 **Content Creation**:
+
 - **Test Worlds**: Designing new demo adventures with puzzles and NPCs
 - **Tutorial Worlds**: Creating educational worlds for new players
 - **World Templates**: Building reusable templates for different genres
 
 **Documentation & Community**:
+
 - **User Guides**: Writing tutorials, FAQs, troubleshooting guides
 - **API Documentation**: Documenting endpoints, WebSocket events, data formats
 - **Video Content**: Creating walkthroughs, tutorials, developer guides

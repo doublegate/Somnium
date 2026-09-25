@@ -166,12 +166,9 @@ export default class TournamentManager {
     const { status = 'all', format = null, limit = 50 } = filters;
 
     try {
-      const response = await this.apiClient.get(
-        `${this.config.apiEndpoint}`,
-        {
-          params: { status, format, limit },
-        }
-      );
+      const response = await this.apiClient.get(`${this.config.apiEndpoint}`, {
+        params: { status, format, limit },
+      });
 
       const tournaments = response.data.tournaments;
       tournaments.forEach((t) => this.tournaments.set(t.id, t));

@@ -21,9 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // In-memory data stores (in production, use a real database)
 const users = new Map();
-const saves = new Map();    // userId -> Map(slot -> saveData)
-const shared = new Map();   // shareId -> sharedContent
-const tokens = new Map();   // token -> userId
+const saves = new Map(); // userId -> Map(slot -> saveData)
+const shared = new Map(); // shareId -> sharedContent
+const tokens = new Map(); // token -> userId
 
 // Storage directory
 const STORAGE_DIR = path.join(__dirname, 'storage');
@@ -90,7 +90,9 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     // Check if user exists
-    const existingUser = Array.from(users.values()).find(u => u.email === email);
+    const existingUser = Array.from(users.values()).find(
+      (u) => u.email === email
+    );
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' });
     }
@@ -132,7 +134,7 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = Array.from(users.values()).find(u => u.email === email);
+    const user = Array.from(users.values()).find((u) => u.email === email);
 
     if (!user || user.passwordHash !== hashPassword(password)) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -262,7 +264,11 @@ app.put('/api/saves/:slot', authenticate, async (req, res) => {
     });
 
     // Persist to disk
-    const savePath = path.join(STORAGE_DIR, 'saves', `${req.userId}_${slot}.json`);
+    const savePath = path.join(
+      STORAGE_DIR,
+      'saves',
+      `${req.userId}_${slot}.json`
+    );
     await fs.writeFile(savePath, JSON.stringify(saveData, null, 2));
 
     console.log(`[API] Save uploaded: User ${req.userId}, Slot ${slot}`);
@@ -294,7 +300,11 @@ app.delete('/api/saves/:slot', authenticate, async (req, res) => {
     userSaves.delete(slot);
 
     // Delete from disk
-    const savePath = path.join(STORAGE_DIR, 'saves', `${req.userId}_${slot}.json`);
+    const savePath = path.join(
+      STORAGE_DIR,
+      'saves',
+      `${req.userId}_${slot}.json`
+    );
     await fs.unlink(savePath).catch(() => {});
 
     console.log(`[API] Save deleted: User ${req.userId}, Slot ${slot}`);
@@ -418,16 +428,16 @@ app.get('/api/share', async (req, res) => {
   try {
     const { type, genre, sort = 'popular', page = 1 } = req.query;
 
-    let items = Array.from(shared.values()).filter(item => item.public);
+    let items = Array.from(shared.values()).filter((item) => item.public);
 
     // Filter by type
     if (type) {
-      items = items.filter(item => item.type === type);
+      items = items.filter((item) => item.type === type);
     }
 
     // Filter by genre
     if (genre && type === 'world') {
-      items = items.filter(item => item.content.metadata?.genre === genre);
+      items = items.filter((item) => item.content.metadata?.genre === genre);
     }
 
     // Sort
@@ -447,7 +457,7 @@ app.get('/api/share', async (req, res) => {
 
     res.json({
       success: true,
-      worlds: paginatedItems.map(item => ({
+      worlds: paginatedItems.map((item) => ({
         id: item.id,
         title: item.title,
         description: item.description,
@@ -543,7 +553,10 @@ app.get('/api/health', (req, res) => {
 app.get('/api/stats', (req, res) => {
   res.json({
     users: users.size,
-    saves: Array.from(saves.values()).reduce((total, userSaves) => total + userSaves.size, 0),
+    saves: Array.from(saves.values()).reduce(
+      (total, userSaves) => total + userSaves.size,
+      0
+    ),
     sharedContent: shared.size,
     uptime: process.uptime(),
   });

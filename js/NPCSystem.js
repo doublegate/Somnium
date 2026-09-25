@@ -669,8 +669,7 @@ export class NPCSystem {
     }
 
     // Check if NPC accepts this item
-    const acceptsItem =
-      !npc.acceptsItems || npc.acceptsItems.includes(itemId);
+    const acceptsItem = !npc.acceptsItems || npc.acceptsItems.includes(itemId);
 
     if (acceptsItem) {
       // Add item to NPC inventory

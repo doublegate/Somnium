@@ -159,8 +159,7 @@ export class CombatSystem {
    */
   determineTurnOrder() {
     const playerInitiative =
-      this.combatData.player.speed ||
-      10 + Math.floor(Math.random() * 10);
+      this.combatData.player.speed || 10 + Math.floor(Math.random() * 10);
     const enemyInitiative =
       this.combatData.enemy.speed || 10 + Math.floor(Math.random() * 10);
 
@@ -260,8 +259,7 @@ export class CombatSystem {
     }
 
     // Calculate defense
-    const defense =
-      (targetData.defense || 5) + (targetData.defenseBonus || 0);
+    const defense = (targetData.defense || 5) + (targetData.defenseBonus || 0);
 
     // Hit chance (base 90%, modified by stats)
     const hitChance = 0.9;
@@ -292,10 +290,7 @@ export class CombatSystem {
     }
 
     // Apply damage
-    targetData.currentHealth = Math.max(
-      0,
-      targetData.currentHealth - damage
-    );
+    targetData.currentHealth = Math.max(0, targetData.currentHealth - damage);
 
     // Update statistics
     if (attacker === 'player') {
@@ -437,13 +432,8 @@ export class CombatSystem {
 
     // Apply spell effects
     if (spell.damage) {
-      const damage = Math.floor(
-        spell.damage + (casterData.magic || 0) * 0.5
-      );
-      targetData.currentHealth = Math.max(
-        0,
-        targetData.currentHealth - damage
-      );
+      const damage = Math.floor(spell.damage + (casterData.magic || 0) * 0.5);
+      targetData.currentHealth = Math.max(0, targetData.currentHealth - damage);
       this.addToCombatLog(
         `${casterData.name} casts ${spell.name} for ${damage} magical damage!`
       );
@@ -576,9 +566,7 @@ export class CombatSystem {
     if (!effect) return;
 
     // Check if already has this effect
-    const existing = targetData.statusEffects.find(
-      (e) => e.id === effectId
-    );
+    const existing = targetData.statusEffects.find((e) => e.id === effectId);
     if (existing) {
       existing.turnsRemaining = effect.duration;
     } else {

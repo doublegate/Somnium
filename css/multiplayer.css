@@ -88,8 +88,8 @@ body {
   text-align: left;
 }
 
-.form-group input[type="text"],
-.form-group input[type="password"],
+.form-group input[type='text'],
+.form-group input[type='password'],
 .form-group select {
   width: 100%;
   padding: 12px;
@@ -106,7 +106,7 @@ body {
   border-color: var(--mp-primary);
 }
 
-.form-group input[type="checkbox"] {
+.form-group input[type='checkbox'] {
   width: auto;
   margin-right: 8px;
 }

@@ -31,22 +31,116 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#000000',
           primitives: [
             // Your shuttle
-            { type: 'polygon', points: [[50, 140], [120, 120], [120, 160], [50, 180]], color: '#AAAAAA', filled: true },
-            { type: 'circle', x: 65, y: 145, radius: 3, color: '#55FF55', filled: true }, // Running light
-            { type: 'circle', x: 65, y: 165, radius: 3, color: '#FF5555', filled: true }, // Warning light
+            {
+              type: 'polygon',
+              points: [
+                [50, 140],
+                [120, 120],
+                [120, 160],
+                [50, 180],
+              ],
+              color: '#AAAAAA',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 65,
+              y: 145,
+              radius: 3,
+              color: '#55FF55',
+              filled: true,
+            }, // Running light
+            {
+              type: 'circle',
+              x: 65,
+              y: 165,
+              radius: 3,
+              color: '#FF5555',
+              filled: true,
+            }, // Warning light
             // Docking clamps
-            { type: 'rect', x: 45, y: 180, width: 10, height: 20, color: '#FFFF55', filled: true },
-            { type: 'rect', x: 115, y: 180, width: 10, height: 20, color: '#FFFF55', filled: true },
+            {
+              type: 'rect',
+              x: 45,
+              y: 180,
+              width: 10,
+              height: 20,
+              color: '#FFFF55',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 115,
+              y: 180,
+              width: 10,
+              height: 20,
+              color: '#FFFF55',
+              filled: true,
+            },
             // Station walls
-            { type: 'rect', x: 0, y: 0, width: 10, height: 200, color: '#555555', filled: true },
-            { type: 'rect', x: 310, y: 0, width: 10, height: 200, color: '#555555', filled: true },
-            { type: 'rect', x: 0, y: 0, width: 320, height: 10, color: '#555555', filled: true },
-            { type: 'rect', x: 0, y: 190, width: 320, height: 10, color: '#555555', filled: true },
+            {
+              type: 'rect',
+              x: 0,
+              y: 0,
+              width: 10,
+              height: 200,
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 310,
+              y: 0,
+              width: 10,
+              height: 200,
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 0,
+              y: 0,
+              width: 320,
+              height: 10,
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 0,
+              y: 190,
+              width: 320,
+              height: 10,
+              color: '#555555',
+              filled: true,
+            },
             // Airlock door
-            { type: 'rect', x: 250, y: 80, width: 50, height: 80, color: '#00AAAA', filled: true },
+            {
+              type: 'rect',
+              x: 250,
+              y: 80,
+              width: 50,
+              height: 80,
+              color: '#00AAAA',
+              filled: true,
+            },
             // Emergency lights
-            { type: 'circle', x: 30, y: 20, radius: 5, color: '#FF5555', filled: true },
-            { type: 'circle', x: 290, y: 20, radius: 5, color: '#FF5555', filled: true },
+            {
+              type: 'circle',
+              x: 30,
+              y: 20,
+              radius: 5,
+              color: '#FF5555',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 290,
+              y: 20,
+              radius: 5,
+              color: '#FF5555',
+              filled: true,
+            },
           ],
         },
         exits: {
@@ -66,22 +160,118 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#000000',
           primitives: [
             // Corridor perspective
-            { type: 'polygon', points: [[80, 50], [240, 50], [280, 100], [40, 100]], color: '#555555', filled: true },
-            { type: 'polygon', points: [[80, 150], [240, 150], [280, 100], [40, 100]], color: '#555555', filled: true },
+            {
+              type: 'polygon',
+              points: [
+                [80, 50],
+                [240, 50],
+                [280, 100],
+                [40, 100],
+              ],
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [80, 150],
+                [240, 150],
+                [280, 100],
+                [40, 100],
+              ],
+              color: '#555555',
+              filled: true,
+            },
             // Floor panels
-            { type: 'rect', x: 60, y: 140, width: 40, height: 10, color: '#AAAAAA', filled: true },
-            { type: 'rect', x: 110, y: 140, width: 40, height: 10, color: '#AAAAAA', filled: true },
-            { type: 'rect', x: 160, y: 140, width: 40, height: 10, color: '#AAAAAA', filled: true },
+            {
+              type: 'rect',
+              x: 60,
+              y: 140,
+              width: 40,
+              height: 10,
+              color: '#AAAAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 110,
+              y: 140,
+              width: 40,
+              height: 10,
+              color: '#AAAAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 160,
+              y: 140,
+              width: 40,
+              height: 10,
+              color: '#AAAAAA',
+              filled: true,
+            },
             // Doors (north, south, west)
-            { type: 'rect', x: 140, y: 60, width: 40, height: 30, color: '#00AAAA', filled: true }, // North
-            { type: 'rect', x: 140, y: 160, width: 40, height: 30, color: '#AA0000', filled: true }, // South (red - danger)
-            { type: 'rect', x: 20, y: 90, width: 30, height: 40, color: '#00AAAA', filled: true }, // West
+            {
+              type: 'rect',
+              x: 140,
+              y: 60,
+              width: 40,
+              height: 30,
+              color: '#00AAAA',
+              filled: true,
+            }, // North
+            {
+              type: 'rect',
+              x: 140,
+              y: 160,
+              width: 40,
+              height: 30,
+              color: '#AA0000',
+              filled: true,
+            }, // South (red - danger)
+            {
+              type: 'rect',
+              x: 20,
+              y: 90,
+              width: 30,
+              height: 40,
+              color: '#00AAAA',
+              filled: true,
+            }, // West
             // Sparks/damage
-            { type: 'line', x1: 200, y1: 60, x2: 205, y2: 55, color: '#FFFF55' },
-            { type: 'line', x1: 202, y1: 58, x2: 208, y2: 60, color: '#FFFF55' },
+            {
+              type: 'line',
+              x1: 200,
+              y1: 60,
+              x2: 205,
+              y2: 55,
+              color: '#FFFF55',
+            },
+            {
+              type: 'line',
+              x1: 202,
+              y1: 58,
+              x2: 208,
+              y2: 60,
+              color: '#FFFF55',
+            },
             // Water drips
-            { type: 'circle', x: 100, y: 55, radius: 2, color: '#55FFFF', filled: true },
-            { type: 'circle', x: 180, y: 58, radius: 2, color: '#55FFFF', filled: true },
+            {
+              type: 'circle',
+              x: 100,
+              y: 55,
+              radius: 2,
+              color: '#55FFFF',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 180,
+              y: 58,
+              radius: 2,
+              color: '#55FFFF',
+              filled: true,
+            },
           ],
         },
         exits: {
@@ -104,27 +294,117 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#0000AA',
           primitives: [
             // Viewscreen showing Earth
-            { type: 'rect', x: 60, y: 30, width: 200, height: 80, color: '#000000', filled: true },
-            { type: 'circle', x: 160, y: 70, radius: 30, color: '#0000AA', filled: true }, // Earth
-            { type: 'circle', x: 170, y: 65, radius: 8, color: '#55FF55', filled: true }, // Landmass
-            { type: 'circle', x: 150, y: 75, radius: 12, color: '#55FF55', filled: true }, // Landmass
+            {
+              type: 'rect',
+              x: 60,
+              y: 30,
+              width: 200,
+              height: 80,
+              color: '#000000',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 160,
+              y: 70,
+              radius: 30,
+              color: '#0000AA',
+              filled: true,
+            }, // Earth
+            {
+              type: 'circle',
+              x: 170,
+              y: 65,
+              radius: 8,
+              color: '#55FF55',
+              filled: true,
+            }, // Landmass
+            {
+              type: 'circle',
+              x: 150,
+              y: 75,
+              radius: 12,
+              color: '#55FF55',
+              filled: true,
+            }, // Landmass
             // Captain's chair
-            { type: 'rect', x: 140, y: 140, width: 40, height: 40, color: '#AA0000', filled: true },
-            { type: 'rect', x: 135, y: 130, width: 50, height: 10, color: '#AA0000', filled: true },
+            {
+              type: 'rect',
+              x: 140,
+              y: 140,
+              width: 40,
+              height: 40,
+              color: '#AA0000',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 135,
+              y: 130,
+              width: 50,
+              height: 10,
+              color: '#AA0000',
+              filled: true,
+            },
             // Coffee cup
-            { type: 'rect', x: 195, y: 155, width: 8, height: 10, color: '#AA5500', filled: true },
+            {
+              type: 'rect',
+              x: 195,
+              y: 155,
+              width: 8,
+              height: 10,
+              color: '#AA5500',
+              filled: true,
+            },
             // Consoles
-            { type: 'rect', x: 20, y: 120, width: 80, height: 40, color: '#555555', filled: true },
-            { type: 'rect', x: 220, y: 120, width: 80, height: 40, color: '#555555', filled: true },
+            {
+              type: 'rect',
+              x: 20,
+              y: 120,
+              width: 80,
+              height: 40,
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 220,
+              y: 120,
+              width: 80,
+              height: 40,
+              color: '#555555',
+              filled: true,
+            },
             // Console screens (some red errors)
-            { type: 'rect', x: 30, y: 125, width: 60, height: 25, color: '#FF5555', filled: true },
-            { type: 'rect', x: 230, y: 125, width: 60, height: 25, color: '#FF5555', filled: true },
+            {
+              type: 'rect',
+              x: 30,
+              y: 125,
+              width: 60,
+              height: 25,
+              color: '#FF5555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 230,
+              y: 125,
+              width: 60,
+              height: 25,
+              color: '#FF5555',
+              filled: true,
+            },
           ],
         },
         exits: {
           south: { room: 'main_corridor', blocked: false },
         },
-        objects: ['viewscreen', 'captains_chair', 'navigation_console', 'communications_console'],
+        objects: [
+          'viewscreen',
+          'captains_chair',
+          'navigation_console',
+          'communications_console',
+        ],
         items: ['captains_log', 'coffee_cup', 'command_override'],
         npcs: [],
       },
@@ -138,23 +418,126 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#AA0000',
           primitives: [
             // Reactor core (glowing hot)
-            { type: 'circle', x: 160, y: 100, radius: 40, color: '#FF5555', filled: true },
-            { type: 'circle', x: 160, y: 100, radius: 30, color: '#FFFF55', filled: true },
-            { type: 'circle', x: 160, y: 100, radius: 20, color: '#FFFFFF', filled: true },
+            {
+              type: 'circle',
+              x: 160,
+              y: 100,
+              radius: 40,
+              color: '#FF5555',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 160,
+              y: 100,
+              radius: 30,
+              color: '#FFFF55',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 160,
+              y: 100,
+              radius: 20,
+              color: '#FFFFFF',
+              filled: true,
+            },
             // Warning bars around reactor
-            { type: 'rect', x: 100, y: 85, width: 10, height: 30, color: '#FFFF55', filled: true },
-            { type: 'rect', x: 210, y: 85, width: 10, height: 30, color: '#FFFF55', filled: true },
-            { type: 'rect', x: 145, y: 60, width: 30, height: 10, color: '#FFFF55', filled: true },
-            { type: 'rect', x: 145, y: 130, width: 30, height: 10, color: '#FFFF55', filled: true },
+            {
+              type: 'rect',
+              x: 100,
+              y: 85,
+              width: 10,
+              height: 30,
+              color: '#FFFF55',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 210,
+              y: 85,
+              width: 10,
+              height: 30,
+              color: '#FFFF55',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 145,
+              y: 60,
+              width: 30,
+              height: 10,
+              color: '#FFFF55',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 145,
+              y: 130,
+              width: 30,
+              height: 10,
+              color: '#FFFF55',
+              filled: true,
+            },
             // Ruptured coolant pipes
-            { type: 'rect', x: 50, y: 50, width: 40, height: 5, color: '#00AAAA', filled: true },
-            { type: 'polygon', points: [[90, 50], [95, 45], [95, 55]], color: '#00AAAA', filled: true }, // Break
+            {
+              type: 'rect',
+              x: 50,
+              y: 50,
+              width: 40,
+              height: 5,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [90, 50],
+                [95, 45],
+                [95, 55],
+              ],
+              color: '#00AAAA',
+              filled: true,
+            }, // Break
             // Console with countdown
-            { type: 'rect', x: 240, y: 140, width: 60, height: 40, color: '#555555', filled: true },
-            { type: 'rect', x: 245, y: 145, width: 50, height: 25, color: '#FF5555', filled: true },
+            {
+              type: 'rect',
+              x: 240,
+              y: 140,
+              width: 60,
+              height: 40,
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 245,
+              y: 145,
+              width: 50,
+              height: 25,
+              color: '#FF5555',
+              filled: true,
+            },
             // Scattered tools
-            { type: 'polygon', points: [[20, 170], [35, 165], [30, 175]], color: '#AAAAAA', filled: true },
-            { type: 'rect', x: 270, y: 180, width: 15, height: 5, color: '#AAAAAA', filled: true },
+            {
+              type: 'polygon',
+              points: [
+                [20, 170],
+                [35, 165],
+                [30, 175],
+              ],
+              color: '#AAAAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 270,
+              y: 180,
+              width: 15,
+              height: 5,
+              color: '#AAAAAA',
+              filled: true,
+            },
           ],
         },
         exits: {
@@ -174,19 +557,95 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#555555',
           primitives: [
             // Bunks (3 visible)
-            { type: 'rect', x: 20, y: 80, width: 60, height: 30, color: '#00AAAA', filled: true },
-            { type: 'rect', x: 20, y: 120, width: 60, height: 30, color: '#00AAAA', filled: true },
-            { type: 'rect', x: 240, y: 80, width: 60, height: 30, color: '#00AAAA', filled: true },
-            { type: 'rect', x: 240, y: 120, width: 60, height: 30, color: '#00AAAA', filled: true },
+            {
+              type: 'rect',
+              x: 20,
+              y: 80,
+              width: 60,
+              height: 30,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 20,
+              y: 120,
+              width: 60,
+              height: 30,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 240,
+              y: 80,
+              width: 60,
+              height: 30,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 240,
+              y: 120,
+              width: 60,
+              height: 30,
+              color: '#00AAAA',
+              filled: true,
+            },
             // Claw marks (dark lines on one bunk)
-            { type: 'line', x1: 245, y1: 125, x2: 255, y2: 145, color: '#000000' },
-            { type: 'line', x1: 250, y1: 125, x2: 260, y2: 145, color: '#000000' },
-            { type: 'line', x1: 255, y1: 125, x2: 265, y2: 145, color: '#000000' },
+            {
+              type: 'line',
+              x1: 245,
+              y1: 125,
+              x2: 255,
+              y2: 145,
+              color: '#000000',
+            },
+            {
+              type: 'line',
+              x1: 250,
+              y1: 125,
+              x2: 260,
+              y2: 145,
+              color: '#000000',
+            },
+            {
+              type: 'line',
+              x1: 255,
+              y1: 125,
+              x2: 265,
+              y2: 145,
+              color: '#000000',
+            },
             // Scattered items
-            { type: 'rect', x: 100, y: 150, width: 15, height: 10, color: '#FFFFFF', filled: true }, // Tablet
-            { type: 'circle', x: 180, y: 165, radius: 8, color: '#AA5500', filled: true }, // Boot
+            {
+              type: 'rect',
+              x: 100,
+              y: 150,
+              width: 15,
+              height: 10,
+              color: '#FFFFFF',
+              filled: true,
+            }, // Tablet
+            {
+              type: 'circle',
+              x: 180,
+              y: 165,
+              radius: 8,
+              color: '#AA5500',
+              filled: true,
+            }, // Boot
             // Lockers
-            { type: 'rect', x: 140, y: 60, width: 40, height: 100, color: '#555555', filled: true },
+            {
+              type: 'rect',
+              x: 140,
+              y: 60,
+              width: 40,
+              height: 100,
+              color: '#555555',
+              filled: true,
+            },
           ],
         },
         exits: {
@@ -201,39 +660,167 @@ export function generateSpaceStationWorld() {
         id: 'medical_bay',
         name: 'Medical Bay',
         description:
-          'The medical bay is a disaster. Surgical tools are scattered across the floor. An operating table has restraints - one is broken. Blood spatters lead to the ventilation shaft. A medical scanner chirps - detecting multiple life signs, but they\'re not human.',
+          "The medical bay is a disaster. Surgical tools are scattered across the floor. An operating table has restraints - one is broken. Blood spatters lead to the ventilation shaft. A medical scanner chirps - detecting multiple life signs, but they're not human.",
         graphics: {
           backgroundColor: '#FFFFFF',
           primitives: [
             // Operating table
-            { type: 'rect', x: 120, y: 100, width: 80, height: 40, color: '#AAAAAA', filled: true },
+            {
+              type: 'rect',
+              x: 120,
+              y: 100,
+              width: 80,
+              height: 40,
+              color: '#AAAAAA',
+              filled: true,
+            },
             // Broken restraint
-            { type: 'line', x1: 125, y1: 105, x2: 135, y2: 95, color: '#555555' },
-            { type: 'line', x1: 135, y1: 105, x2: 145, y2: 95, color: '#555555' },
+            {
+              type: 'line',
+              x1: 125,
+              y1: 105,
+              x2: 135,
+              y2: 95,
+              color: '#555555',
+            },
+            {
+              type: 'line',
+              x1: 135,
+              y1: 105,
+              x2: 145,
+              y2: 95,
+              color: '#555555',
+            },
             // Blood trail
-            { type: 'ellipse', x: 160, y: 145, radiusX: 5, radiusY: 3, color: '#AA0000', filled: true },
-            { type: 'ellipse', x: 175, y: 150, radiusX: 4, radiusY: 3, color: '#AA0000', filled: true },
-            { type: 'ellipse', x: 190, y: 155, radiusX: 3, radiusY: 2, color: '#AA0000', filled: true },
+            {
+              type: 'ellipse',
+              x: 160,
+              y: 145,
+              radiusX: 5,
+              radiusY: 3,
+              color: '#AA0000',
+              filled: true,
+            },
+            {
+              type: 'ellipse',
+              x: 175,
+              y: 150,
+              radiusX: 4,
+              radiusY: 3,
+              color: '#AA0000',
+              filled: true,
+            },
+            {
+              type: 'ellipse',
+              x: 190,
+              y: 155,
+              radiusX: 3,
+              radiusY: 2,
+              color: '#AA0000',
+              filled: true,
+            },
             // Ventilation shaft (open)
-            { type: 'rect', x: 200, y: 30, width: 60, height: 40, color: '#000000', filled: true },
-            { type: 'line', x1: 210, y1: 35, x2: 210, y2: 65, color: '#555555' },
-            { type: 'line', x1: 220, y1: 35, x2: 220, y2: 65, color: '#555555' },
-            { type: 'line', x1: 230, y1: 35, x2: 230, y2: 65, color: '#555555' },
-            { type: 'line', x1: 240, y1: 35, x2: 240, y2: 65, color: '#555555' },
-            { type: 'line', x1: 250, y1: 35, x2: 250, y2: 65, color: '#555555' },
+            {
+              type: 'rect',
+              x: 200,
+              y: 30,
+              width: 60,
+              height: 40,
+              color: '#000000',
+              filled: true,
+            },
+            {
+              type: 'line',
+              x1: 210,
+              y1: 35,
+              x2: 210,
+              y2: 65,
+              color: '#555555',
+            },
+            {
+              type: 'line',
+              x1: 220,
+              y1: 35,
+              x2: 220,
+              y2: 65,
+              color: '#555555',
+            },
+            {
+              type: 'line',
+              x1: 230,
+              y1: 35,
+              x2: 230,
+              y2: 65,
+              color: '#555555',
+            },
+            {
+              type: 'line',
+              x1: 240,
+              y1: 35,
+              x2: 240,
+              y2: 65,
+              color: '#555555',
+            },
+            {
+              type: 'line',
+              x1: 250,
+              y1: 35,
+              x2: 250,
+              y2: 65,
+              color: '#555555',
+            },
             // Medical scanner
-            { type: 'rect', x: 30, y: 80, width: 40, height: 60, color: '#00AAAA', filled: true },
-            { type: 'rect', x: 35, y: 85, width: 30, height: 40, color: '#55FF55', filled: true },
+            {
+              type: 'rect',
+              x: 30,
+              y: 80,
+              width: 40,
+              height: 60,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 35,
+              y: 85,
+              width: 30,
+              height: 40,
+              color: '#55FF55',
+              filled: true,
+            },
             // Scattered surgical tools
-            { type: 'line', x1: 90, y1: 160, x2: 100, y2: 165, color: '#AAAAAA' },
-            { type: 'circle', x: 110, y: 170, radius: 3, color: '#AAAAAA', filled: true },
+            {
+              type: 'line',
+              x1: 90,
+              y1: 160,
+              x2: 100,
+              y2: 165,
+              color: '#AAAAAA',
+            },
+            {
+              type: 'circle',
+              x: 110,
+              y: 170,
+              radius: 3,
+              color: '#AAAAAA',
+              filled: true,
+            },
           ],
         },
         exits: {
           west: { room: 'main_corridor', blocked: false },
-          north: { room: 'laboratory', blocked: true, requiresItem: 'access_card' },
+          north: {
+            room: 'laboratory',
+            blocked: true,
+            requiresItem: 'access_card',
+          },
         },
-        objects: ['operating_table', 'ventilation_shaft', 'medical_scanner', 'blood_trail'],
+        objects: [
+          'operating_table',
+          'ventilation_shaft',
+          'medical_scanner',
+          'blood_trail',
+        ],
         items: ['scalpel', 'medical_report', 'sedative'],
         npcs: [],
       },
@@ -247,35 +834,159 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#00AA00',
           primitives: [
             // Containment pods (broken)
-            { type: 'rect', x: 30, y: 60, width: 40, height: 80, color: '#00AAAA', filled: true },
-            { type: 'polygon', points: [[35, 90], [50, 75], [65, 90], [35, 90]], color: '#55FFFF', filled: true }, // Shattered glass
-            { type: 'polygon', points: [[40, 100], [55, 110], [45, 115]], color: '#55FFFF', filled: true },
+            {
+              type: 'rect',
+              x: 30,
+              y: 60,
+              width: 40,
+              height: 80,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [35, 90],
+                [50, 75],
+                [65, 90],
+                [35, 90],
+              ],
+              color: '#55FFFF',
+              filled: true,
+            }, // Shattered glass
+            {
+              type: 'polygon',
+              points: [
+                [40, 100],
+                [55, 110],
+                [45, 115],
+              ],
+              color: '#55FFFF',
+              filled: true,
+            },
 
-            { type: 'rect', x: 90, y: 60, width: 40, height: 80, color: '#00AAAA', filled: true },
-            { type: 'polygon', points: [[95, 85], [110, 70], [125, 85]], color: '#55FFFF', filled: true },
+            {
+              type: 'rect',
+              x: 90,
+              y: 60,
+              width: 40,
+              height: 80,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [95, 85],
+                [110, 70],
+                [125, 85],
+              ],
+              color: '#55FFFF',
+              filled: true,
+            },
 
-            { type: 'rect', x: 190, y: 60, width: 40, height: 80, color: '#00AAAA', filled: true },
-            { type: 'polygon', points: [[195, 95], [210, 80], [220, 100]], color: '#55FFFF', filled: true },
+            {
+              type: 'rect',
+              x: 190,
+              y: 60,
+              width: 40,
+              height: 80,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [195, 95],
+                [210, 80],
+                [220, 100],
+              ],
+              color: '#55FFFF',
+              filled: true,
+            },
 
-            { type: 'rect', x: 250, y: 60, width: 40, height: 80, color: '#00AAAA', filled: true },
-            { type: 'polygon', points: [[255, 88], [270, 75], [280, 92]], color: '#55FFFF', filled: true },
+            {
+              type: 'rect',
+              x: 250,
+              y: 60,
+              width: 40,
+              height: 80,
+              color: '#00AAAA',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [255, 88],
+                [270, 75],
+                [280, 92],
+              ],
+              color: '#55FFFF',
+              filled: true,
+            },
 
             // Research terminal
-            { type: 'rect', x: 130, y: 130, width: 60, height: 50, color: '#555555', filled: true },
-            { type: 'rect', x: 135, y: 135, width: 50, height: 35, color: '#FF5555', filled: true },
+            {
+              type: 'rect',
+              x: 130,
+              y: 130,
+              width: 60,
+              height: 50,
+              color: '#555555',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 135,
+              y: 135,
+              width: 50,
+              height: 35,
+              color: '#FF5555',
+              filled: true,
+            },
 
             // Microscope
-            { type: 'rect', x: 150, y: 100, width: 20, height: 25, color: '#AAAAAA', filled: true },
-            { type: 'circle', x: 160, y: 95, radius: 5, color: '#55FFFF', filled: true },
+            {
+              type: 'rect',
+              x: 150,
+              y: 100,
+              width: 20,
+              height: 25,
+              color: '#AAAAAA',
+              filled: true,
+            },
+            {
+              type: 'circle',
+              x: 160,
+              y: 95,
+              radius: 5,
+              color: '#55FFFF',
+              filled: true,
+            },
 
             // Slime trail (creature evidence)
-            { type: 'polygon', points: [[70, 140], [120, 155], [90, 165], [60, 150]], color: '#55FF55', filled: true },
+            {
+              type: 'polygon',
+              points: [
+                [70, 140],
+                [120, 155],
+                [90, 165],
+                [60, 150],
+              ],
+              color: '#55FF55',
+              filled: true,
+            },
           ],
         },
         exits: {
           south: { room: 'medical_bay', blocked: false },
         },
-        objects: ['containment_pods', 'research_terminal', 'microscope', 'slime_trail'],
+        objects: [
+          'containment_pods',
+          'research_terminal',
+          'microscope',
+          'slime_trail',
+        ],
         items: ['research_notes', 'asteroid_sample', 'containment_key'],
         npcs: [],
       },
@@ -289,18 +1000,93 @@ export function generateSpaceStationWorld() {
           backgroundColor: '#555555',
           primitives: [
             // Cargo containers
-            { type: 'rect', x: 20, y: 40, width: 60, height: 80, color: '#AA5500', filled: true },
-            { type: 'rect', x: 90, y: 40, width: 60, height: 80, color: '#AA5500', filled: true },
-            { type: 'rect', x: 160, y: 40, width: 60, height: 80, color: '#AA5500', filled: true },
+            {
+              type: 'rect',
+              x: 20,
+              y: 40,
+              width: 60,
+              height: 80,
+              color: '#AA5500',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 90,
+              y: 40,
+              width: 60,
+              height: 80,
+              color: '#AA5500',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 160,
+              y: 40,
+              width: 60,
+              height: 80,
+              color: '#AA5500',
+              filled: true,
+            },
             // Open container with nest
-            { type: 'rect', x: 230, y: 40, width: 70, height: 100, color: '#AA5500', filled: true },
-            { type: 'rect', x: 235, y: 45, width: 60, height: 90, color: '#000000', filled: true }, // Open interior
+            {
+              type: 'rect',
+              x: 230,
+              y: 40,
+              width: 70,
+              height: 100,
+              color: '#AA5500',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 235,
+              y: 45,
+              width: 60,
+              height: 90,
+              color: '#000000',
+              filled: true,
+            }, // Open interior
             // Nest materials (organic)
-            { type: 'polygon', points: [[240, 120], [260, 100], [280, 115], [270, 130]], color: '#55FF55', filled: true },
-            { type: 'polygon', points: [[245, 110], [255, 95], [265, 108]], color: '#00AA00', filled: true },
+            {
+              type: 'polygon',
+              points: [
+                [240, 120],
+                [260, 100],
+                [280, 115],
+                [270, 130],
+              ],
+              color: '#55FF55',
+              filled: true,
+            },
+            {
+              type: 'polygon',
+              points: [
+                [245, 110],
+                [255, 95],
+                [265, 108],
+              ],
+              color: '#00AA00',
+              filled: true,
+            },
             // Scattered supplies
-            { type: 'rect', x: 120, y: 140, width: 20, height: 15, color: '#AAAAAA', filled: true },
-            { type: 'rect', x: 180, y: 155, width: 15, height: 20, color: '#AAAAAA', filled: true },
+            {
+              type: 'rect',
+              x: 120,
+              y: 140,
+              width: 20,
+              height: 15,
+              color: '#AAAAAA',
+              filled: true,
+            },
+            {
+              type: 'rect',
+              x: 180,
+              y: 155,
+              width: 15,
+              height: 20,
+              color: '#AAAAAA',
+              filled: true,
+            },
             // Claw marks on containers
             { type: 'line', x1: 25, y1: 50, x2: 35, y2: 70, color: '#000000' },
             { type: 'line', x1: 30, y1: 50, x2: 40, y2: 70, color: '#000000' },
@@ -308,7 +1094,11 @@ export function generateSpaceStationWorld() {
           ],
         },
         exits: {
-          north: { room: 'main_corridor', blocked: true, requiresItem: 'cargo_keycard' },
+          north: {
+            room: 'main_corridor',
+            blocked: true,
+            requiresItem: 'cargo_keycard',
+          },
         },
         objects: ['cargo_containers', 'alien_nest', 'claw_marks_cargo'],
         items: ['cargo_manifest', 'mining_equipment', 'emergency_flare'],
@@ -320,7 +1110,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'shuttle',
         name: 'escape shuttle',
-        description: 'Your only way off this station. Fuel for one trip - either to Earth or deep space.',
+        description:
+          'Your only way off this station. Fuel for one trip - either to Earth or deep space.',
         state: 'docked',
         canEnter: true,
         canExamine: true,
@@ -328,7 +1119,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'reactor_core',
         name: 'reactor core',
-        description: 'Temperature: 87% of critical. Rising at 2% per hour. Core breach in 24 hours.',
+        description:
+          'Temperature: 87% of critical. Rising at 2% per hour. Core breach in 24 hours.',
         state: 'critical',
         canExamine: true,
         canRepair: true,
@@ -344,7 +1136,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'medical_scanner',
         name: 'medical scanner',
-        description: 'Detecting 3 non-human life signs. Moving through ventilation system. Size: approximately 2 meters.',
+        description:
+          'Detecting 3 non-human life signs. Moving through ventilation system. Size: approximately 2 meters.',
         state: 'active',
         canExamine: true,
         canUse: true,
@@ -352,7 +1145,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'ventilation_shaft',
         name: 'ventilation shaft',
-        description: 'The grate has been torn off from the inside. You can hear movement in the ducts.',
+        description:
+          'The grate has been torn off from the inside. You can hear movement in the ducts.',
         state: 'open',
         canExamine: true,
         canEnter: false,
@@ -360,14 +1154,16 @@ export function generateSpaceStationWorld() {
       {
         id: 'containment_pods',
         name: 'containment pods',
-        description: '4 reinforced glass containment chambers. All shattered from within. Whatever was inside is very strong.',
+        description:
+          '4 reinforced glass containment chambers. All shattered from within. Whatever was inside is very strong.',
         state: 'broken',
         canExamine: true,
       },
       {
         id: 'alien_nest',
         name: 'organic nest',
-        description: 'A twisted mass of station materials and alien secretions. Eggs? Larval pods? Nothing good.',
+        description:
+          'A twisted mass of station materials and alien secretions. Eggs? Larval pods? Nothing good.',
         state: 'active',
         canExamine: true,
         requiresItem: 'emergency_flare',
@@ -378,7 +1174,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'pressure_suit',
         name: 'EVA suit',
-        description: 'Emergency spacewalk suit. Allows survival in vacuum for 2 hours.',
+        description:
+          'Emergency spacewalk suit. Allows survival in vacuum for 2 hours.',
         weight: 15,
         size: 20,
         value: 500,
@@ -389,7 +1186,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'emergency_beacon',
         name: 'distress beacon',
-        description: 'Sends emergency signal to Earth. Help will arrive in 48 hours - if you survive that long.',
+        description:
+          'Sends emergency signal to Earth. Help will arrive in 48 hours - if you survive that long.',
         weight: 2,
         size: 3,
         value: 300,
@@ -420,7 +1218,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'repair_kit',
         name: 'engineering toolkit',
-        description: 'Standard station repair equipment. Might fix the coolant system.',
+        description:
+          'Standard station repair equipment. Might fix the coolant system.',
         weight: 5,
         size: 8,
         value: 150,
@@ -430,7 +1229,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'coolant_canister',
         name: 'coolant canister',
-        description: 'Emergency reactor coolant. Enough for one emergency injection.',
+        description:
+          'Emergency reactor coolant. Enough for one emergency injection.',
         weight: 10,
         size: 10,
         value: 400,
@@ -462,7 +1262,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'sedative',
         name: 'heavy sedative',
-        description: 'Medical tranquilizer. Powerful enough to drop a horse - or an alien creature.',
+        description:
+          'Medical tranquilizer. Powerful enough to drop a horse - or an alien creature.',
         weight: 0.5,
         size: 2,
         value: 200,
@@ -472,7 +1273,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'emergency_flare',
         name: 'signal flare',
-        description: 'Burns at 3000 degrees. Designed for space rescue, but might work as a weapon.',
+        description:
+          'Burns at 3000 degrees. Designed for space rescue, but might work as a weapon.',
         weight: 1,
         size: 3,
         value: 150,
@@ -482,7 +1284,8 @@ export function generateSpaceStationWorld() {
       {
         id: 'command_override',
         name: 'command codes',
-        description: 'Emergency override codes. Can trigger station self-destruct or emergency systems.',
+        description:
+          'Emergency override codes. Can trigger station self-destruct or emergency systems.',
         weight: 0.1,
         size: 1,
         value: 500,

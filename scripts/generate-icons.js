@@ -67,7 +67,10 @@ async function generateAllIcons() {
       console.log(`✓ Generated icon-${size}x${size}.png`);
       successCount++;
     } catch (error) {
-      console.error(`✗ Failed to generate icon-${size}x${size}.png:`, error.message);
+      console.error(
+        `✗ Failed to generate icon-${size}x${size}.png:`,
+        error.message
+      );
       errorCount++;
     }
   }

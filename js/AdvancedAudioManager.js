@@ -78,8 +78,8 @@ export class AdvancedAudioManager {
     const responses = {
       'small-room': await this.generateImpulseResponse(0.3, 0.5),
       'large-hall': await this.generateImpulseResponse(2.0, 0.7),
-      'cave': await this.generateImpulseResponse(1.5, 0.9),
-      'church': await this.generateImpulseResponse(3.0, 0.8),
+      cave: await this.generateImpulseResponse(1.5, 0.9),
+      church: await this.generateImpulseResponse(3.0, 0.8),
     };
 
     for (const [name, buffer] of Object.entries(responses)) {
@@ -196,7 +196,9 @@ export class AdvancedAudioManager {
     const impulseBuffer = this.impulseResponses.get(preset);
 
     if (!impulseBuffer) {
-      this.logger.warn(`[AdvancedAudioManager] Impulse response ${preset} not found`);
+      this.logger.warn(
+        `[AdvancedAudioManager] Impulse response ${preset} not found`
+      );
       return source;
     }
 

@@ -255,16 +255,19 @@ npm run start:multiplayer  # Multiplayer server only (port 8080)
 Explore Somnium's features through interactive demonstrations:
 
 **Game Experiences:**
+
 - **Tutorial World**: Learn to play with an interactive guide - `http://localhost:8000/demos/demo-adventure.html?world=tutorial`
 - **Complete Adventure**: Play "The Enchanted Manor" demo - `http://localhost:8000/demos/demo-adventure.html`
 - **Multiplayer Lobby**: Test multiplayer features - `http://localhost:8000/multiplayer.html`
 
 **Technical Demos:**
+
 - **Parser Demo**: Test the natural language parser - `http://localhost:8000/demos/parser-demo.html`
 - **Graphics Demo**: See the vector graphics engine - `http://localhost:8000/demos/demo-graphics.html`
 - **Sound Demo**: Experience retro sound synthesis - `http://localhost:8000/demos/sound-demo.html`
 
 **Creation Tools:**
+
 - **World Editor**: Create custom adventures - `http://localhost:8000/editor.html`
 - **World Templates**: Browse pre-built templates in the editor's "New World" menu
 
@@ -399,23 +402,27 @@ Somnium v2.1.0 is **production-ready** with comprehensive content creation tools
 ### What's New in v2.1.0
 
 **🎨 Content Creation Suite:**
+
 - ✅ Visual World Editor with drag-and-drop room designer (~1000 lines)
 - ✅ Puzzle Builder with flowchart-style node editor (~800 lines)
 - ✅ Dialogue Tree Editor for NPC conversations (~1000 lines)
 - ✅ Asset Library System for comprehensive asset management (~700 lines)
 
 **🤖 Enhanced AI & Validation:**
+
 - ✅ EnhancedWorldGenerator with 5-phase pipeline and retry logic (~500 lines)
 - ✅ WorldValidator with graph algorithms and comprehensive validation (~550 lines)
 - ✅ Auto-fix common world generation issues
 - ✅ Puzzle solvability verification
 
 **🏆 Expanded Features:**
+
 - ✅ 50+ achievements across 8 categories with rarity tiers (~650 lines)
 - ✅ Friend System with real-time messaging and status tracking (~650 lines)
 - ✅ Production PNG icon generation using Sharp library (12 icons)
 
 **📊 v2.1.0 Metrics:**
+
 - 11,000+ lines of new code
 - 4 major backend modules
 - 3 complete visual editors with HTML/CSS/JS
@@ -427,6 +434,7 @@ See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical 
 ### What's New in v2.0.0
 
 **Path A - Full Production Launch:**
+
 - ✅ Node.js multiplayer server with WebSocket support
 - ✅ Express REST API for authentication, cloud saves, and social sharing
 - ✅ GitHub Actions deployment workflow for automatic CI/CD
@@ -434,11 +442,13 @@ See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical 
 - ✅ PWA icon generation script for all required sizes
 
 **Path B - Editor Enhancement:**
+
 - ✅ World template library with 4 professional templates
 - ✅ Interactive tutorial world teaching all game mechanics
 - ✅ Pre-built worlds: Medieval Castle, Mysterious Dungeon, Space Station
 
 **Path C - Multiplayer Focus:**
+
 - ✅ Multiplayer lobby UI with session management
 - ✅ Real-time chat system for player communication
 - ✅ Three game modes: Co-op, Competitive, Shared World
@@ -493,6 +503,7 @@ See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical 
 
 - **452 tests passing** (100% pass rate across 22 test suites)
 - **25.7% line coverage across all of `js/`**, higher in the core modules
+- **Prettier-clean** (`npm run format:check`)
 - **Full CI/CD pipeline** (Node.js 22.x and 24.x tested)
 
 ### Release Information
@@ -511,6 +522,7 @@ See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical 
 ### What's Next?
 
 v2.1.0 brings professional content creation tools! Future enhancements for v2.2+:
+
 - **Mobile Optimization**: Touch-optimized editors for tablets and mobile devices
 - **Collaborative Editing**: Real-time co-editing of worlds with multiple users
 - **Advanced Editor Features**:

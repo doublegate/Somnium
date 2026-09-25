@@ -29,7 +29,8 @@ export class SocialManager {
       type: 'save',
       data: saveData,
       title: options.title || `My ${saveData.worldTitle} Adventure`,
-      description: options.description || `Save game from ${saveData.currentRoom}`,
+      description:
+        options.description || `Save game from ${saveData.currentRoom}`,
       public: options.public !== false,
     };
 
@@ -93,7 +94,8 @@ export class SocialManager {
             type: 'screenshot',
             blob,
             title: options.title || 'My Somnium Adventure',
-            description: options.description || 'Check out this moment from my adventure!',
+            description:
+              options.description || 'Check out this moment from my adventure!',
           };
 
           const result = await this.shareContent(shareData);

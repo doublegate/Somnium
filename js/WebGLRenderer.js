@@ -44,9 +44,10 @@ export class WebGLRenderer {
   async initialize() {
     try {
       // Get WebGL2 context (fallback to WebGL1)
-      this.gl = this.canvas.getContext('webgl2') ||
-                this.canvas.getContext('webgl') ||
-                this.canvas.getContext('experimental-webgl');
+      this.gl =
+        this.canvas.getContext('webgl2') ||
+        this.canvas.getContext('webgl') ||
+        this.canvas.getContext('experimental-webgl');
 
       if (!this.gl) {
         throw new Error('WebGL not supported');
@@ -246,13 +247,34 @@ export class WebGLRenderer {
     `;
 
     // Compile shader programs
-    this.programs.set('crt', this.createProgram(basicVertexShader, crtFragmentShader));
-    this.programs.set('bloom', this.createProgram(basicVertexShader, bloomFragmentShader));
-    this.programs.set('blur', this.createProgram(basicVertexShader, blurFragmentShader));
-    this.programs.set('pixelate', this.createProgram(basicVertexShader, pixelateFragmentShader));
-    this.programs.set('aberration', this.createProgram(basicVertexShader, aberrationFragmentShader));
-    this.programs.set('vignette', this.createProgram(basicVertexShader, vignetteFragmentShader));
-    this.programs.set('composite', this.createProgram(basicVertexShader, compositeFragmentShader));
+    this.programs.set(
+      'crt',
+      this.createProgram(basicVertexShader, crtFragmentShader)
+    );
+    this.programs.set(
+      'bloom',
+      this.createProgram(basicVertexShader, bloomFragmentShader)
+    );
+    this.programs.set(
+      'blur',
+      this.createProgram(basicVertexShader, blurFragmentShader)
+    );
+    this.programs.set(
+      'pixelate',
+      this.createProgram(basicVertexShader, pixelateFragmentShader)
+    );
+    this.programs.set(
+      'aberration',
+      this.createProgram(basicVertexShader, aberrationFragmentShader)
+    );
+    this.programs.set(
+      'vignette',
+      this.createProgram(basicVertexShader, vignetteFragmentShader)
+    );
+    this.programs.set(
+      'composite',
+      this.createProgram(basicVertexShader, compositeFragmentShader)
+    );
 
     this.logger.log('[WebGLRenderer] Shaders compiled successfully');
   }
@@ -307,19 +329,9 @@ export class WebGLRenderer {
     const gl = this.gl;
 
     // Full-screen quad
-    const positions = new Float32Array([
-      -1, -1,
-       1, -1,
-      -1,  1,
-       1,  1,
-    ]);
+    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
 
-    const texCoords = new Float32Array([
-      0, 0,
-      1, 0,
-      0, 1,
-      1, 1,
-    ]);
+    const texCoords = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
 
     // Position buffer
     const positionBuffer = gl.createBuffer();
@@ -346,8 +358,14 @@ export class WebGLRenderer {
     this.framebuffers.set('main', this.createFramebuffer(width, height));
 
     // Bloom framebuffers (quarter resolution)
-    this.framebuffers.set('bloom', this.createFramebuffer(width / 4, height / 4));
-    this.framebuffers.set('bloomBlur', this.createFramebuffer(width / 4, height / 4));
+    this.framebuffers.set(
+      'bloom',
+      this.createFramebuffer(width / 4, height / 4)
+    );
+    this.framebuffers.set(
+      'bloomBlur',
+      this.createFramebuffer(width / 4, height / 4)
+    );
   }
 
   /**
@@ -362,14 +380,30 @@ export class WebGLRenderer {
     // Create texture
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      width,
+      height,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      null
+    );
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     // Attach texture
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+    gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,
+      gl.COLOR_ATTACHMENT0,
+      gl.TEXTURE_2D,
+      texture,
+      0
+    );
 
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
       throw new Error('Framebuffer incomplete');
@@ -468,8 +502,15 @@ export class WebGLRenderer {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTexture);
     gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
-    gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), fb.width, fb.height);
-    gl.uniform1f(gl.getUniformLocation(program, 'u_pixelSize'), this.params.pixelSize);
+    gl.uniform2f(
+      gl.getUniformLocation(program, 'u_resolution'),
+      fb.width,
+      fb.height
+    );
+    gl.uniform1f(
+      gl.getUniformLocation(program, 'u_pixelSize'),
+      this.params.pixelSize
+    );
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -494,10 +535,20 @@ export class WebGLRenderer {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTexture);
     gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
-    gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), fb.width, fb.height);
+    gl.uniform2f(
+      gl.getUniformLocation(program, 'u_resolution'),
+      fb.width,
+      fb.height
+    );
     gl.uniform1f(gl.getUniformLocation(program, 'u_time'), time);
-    gl.uniform1f(gl.getUniformLocation(program, 'u_curvature'), this.params.crtCurvature);
-    gl.uniform1f(gl.getUniformLocation(program, 'u_scanlineIntensity'), this.params.scanlineIntensity);
+    gl.uniform1f(
+      gl.getUniformLocation(program, 'u_curvature'),
+      this.params.crtCurvature
+    );
+    gl.uniform1f(
+      gl.getUniformLocation(program, 'u_scanlineIntensity'),
+      this.params.scanlineIntensity
+    );
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -531,7 +582,10 @@ export class WebGLRenderer {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTexture);
     gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
-    gl.uniform1f(gl.getUniformLocation(program, 'u_amount'), this.params.aberrationAmount);
+    gl.uniform1f(
+      gl.getUniformLocation(program, 'u_amount'),
+      this.params.aberrationAmount
+    );
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -556,7 +610,10 @@ export class WebGLRenderer {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTexture);
     gl.uniform1i(gl.getUniformLocation(program, 'u_texture'), 0);
-    gl.uniform1f(gl.getUniformLocation(program, 'u_intensity'), this.params.vignetteIntensity);
+    gl.uniform1f(
+      gl.getUniformLocation(program, 'u_intensity'),
+      this.params.vignetteIntensity
+    );
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -586,7 +643,10 @@ export class WebGLRenderer {
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, bloomTexture);
       gl.uniform1i(gl.getUniformLocation(program, 'u_bloomTexture'), 1);
-      gl.uniform1f(gl.getUniformLocation(program, 'u_bloomIntensity'), this.params.bloomIntensity);
+      gl.uniform1f(
+        gl.getUniformLocation(program, 'u_bloomIntensity'),
+        this.params.bloomIntensity
+      );
     }
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -616,7 +676,9 @@ export class WebGLRenderer {
   toggleEffect(effectName, enabled) {
     if (effectName in this.effects) {
       this.effects[effectName] = enabled;
-      this.logger.log(`[WebGLRenderer] Effect ${effectName}: ${enabled ? 'enabled' : 'disabled'}`);
+      this.logger.log(
+        `[WebGLRenderer] Effect ${effectName}: ${enabled ? 'enabled' : 'disabled'}`
+      );
     }
   }
 

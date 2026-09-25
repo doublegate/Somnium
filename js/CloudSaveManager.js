@@ -84,7 +84,7 @@ export class CloudSaveManager {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -112,11 +112,14 @@ export class CloudSaveManager {
       }
 
       // Real authentication
-      const response = await fetch(`${this.config.apiEndpoint}/auth/${provider}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
+      const response = await fetch(
+        `${this.config.apiEndpoint}/auth/${provider}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(credentials),
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Authentication failed');
@@ -302,7 +305,7 @@ export class CloudSaveManager {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -394,7 +397,7 @@ export class CloudSaveManager {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(saveData),
     });
@@ -467,7 +470,7 @@ export class CloudSaveManager {
     const response = await fetch(`${this.config.apiEndpoint}/saves/${slot}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 

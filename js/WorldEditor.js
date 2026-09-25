@@ -51,8 +51,14 @@ class WorldEditor {
 
   setupEventListeners() {
     // Canvas mouse events
-    this.canvas.addEventListener('mousedown', this.onCanvasMouseDown.bind(this));
-    this.canvas.addEventListener('mousemove', this.onCanvasMouseMove.bind(this));
+    this.canvas.addEventListener(
+      'mousedown',
+      this.onCanvasMouseDown.bind(this)
+    );
+    this.canvas.addEventListener(
+      'mousemove',
+      this.onCanvasMouseMove.bind(this)
+    );
     this.canvas.addEventListener('mouseup', this.onCanvasMouseUp.bind(this));
 
     // Keyboard shortcuts
@@ -67,9 +73,11 @@ class WorldEditor {
     });
 
     // Color picker
-    document.getElementById('ega-color-select').addEventListener('change', (e) => {
-      this.currentColor = e.target.value;
-    });
+    document
+      .getElementById('ega-color-select')
+      .addEventListener('change', (e) => {
+        this.currentColor = e.target.value;
+      });
 
     // Fill checkbox
     document.getElementById('fill-shape').addEventListener('change', (e) => {
@@ -98,13 +106,17 @@ class WorldEditor {
     });
 
     // Create room
-    document.querySelector('[data-action="create-room"]').addEventListener('click', () => {
-      this.showModal('new-room-modal');
-    });
+    document
+      .querySelector('[data-action="create-room"]')
+      .addEventListener('click', () => {
+        this.showModal('new-room-modal');
+      });
 
-    document.querySelector('[data-action="confirm-room"]').addEventListener('click', () => {
-      this.createRoom();
-    });
+    document
+      .querySelector('[data-action="confirm-room"]')
+      .addEventListener('click', () => {
+        this.createRoom();
+      });
   }
 
   setupPalette() {
@@ -180,7 +192,9 @@ class WorldEditor {
       content.classList.add('hidden');
     });
 
-    document.querySelector(`[data-content="${tab}"]`).classList.remove('hidden');
+    document
+      .querySelector(`[data-content="${tab}"]`)
+      .classList.remove('hidden');
   }
 
   onCanvasMouseDown(e) {
@@ -335,7 +349,14 @@ class WorldEditor {
         return Math.sqrt(dx * dx + dy * dy) <= primitive.radius;
       case 'line':
         // Simplified line hit detection
-        const dist = this.pointToLineDistance(x, y, primitive.x1, primitive.y1, primitive.x2, primitive.y2);
+        const dist = this.pointToLineDistance(
+          x,
+          y,
+          primitive.x1,
+          primitive.y1,
+          primitive.x2,
+          primitive.y2
+        );
         return dist < 5;
       default:
         return false;
@@ -468,7 +489,8 @@ class WorldEditor {
     this.currentRoom = room;
     this.updateRoomsList();
     this.render();
-    document.getElementById('current-room-label').textContent = `Room: ${room.name}`;
+    document.getElementById('current-room-label').textContent =
+      `Room: ${room.name}`;
   }
 
   render() {
@@ -515,15 +537,31 @@ class WorldEditor {
       case 'rectangle':
       case 'rect':
         if (primitive.filled) {
-          this.ctx.fillRect(primitive.x, primitive.y, primitive.width, primitive.height);
+          this.ctx.fillRect(
+            primitive.x,
+            primitive.y,
+            primitive.width,
+            primitive.height
+          );
         } else {
-          this.ctx.strokeRect(primitive.x, primitive.y, primitive.width, primitive.height);
+          this.ctx.strokeRect(
+            primitive.x,
+            primitive.y,
+            primitive.width,
+            primitive.height
+          );
         }
         break;
 
       case 'circle':
         this.ctx.beginPath();
-        this.ctx.arc(primitive.x, primitive.y, primitive.radius, 0, Math.PI * 2);
+        this.ctx.arc(
+          primitive.x,
+          primitive.y,
+          primitive.radius,
+          0,
+          Math.PI * 2
+        );
         if (primitive.filled) {
           this.ctx.fill();
         } else {
@@ -564,11 +602,22 @@ class WorldEditor {
     switch (primitive.type) {
       case 'rectangle':
       case 'rect':
-        this.ctx.strokeRect(primitive.x - 2, primitive.y - 2, primitive.width + 4, primitive.height + 4);
+        this.ctx.strokeRect(
+          primitive.x - 2,
+          primitive.y - 2,
+          primitive.width + 4,
+          primitive.height + 4
+        );
         break;
       case 'circle':
         this.ctx.beginPath();
-        this.ctx.arc(primitive.x, primitive.y, primitive.radius + 2, 0, Math.PI * 2);
+        this.ctx.arc(
+          primitive.x,
+          primitive.y,
+          primitive.radius + 2,
+          0,
+          Math.PI * 2
+        );
         this.ctx.stroke();
         break;
     }
@@ -636,10 +685,22 @@ class WorldEditor {
 
   getEGAColorOptions(selectedColor) {
     const colors = [
-      ['#000000', 'Black'], ['#0000AA', 'Blue'], ['#00AA00', 'Green'], ['#00AAAA', 'Cyan'],
-      ['#AA0000', 'Red'], ['#AA00AA', 'Magenta'], ['#AA5500', 'Brown'], ['#AAAAAA', 'Light Gray'],
-      ['#555555', 'Dark Gray'], ['#5555FF', 'Light Blue'], ['#55FF55', 'Light Green'], ['#55FFFF', 'Light Cyan'],
-      ['#FF5555', 'Light Red'], ['#FF55FF', 'Light Magenta'], ['#FFFF55', 'Yellow'], ['#FFFFFF', 'White'],
+      ['#000000', 'Black'],
+      ['#0000AA', 'Blue'],
+      ['#00AA00', 'Green'],
+      ['#00AAAA', 'Cyan'],
+      ['#AA0000', 'Red'],
+      ['#AA00AA', 'Magenta'],
+      ['#AA5500', 'Brown'],
+      ['#AAAAAA', 'Light Gray'],
+      ['#555555', 'Dark Gray'],
+      ['#5555FF', 'Light Blue'],
+      ['#55FF55', 'Light Green'],
+      ['#55FFFF', 'Light Cyan'],
+      ['#FF5555', 'Light Red'],
+      ['#FF55FF', 'Light Magenta'],
+      ['#FFFF55', 'Yellow'],
+      ['#FFFFFF', 'White'],
     ];
 
     return colors
@@ -666,7 +727,8 @@ class WorldEditor {
   }
 
   updateZoomLabel() {
-    document.getElementById('zoom-level').textContent = `Zoom: ${Math.round(this.zoom * 100)}%`;
+    document.getElementById('zoom-level').textContent =
+      `Zoom: ${Math.round(this.zoom * 100)}%`;
   }
 
   saveState() {
@@ -704,7 +766,13 @@ class WorldEditor {
   newWorld() {
     if (confirm('Create a new world? Unsaved changes will be lost.')) {
       this.world = {
-        metadata: { title: '', author: '', description: '', genre: 'adventure', version: '1.0' },
+        metadata: {
+          title: '',
+          author: '',
+          description: '',
+          genre: 'adventure',
+          version: '1.0',
+        },
         rooms: [],
         objects: [],
         items: [],
@@ -723,7 +791,8 @@ class WorldEditor {
     // Sync metadata from UI
     this.world.metadata.title = document.getElementById('world-title').value;
     this.world.metadata.author = document.getElementById('world-author').value;
-    this.world.metadata.description = document.getElementById('world-description').value;
+    this.world.metadata.description =
+      document.getElementById('world-description').value;
     this.world.metadata.genre = document.getElementById('world-genre').value;
 
     const json = JSON.stringify(this.world, null, 2);
@@ -741,10 +810,14 @@ class WorldEditor {
       this.updateStatus('World loaded from localStorage');
 
       // Update UI
-      document.getElementById('world-title').value = this.world.metadata.title || '';
-      document.getElementById('world-author').value = this.world.metadata.author || '';
-      document.getElementById('world-description').value = this.world.metadata.description || '';
-      document.getElementById('world-genre').value = this.world.metadata.genre || 'adventure';
+      document.getElementById('world-title').value =
+        this.world.metadata.title || '';
+      document.getElementById('world-author').value =
+        this.world.metadata.author || '';
+      document.getElementById('world-description').value =
+        this.world.metadata.description || '';
+      document.getElementById('world-genre').value =
+        this.world.metadata.genre || 'adventure';
     } else {
       this.updateStatus('No saved world found');
     }

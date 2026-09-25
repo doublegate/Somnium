@@ -52,7 +52,7 @@ To achieve the nostalgic look of Sierra’s late-1980s adventures, we meticulous
   - The text window in SCI0 was a blue rectangle with white text (in early SCI) or sometimes gray with black text depending on user settings. We can mimic the classic look: a medium blue background for the text box with a white border, and white or light gray font in a pixelated font (we could use a font like IBM PC 8x16 or Sierra’s fonts if available).
   - Any icons (like the cursor or if we implement a simple inventory icon view) would also be drawn in 16 colors minimalistic form. Sierra’s parser games had an arrow cursor for menus, etc., we can replicate that.
 
-&#x20;*An example screen from *King’s Quest IV* (1988, SCI0) showing the classic 16-color EGA palette, heavy dithering (e.g., the sky and water gradients), and a mix of bold and subtle details. Somnium aims to generate scenes with a similar level of detail and style.*
+&#x20;_An example screen from *King’s Quest IV* (1988, SCI0) showing the classic 16-color EGA palette, heavy dithering (e.g., the sky and water gradients), and a mix of bold and subtle details. Somnium aims to generate scenes with a similar level of detail and style._
 
 The above screenshot illustrates the kind of outcome we want from our AI-generated graphics: note the gradient of the sky achieved by mixing blues and black in a checker pattern, the textured appearance of the sand with dithered brown/yellow, and the distinct but limited colors used for Rosella’s sprite and other objects. We instruct our system to create **comparable visuals** so that a player would be hard-pressed to distinguish a Somnium scene from a hand-crafted Sierra scene at first glance.
 

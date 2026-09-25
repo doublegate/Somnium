@@ -243,7 +243,9 @@ export class CompetitiveFeatures {
           // Check if actions are within threshold
           const threshold = 100;
           if (this.activeSpeedrun.stats.actions > threshold) {
-            violations.push(`Too many actions (${this.activeSpeedrun.stats.actions})`);
+            violations.push(
+              `Too many actions (${this.activeSpeedrun.stats.actions})`
+            );
           }
           break;
       }
@@ -429,14 +431,11 @@ export class CompetitiveFeatures {
       case 'time_attack':
         const elapsed = Date.now() - challenge.startTime;
         return (
-          challenge.progress.objective &&
-          elapsed <= challenge.params.timeLimit
+          challenge.progress.objective && elapsed <= challenge.params.timeLimit
         );
 
       case 'collection':
-        return (
-          challenge.progress.collected >= challenge.params.requiredItems
-        );
+        return challenge.progress.collected >= challenge.params.requiredItems;
 
       case 'no_damage':
         return (

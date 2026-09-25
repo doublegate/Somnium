@@ -18,13 +18,37 @@ export const TUTORIAL_WORLD = {
     {
       id: 'tutorial_start',
       name: 'Tutorial Chamber',
-      description: 'Welcome! This is your first adventure. A friendly guide waits to help you. Try typing "look" or "talk to guide" to begin.',
+      description:
+        'Welcome! This is your first adventure. A friendly guide waits to help you. Try typing "look" or "talk to guide" to begin.',
       graphics: {
         backgroundColor: '#00AA00',
         primitives: [
-          { type: 'rect', x: 100, y: 100, width: 120, height: 60, color: '#885500', filled: true },
-          { type: 'circle', x: 160, y: 80, radius: 15, color: '#FFAA00', filled: true },
-          { type: 'rect', x: 150, y: 85, width: 20, height: 30, color: '#FFAA00', filled: true },
+          {
+            type: 'rect',
+            x: 100,
+            y: 100,
+            width: 120,
+            height: 60,
+            color: '#885500',
+            filled: true,
+          },
+          {
+            type: 'circle',
+            x: 160,
+            y: 80,
+            radius: 15,
+            color: '#FFAA00',
+            filled: true,
+          },
+          {
+            type: 'rect',
+            x: 150,
+            y: 85,
+            width: 20,
+            height: 30,
+            color: '#FFAA00',
+            filled: true,
+          },
         ],
       },
       exits: {
@@ -38,14 +62,51 @@ export const TUTORIAL_WORLD = {
     {
       id: 'movement_room',
       name: 'Movement Practice',
-      description: 'This room teaches movement. You can go north, south, east, or west. Try going east to the item room.',
+      description:
+        'This room teaches movement. You can go north, south, east, or west. Try going east to the item room.',
       graphics: {
         backgroundColor: '#0000AA',
         primitives: [
-          { type: 'polygon', points: [[160, 60], [180, 80], [140, 80]], color: '#FFFF55', filled: true },
-          { type: 'polygon', points: [[160, 140], [180, 120], [140, 120]], color: '#FFFF55', filled: true },
-          { type: 'polygon', points: [[60, 100], [80, 120], [80, 80]], color: '#FFFF55', filled: true },
-          { type: 'polygon', points: [[260, 100], [240, 120], [240, 80]], color: '#FFFF55', filled: true },
+          {
+            type: 'polygon',
+            points: [
+              [160, 60],
+              [180, 80],
+              [140, 80],
+            ],
+            color: '#FFFF55',
+            filled: true,
+          },
+          {
+            type: 'polygon',
+            points: [
+              [160, 140],
+              [180, 120],
+              [140, 120],
+            ],
+            color: '#FFFF55',
+            filled: true,
+          },
+          {
+            type: 'polygon',
+            points: [
+              [60, 100],
+              [80, 120],
+              [80, 80],
+            ],
+            color: '#FFFF55',
+            filled: true,
+          },
+          {
+            type: 'polygon',
+            points: [
+              [260, 100],
+              [240, 120],
+              [240, 80],
+            ],
+            color: '#FFFF55',
+            filled: true,
+          },
         ],
       },
       exits: {
@@ -60,12 +121,28 @@ export const TUTORIAL_WORLD = {
     {
       id: 'item_room',
       name: 'Item Collection',
-      description: 'This room contains a key on the floor. Try "take key" to pick it up, then "inventory" to see what you carry.',
+      description:
+        'This room contains a key on the floor. Try "take key" to pick it up, then "inventory" to see what you carry.',
       graphics: {
         backgroundColor: '#AA00AA',
         primitives: [
-          { type: 'rect', x: 140, y: 160, width: 40, height: 5, color: '#FFFF55', filled: true },
-          { type: 'circle', x: 150, y: 160, radius: 3, color: '#FFFF55', filled: true },
+          {
+            type: 'rect',
+            x: 140,
+            y: 160,
+            width: 40,
+            height: 5,
+            color: '#FFFF55',
+            filled: true,
+          },
+          {
+            type: 'circle',
+            x: 150,
+            y: 160,
+            radius: 3,
+            color: '#FFFF55',
+            filled: true,
+          },
         ],
       },
       exits: {
@@ -80,12 +157,28 @@ export const TUTORIAL_WORLD = {
     {
       id: 'puzzle_room',
       name: 'Puzzle Challenge',
-      description: 'A locked door blocks your path. Use the key you found! Try "use key on door" or "unlock door with key".',
+      description:
+        'A locked door blocks your path. Use the key you found! Try "use key on door" or "unlock door with key".',
       graphics: {
         backgroundColor: '#AA5500',
         primitives: [
-          { type: 'rect', x: 130, y: 60, width: 60, height: 80, color: '#885500', filled: true },
-          { type: 'circle', x: 170, y: 100, radius: 5, color: '#FFFF55', filled: true },
+          {
+            type: 'rect',
+            x: 130,
+            y: 60,
+            width: 60,
+            height: 80,
+            color: '#885500',
+            filled: true,
+          },
+          {
+            type: 'circle',
+            x: 170,
+            y: 100,
+            radius: 5,
+            color: '#FFFF55',
+            filled: true,
+          },
         ],
       },
       exits: {
@@ -100,13 +193,37 @@ export const TUTORIAL_WORLD = {
     {
       id: 'final_room',
       name: 'Graduation Hall',
-      description: 'Congratulations! You have completed the tutorial. You now know the basics of adventure gaming. Your journey begins!',
+      description:
+        'Congratulations! You have completed the tutorial. You now know the basics of adventure gaming. Your journey begins!',
       graphics: {
         backgroundColor: '#FFFF55',
         primitives: [
-          { type: 'polygon', points: [[160, 80], [140, 120], [180, 120]], color: '#FFAA00', filled: true },
-          { type: 'circle', x: 160, y: 100, radius: 20, color: '#FF5555', filled: true },
-          { type: 'circle', x: 160, y: 100, radius: 12, color: '#FFFF55', filled: true },
+          {
+            type: 'polygon',
+            points: [
+              [160, 80],
+              [140, 120],
+              [180, 120],
+            ],
+            color: '#FFAA00',
+            filled: true,
+          },
+          {
+            type: 'circle',
+            x: 160,
+            y: 100,
+            radius: 20,
+            color: '#FF5555',
+            filled: true,
+          },
+          {
+            type: 'circle',
+            x: 160,
+            y: 100,
+            radius: 12,
+            color: '#FFFF55',
+            filled: true,
+          },
         ],
       },
       exits: {
@@ -178,13 +295,18 @@ export const TUTORIAL_WORLD = {
       description: 'A friendly person here to teach you the basics',
       location: 'tutorial_start',
       dialogue: {
-        greeting: 'Hello! Welcome to Somnium. Let me teach you how to play adventure games.',
+        greeting:
+          'Hello! Welcome to Somnium. Let me teach you how to play adventure games.',
         topics: {
           help: 'You can LOOK at things, TAKE items, USE objects, TALK to people, and MOVE in directions (north, south, east, west). Try these commands!',
-          movement: 'To move, just type a direction: NORTH, SOUTH, EAST, or WEST. You can also use abbreviations like N, S, E, W.',
-          items: 'To interact with items, try TAKE [item], DROP [item], USE [item], or EXAMINE [item]. Check your INVENTORY to see what you carry.',
-          puzzles: 'Many adventures have puzzles. Read descriptions carefully and experiment with different commands. The key to success is exploration!',
-          goodbye: 'Good luck on your adventure! Head north when you are ready to practice.',
+          movement:
+            'To move, just type a direction: NORTH, SOUTH, EAST, or WEST. You can also use abbreviations like N, S, E, W.',
+          items:
+            'To interact with items, try TAKE [item], DROP [item], USE [item], or EXAMINE [item]. Check your INVENTORY to see what you carry.',
+          puzzles:
+            'Many adventures have puzzles. Read descriptions carefully and experiment with different commands. The key to success is exploration!',
+          goodbye:
+            'Good luck on your adventure! Head north when you are ready to practice.',
         },
       },
       relationship: 100,
@@ -234,7 +356,8 @@ export const TUTORIAL_WORLD = {
     {
       id: 'tutorial_success',
       name: 'Tutorial Complete',
-      description: 'You have successfully learned the basics of adventure gaming. Now go forth and explore the many worlds of Somnium!',
+      description:
+        'You have successfully learned the basics of adventure gaming. Now go forth and explore the many worlds of Somnium!',
       condition: { type: 'achievement', achievement: 'tutorial_complete' },
       pointsRequired: 10,
     },

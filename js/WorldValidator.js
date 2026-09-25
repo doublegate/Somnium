@@ -202,7 +202,11 @@ export class WorldValidator {
       itemIds.add(item.id);
 
       // Location validation
-      if (item.location && !roomIds.has(item.location) && !npcIds.has(item.location)) {
+      if (
+        item.location &&
+        !roomIds.has(item.location) &&
+        !npcIds.has(item.location)
+      ) {
         errors.push({
           type: 'invalid_item_location',
           itemId: item.id,

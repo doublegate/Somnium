@@ -19,7 +19,7 @@ class MultiplayerServer {
 
     // Session management
     this.sessions = new Map(); // sessionId -> Session
-    this.clients = new Map();  // ws -> Client
+    this.clients = new Map(); // ws -> Client
 
     this.setupWebSocketServer();
     this.startHeartbeat();
@@ -165,7 +165,9 @@ class MultiplayerServer {
       },
     });
 
-    console.log(`[Server] Session created: ${sessionId} by ${client.playerName}`);
+    console.log(
+      `[Server] Session created: ${sessionId} by ${client.playerName}`
+    );
   }
 
   handleJoinSession(ws, message) {
@@ -223,10 +225,14 @@ class MultiplayerServer {
     });
 
     // Notify other players
-    this.broadcastToSession(sessionId, {
-      type: 'player_joined',
-      data: { player },
-    }, client.playerId);
+    this.broadcastToSession(
+      sessionId,
+      {
+        type: 'player_joined',
+        data: { player },
+      },
+      client.playerId
+    );
 
     console.log(`[Server] ${client.playerName} joined session ${sessionId}`);
   }
@@ -251,14 +257,18 @@ class MultiplayerServer {
     const { sessionId, action, timestamp } = message;
 
     // Broadcast action to all players in session
-    this.broadcastToSession(sessionId, {
-      type: 'player_action',
-      data: {
-        playerId: client.playerId,
-        action,
-        timestamp,
+    this.broadcastToSession(
+      sessionId,
+      {
+        type: 'player_action',
+        data: {
+          playerId: client.playerId,
+          action,
+          timestamp,
+        },
       },
-    }, client.playerId);
+      client.playerId
+    );
   }
 
   handleStateSync(ws, message) {
@@ -279,14 +289,18 @@ class MultiplayerServer {
     session.state = { ...session.state, ...state };
 
     // Broadcast state to all players
-    this.broadcastToSession(sessionId, {
-      type: 'state_sync',
-      data: {
-        playerId: client.playerId,
-        state,
-        timestamp,
+    this.broadcastToSession(
+      sessionId,
+      {
+        type: 'state_sync',
+        data: {
+          playerId: client.playerId,
+          state,
+          timestamp,
+        },
       },
-    }, client.playerId);
+      client.playerId
+    );
   }
 
   handleChat(ws, message) {
@@ -299,14 +313,18 @@ class MultiplayerServer {
     const { sessionId, message: chatMessage, timestamp } = message;
 
     // Broadcast chat to all players
-    this.broadcastToSession(sessionId, {
-      type: 'chat',
-      data: {
-        playerId: client.playerId,
-        message: chatMessage,
-        timestamp,
+    this.broadcastToSession(
+      sessionId,
+      {
+        type: 'chat',
+        data: {
+          playerId: client.playerId,
+          message: chatMessage,
+          timestamp,
+        },
       },
-    }, client.playerId);
+      client.playerId
+    );
 
     console.log(`[Server] [${sessionId}] ${client.playerName}: ${chatMessage}`);
   }
@@ -335,7 +353,7 @@ class MultiplayerServer {
     }
 
     // Remove player
-    session.players = session.players.filter(p => p.id !== client.playerId);
+    session.players = session.players.filter((p) => p.id !== client.playerId);
 
     // Notify remaining players
     this.broadcastToSession(client.sessionId, {
@@ -351,7 +369,9 @@ class MultiplayerServer {
       if (session.players.length > 0) {
         session.players[0].isHost = true;
         session.hostId = session.players[0].id;
-        console.log(`[Server] New host for session ${client.sessionId}: ${session.players[0].name}`);
+        console.log(
+          `[Server] New host for session ${client.sessionId}: ${session.players[0].name}`
+        );
       } else {
         // Delete empty session
         this.sessions.delete(client.sessionId);
@@ -370,7 +390,10 @@ class MultiplayerServer {
     }
 
     for (const [ws, client] of this.clients.entries()) {
-      if (client.sessionId === sessionId && client.playerId !== excludePlayerId) {
+      if (
+        client.sessionId === sessionId &&
+        client.playerId !== excludePlayerId
+      ) {
         this.send(ws, message);
       }
     }
@@ -422,7 +445,9 @@ class MultiplayerServer {
 
   start() {
     this.server.listen(PORT, () => {
-      console.log(`[Server] Somnium Multiplayer Server listening on port ${PORT}`);
+      console.log(
+        `[Server] Somnium Multiplayer Server listening on port ${PORT}`
+      );
       console.log(`[Server] WebSocket URL: ws://localhost:${PORT}`);
     });
   }
@@ -432,7 +457,9 @@ class MultiplayerServer {
     return {
       clients: this.clients.size,
       sessions: this.sessions.size,
-      activePlayers: Array.from(this.clients.values()).filter(c => c.sessionId).length,
+      activePlayers: Array.from(this.clients.values()).filter(
+        (c) => c.sessionId
+      ).length,
     };
   }
 }
@@ -452,7 +479,9 @@ process.on('SIGTERM', () => {
 // Stats logging
 setInterval(() => {
   const stats = server.getStats();
-  console.log(`[Server] Stats - Clients: ${stats.clients}, Sessions: ${stats.sessions}, Active: ${stats.activePlayers}`);
+  console.log(
+    `[Server] Stats - Clients: ${stats.clients}, Sessions: ${stats.sessions}, Active: ${stats.activePlayers}`
+  );
 }, 60000); // Every minute
 
 module.exports = MultiplayerServer;

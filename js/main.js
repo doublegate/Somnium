@@ -517,7 +517,10 @@ function showHelpMenu() {
   const menu = [
     { label: 'How to Play', action: () => showHelp() },
     { label: 'Commands', action: () => showCommands() },
-    { label: isHighContrast ? '✓ High Contrast Mode' : 'High Contrast Mode', action: () => toggleHighContrast() },
+    {
+      label: isHighContrast ? '✓ High Contrast Mode' : 'High Contrast Mode',
+      action: () => toggleHighContrast(),
+    },
     { label: 'About', action: () => uiManager.showAboutModal() },
   ];
   uiManager.showDropdownMenu(menu);
@@ -781,7 +784,9 @@ function toggleHighContrast() {
   // Notify user
   if (gameManager) {
     uiManager.addOutputText(
-      isEnabled ? 'High contrast mode enabled.' : 'High contrast mode disabled.',
+      isEnabled
+        ? 'High contrast mode enabled.'
+        : 'High contrast mode disabled.',
       'system'
     );
   }
@@ -806,7 +811,10 @@ function loadHighContrastPreference() {
 function closeTopModal() {
   // Check modals in reverse order of typical opening
   const modals = [
-    { id: 'achievement-modal', closeFn: () => uiManager.hideAchievementGallery() },
+    {
+      id: 'achievement-modal',
+      closeFn: () => uiManager.hideAchievementGallery(),
+    },
     { id: 'volume-modal', closeFn: () => uiManager.hideVolumeModal() },
     { id: 'save-modal', closeFn: () => uiManager.hideSaveGameModal() },
     { id: 'load-modal', closeFn: () => uiManager.hideLoadGameModal() },
@@ -830,7 +838,8 @@ function closeTopModal() {
  * @param {HTMLElement} modal - Modal element
  */
 function setupModalTabTrap(modal) {
-  const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const focusableSelector =
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
   const focusableElements = modal.querySelectorAll(focusableSelector);
   const firstFocusable = focusableElements[0];
   const lastFocusable = focusableElements[focusableElements.length - 1];
@@ -868,10 +877,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'save-modal',
     'load-modal',
     'volume-modal',
-    'achievement-modal'
+    'achievement-modal',
   ];
 
-  modalIds.forEach(id => {
+  modalIds.forEach((id) => {
     const modal = document.getElementById(id);
     if (modal) {
       setupModalTabTrap(modal);

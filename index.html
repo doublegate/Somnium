@@ -12,7 +12,10 @@
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0000AA" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="Somnium" />
 
     <!-- PWA Manifest -->
@@ -27,11 +30,56 @@
 
     <!-- Menu Bar -->
     <nav id="menu-bar" class="menu-bar" role="menubar" aria-label="Main menu">
-      <div class="menu-item" data-menu="file" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">File</div>
-      <div class="menu-item" data-menu="game" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Game</div>
-      <div class="menu-item" data-menu="speed" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Speed</div>
-      <div class="menu-item" data-menu="sound" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Sound</div>
-      <div class="menu-item" data-menu="help" role="menuitem" tabindex="0" aria-haspopup="true" aria-expanded="false">Help</div>
+      <div
+        class="menu-item"
+        data-menu="file"
+        role="menuitem"
+        tabindex="0"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        File
+      </div>
+      <div
+        class="menu-item"
+        data-menu="game"
+        role="menuitem"
+        tabindex="0"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Game
+      </div>
+      <div
+        class="menu-item"
+        data-menu="speed"
+        role="menuitem"
+        tabindex="0"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Speed
+      </div>
+      <div
+        class="menu-item"
+        data-menu="sound"
+        role="menuitem"
+        tabindex="0"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Sound
+      </div>
+      <div
+        class="menu-item"
+        data-menu="help"
+        role="menuitem"
+        tabindex="0"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Help
+      </div>
       <div class="menu-status" role="status" aria-live="polite">
         <span id="game-title" aria-label="Current game">Somnium</span>
         <span id="score" aria-label="Current score">Score: 0</span>
@@ -39,16 +87,43 @@
     </nav>
 
     <!-- Dropdown Menus -->
-    <div id="dropdown-menus" class="dropdown-container" role="menu" aria-label="Menu options"></div>
+    <div
+      id="dropdown-menus"
+      class="dropdown-container"
+      role="menu"
+      aria-label="Menu options"
+    ></div>
 
     <!-- Main Game Container -->
-    <main id="game-container" class="game-container" role="main" aria-label="Game view">
+    <main
+      id="game-container"
+      class="game-container"
+      role="main"
+      aria-label="Game view"
+    >
       <!-- Game Canvas (320x200) -->
-      <canvas id="game-canvas" width="320" height="200" role="img" aria-label="Game graphics display"></canvas>
+      <canvas
+        id="game-canvas"
+        width="320"
+        height="200"
+        role="img"
+        aria-label="Game graphics display"
+      ></canvas>
 
       <!-- Text Window (hidden by default) -->
-      <div id="text-window" class="text-window hidden" role="region" aria-label="Game text and input">
-        <div id="text-output" class="text-output" role="log" aria-live="polite" aria-atomic="false"></div>
+      <div
+        id="text-window"
+        class="text-window hidden"
+        role="region"
+        aria-label="Game text and input"
+      >
+        <div
+          id="text-output"
+          class="text-output"
+          role="log"
+          aria-live="polite"
+          aria-atomic="false"
+        ></div>
         <div class="text-input-container">
           <label for="text-input" class="prompt" aria-hidden="true">&gt;</label>
           <input
@@ -64,36 +139,89 @@
       </div>
 
       <!-- Debug Info (FPS counter) -->
-      <div id="debug-info" class="debug-info hidden" role="status" aria-live="polite" aria-atomic="true">
+      <div
+        id="debug-info"
+        class="debug-info hidden"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         <span id="fps-counter" aria-label="Frames per second">FPS: 0</span>
       </div>
     </main>
 
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen hidden" role="status" aria-live="assertive" aria-busy="true">
+    <div
+      id="loading-screen"
+      class="loading-screen hidden"
+      role="status"
+      aria-live="assertive"
+      aria-busy="true"
+    >
       <div class="loading-content">
         <h2 id="loading-title">Generating Your Adventure...</h2>
-        <div class="loading-spinner" role="progressbar" aria-label="Loading progress" aria-valuemin="0" aria-valuemax="100"></div>
-        <p id="loading-message" aria-live="polite">Weaving narrative threads...</p>
+        <div
+          class="loading-spinner"
+          role="progressbar"
+          aria-label="Loading progress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+        <p id="loading-message" aria-live="polite">
+          Weaving narrative threads...
+        </p>
       </div>
     </div>
 
     <!-- Main Menu -->
-    <div id="main-menu" class="main-menu" role="dialog" aria-labelledby="main-menu-title" aria-modal="true">
+    <div
+      id="main-menu"
+      class="main-menu"
+      role="dialog"
+      aria-labelledby="main-menu-title"
+      aria-modal="true"
+    >
       <h1 id="main-menu-title">Somnium</h1>
       <p class="tagline" role="doc-subtitle">Every adventure is unique</p>
-      <nav class="menu-options" role="navigation" aria-label="Main menu options">
-        <button id="new-game-btn" class="menu-button" aria-label="Start a new adventure">New Adventure</button>
-        <button id="load-game-btn" class="menu-button" aria-label="Load a saved game">Load Game</button>
-        <button id="about-btn" class="menu-button" aria-label="About Somnium">About</button>
+      <nav
+        class="menu-options"
+        role="navigation"
+        aria-label="Main menu options"
+      >
+        <button
+          id="new-game-btn"
+          class="menu-button"
+          aria-label="Start a new adventure"
+        >
+          New Adventure
+        </button>
+        <button
+          id="load-game-btn"
+          class="menu-button"
+          aria-label="Load a saved game"
+        >
+          Load Game
+        </button>
+        <button id="about-btn" class="menu-button" aria-label="About Somnium">
+          About
+        </button>
       </nav>
     </div>
 
     <!-- Theme Selection Modal -->
-    <div id="theme-modal" class="modal hidden" role="dialog" aria-labelledby="theme-modal-title" aria-modal="true" aria-hidden="true">
+    <div
+      id="theme-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="theme-modal-title"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content">
         <h2 id="theme-modal-title">Choose Your Adventure Theme</h2>
-        <p id="theme-modal-desc">Enter a theme or leave blank for a surprise:</p>
+        <p id="theme-modal-desc">
+          Enter a theme or leave blank for a surprise:
+        </p>
         <label for="theme-input" class="sr-only">Adventure theme</label>
         <input
           type="text"
@@ -102,17 +230,38 @@
           placeholder="e.g., haunted castle, space station, pirate island"
           aria-describedby="theme-modal-desc"
         />
-        <div class="modal-buttons" role="group" aria-label="Theme selection actions">
-          <button id="start-adventure-btn" class="button-primary" aria-label="Start adventure with selected theme">
+        <div
+          class="modal-buttons"
+          role="group"
+          aria-label="Theme selection actions"
+        >
+          <button
+            id="start-adventure-btn"
+            class="button-primary"
+            aria-label="Start adventure with selected theme"
+          >
             Start Adventure
           </button>
-          <button id="cancel-theme-btn" class="button-secondary" aria-label="Cancel and return to main menu">Cancel</button>
+          <button
+            id="cancel-theme-btn"
+            class="button-secondary"
+            aria-label="Cancel and return to main menu"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
     <!-- About Modal -->
-    <div id="about-modal" class="modal hidden" role="dialog" aria-labelledby="about-modal-title" aria-modal="true" aria-hidden="true">
+    <div
+      id="about-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="about-modal-title"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content">
         <h2 id="about-modal-title">About Somnium</h2>
         <p>
@@ -120,47 +269,124 @@
           classic SCI0 games.
         </p>
         <p>Every time you play, a unique world is generated just for you.</p>
-        <p>Version: <span id="version" aria-label="Version number">1.0.0</span></p>
-        <button id="close-about-btn" class="button-primary" aria-label="Close about dialog">Close</button>
+        <p>
+          Version: <span id="version" aria-label="Version number">1.0.0</span>
+        </p>
+        <button
+          id="close-about-btn"
+          class="button-primary"
+          aria-label="Close about dialog"
+        >
+          Close
+        </button>
       </div>
     </div>
 
     <!-- Error Modal -->
-    <div id="error-modal" class="modal hidden" role="alertdialog" aria-labelledby="error-modal-title" aria-describedby="error-message" aria-modal="true" aria-hidden="true">
+    <div
+      id="error-modal"
+      class="modal hidden"
+      role="alertdialog"
+      aria-labelledby="error-modal-title"
+      aria-describedby="error-message"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content error">
         <h2 id="error-modal-title">Error</h2>
         <p id="error-message" role="alert" aria-live="assertive"></p>
-        <button id="close-error-btn" class="button-primary" aria-label="Dismiss error message">OK</button>
+        <button
+          id="close-error-btn"
+          class="button-primary"
+          aria-label="Dismiss error message"
+        >
+          OK
+        </button>
       </div>
     </div>
 
     <!-- Save Game Modal -->
-    <div id="save-modal" class="modal hidden" role="dialog" aria-labelledby="save-modal-title" aria-modal="true" aria-hidden="true">
+    <div
+      id="save-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="save-modal-title"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content">
         <h2 id="save-modal-title">Save Game</h2>
-        <div id="save-slots" class="save-slots" role="list" aria-label="Available save slots"></div>
-        <div class="modal-buttons" role="group" aria-label="Save dialog actions">
-          <button id="close-save-btn" class="button-secondary" aria-label="Cancel saving">Cancel</button>
+        <div
+          id="save-slots"
+          class="save-slots"
+          role="list"
+          aria-label="Available save slots"
+        ></div>
+        <div
+          class="modal-buttons"
+          role="group"
+          aria-label="Save dialog actions"
+        >
+          <button
+            id="close-save-btn"
+            class="button-secondary"
+            aria-label="Cancel saving"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Load Game Modal -->
-    <div id="load-modal" class="modal hidden" role="dialog" aria-labelledby="load-modal-title" aria-modal="true" aria-hidden="true">
+    <div
+      id="load-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="load-modal-title"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content">
         <h2 id="load-modal-title">Load Game</h2>
-        <div id="load-slots" class="save-slots" role="list" aria-label="Saved games"></div>
-        <div class="modal-buttons" role="group" aria-label="Load dialog actions">
-          <button id="close-load-btn" class="button-secondary" aria-label="Cancel loading">Cancel</button>
+        <div
+          id="load-slots"
+          class="save-slots"
+          role="list"
+          aria-label="Saved games"
+        ></div>
+        <div
+          class="modal-buttons"
+          role="group"
+          aria-label="Load dialog actions"
+        >
+          <button
+            id="close-load-btn"
+            class="button-secondary"
+            aria-label="Cancel loading"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Volume Control Modal -->
-    <div id="volume-modal" class="modal hidden" role="dialog" aria-labelledby="volume-modal-title" aria-modal="true" aria-hidden="true">
+    <div
+      id="volume-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="volume-modal-title"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content">
         <h2 id="volume-modal-title">Volume Settings</h2>
-        <div class="volume-controls" role="group" aria-labelledby="volume-modal-title">
+        <div
+          class="volume-controls"
+          role="group"
+          aria-labelledby="volume-modal-title"
+        >
           <div class="volume-control">
             <label for="master-volume">Master Volume</label>
             <input
@@ -193,7 +419,12 @@
           </div>
           <div class="volume-control">
             <label for="sfx-volume">Sound Effects</label>
-            <input type="range" id="sfx-volume" min="0" max="100" value="80"
+            <input
+              type="range"
+              id="sfx-volume"
+              min="0"
+              max="100"
+              value="80"
               aria-valuemin="0"
               aria-valuemax="100"
               aria-valuenow="80"
@@ -217,26 +448,68 @@
             <span id="ambient-volume-value" aria-live="polite">50%</span>
           </div>
         </div>
-        <div class="modal-buttons" role="group" aria-label="Volume dialog actions">
-          <button id="close-volume-btn" class="button-primary" aria-label="Close volume settings">Close</button>
+        <div
+          class="modal-buttons"
+          role="group"
+          aria-label="Volume dialog actions"
+        >
+          <button
+            id="close-volume-btn"
+            class="button-primary"
+            aria-label="Close volume settings"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Achievement Notification Container -->
-    <div id="achievement-container" class="achievement-container" role="region" aria-live="polite" aria-label="Achievement notifications"></div>
+    <div
+      id="achievement-container"
+      class="achievement-container"
+      role="region"
+      aria-live="polite"
+      aria-label="Achievement notifications"
+    ></div>
 
     <!-- Achievement Gallery Modal -->
-    <div id="achievement-modal" class="modal hidden" role="dialog" aria-labelledby="achievement-modal-title" aria-modal="true" aria-hidden="true">
+    <div
+      id="achievement-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-labelledby="achievement-modal-title"
+      aria-modal="true"
+      aria-hidden="true"
+    >
       <div class="modal-content modal-wide">
         <h2 id="achievement-modal-title">Achievements</h2>
         <div class="achievement-stats" role="status" aria-live="polite">
-          <span id="achievement-count" aria-label="Achievements unlocked">0/0 Unlocked</span>
-          <span id="achievement-points" aria-label="Total achievement points">0 Points</span>
+          <span id="achievement-count" aria-label="Achievements unlocked"
+            >0/0 Unlocked</span
+          >
+          <span id="achievement-points" aria-label="Total achievement points"
+            >0 Points</span
+          >
         </div>
-        <div id="achievement-gallery" class="achievement-gallery" role="list" aria-label="Achievement list"></div>
-        <div class="modal-buttons" role="group" aria-label="Achievement dialog actions">
-          <button id="close-achievement-btn" class="button-primary" aria-label="Close achievements">Close</button>
+        <div
+          id="achievement-gallery"
+          class="achievement-gallery"
+          role="list"
+          aria-label="Achievement list"
+        ></div>
+        <div
+          class="modal-buttons"
+          role="group"
+          aria-label="Achievement dialog actions"
+        >
+          <button
+            id="close-achievement-btn"
+            class="button-primary"
+            aria-label="Close achievements"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -261,7 +534,8 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
           try {
-            const registration = await navigator.serviceWorker.register('/service-worker.js');
+            const registration =
+              await navigator.serviceWorker.register('/service-worker.js');
             console.log('[PWA] Service Worker registered:', registration.scope);
 
             // Check for updates
@@ -269,9 +543,16 @@
               const newWorker = registration.installing;
 
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
                   // New version available, prompt user to refresh
-                  if (confirm('A new version of Somnium is available. Reload to update?')) {
+                  if (
+                    confirm(
+                      'A new version of Somnium is available. Reload to update?'
+                    )
+                  ) {
                     newWorker.postMessage({ type: 'SKIP_WAITING' });
                     window.location.reload();
                   }

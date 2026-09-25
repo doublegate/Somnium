@@ -35,6 +35,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ### 3. Edit `.env` File
 
 Open `.env` in your editor and update at minimum:
+
 - `JWT_SECRET` - Use generated secret
 - `SESSION_SECRET` - Use generated secret
 - `ALLOWED_ORIGINS` - Your frontend URL(s)
@@ -56,12 +57,14 @@ tail -f logs/server.log
 ### Server Ports
 
 #### `PORT`
+
 - **Description**: HTTP port for Express REST API server
 - **Default**: 3000
 - **Valid Range**: 1-65535 (recommend > 1024 to avoid requiring root)
 - **Example**: `PORT=3000`
 
 #### `MULTIPLAYER_PORT`
+
 - **Description**: WebSocket port for multiplayer server
 - **Default**: 8080
 - **Valid Range**: 1-65535 (recommend > 1024)
@@ -71,6 +74,7 @@ tail -f logs/server.log
 ### Security
 
 #### `JWT_SECRET`
+
 - **Description**: Secret key for signing JSON Web Tokens
 - **Required**: Yes
 - **Minimum Length**: 32 characters
@@ -79,11 +83,13 @@ tail -f logs/server.log
 - **Security**: Must be cryptographically random, never commit to Git
 
 **Generate secure secret:**
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
 #### `SESSION_SECRET`
+
 - **Description**: Secret key for session management
 - **Required**: Yes
 - **Minimum Length**: 32 characters
@@ -94,6 +100,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ### CORS Configuration
 
 #### `ALLOWED_ORIGINS`
+
 - **Description**: Comma-separated list of allowed origins for CORS
 - **Required**: Yes
 - **Format**: `origin1,origin2,origin3`
@@ -110,6 +117,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ### File Storage
 
 #### `STORAGE_PATH`
+
 - **Description**: Directory for user data and saves
 - **Default**: `./storage`
 - **Example**: `STORAGE_PATH=/var/lib/somnium/data`
@@ -118,6 +126,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ### Logging
 
 #### `LOG_LEVEL`
+
 - **Description**: Minimum log level to output
 - **Default**: `info`
 - **Valid Values**: `error`, `warn`, `info`, `debug`
@@ -127,6 +136,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
   - Minimal: `LOG_LEVEL=error`
 
 **Log Level Hierarchy**:
+
 ```
 error < warn < info < debug
 ↑                          ↑
@@ -134,6 +144,7 @@ Least verbose    Most verbose
 ```
 
 #### `LOG_FILE`
+
 - **Description**: Path to log file (relative to server/)
 - **Default**: `./logs/server.log`
 - **Example**: `LOG_FILE=/var/log/somnium/server.log`
@@ -142,6 +153,7 @@ Least verbose    Most verbose
 ### Rate Limiting
 
 #### `RATE_LIMIT_WINDOW_MS`
+
 - **Description**: Time window for rate limiting in milliseconds
 - **Default**: 900000 (15 minutes)
 - **Examples**:
@@ -150,6 +162,7 @@ Least verbose    Most verbose
   - 1 hour: `3600000`
 
 #### `RATE_LIMIT_MAX_REQUESTS`
+
 - **Description**: Maximum requests per IP per window
 - **Default**: 100
 - **Recommended**:
@@ -161,6 +174,7 @@ Least verbose    Most verbose
 ### WebSocket Configuration
 
 #### `WS_HEARTBEAT_INTERVAL`
+
 - **Description**: Ping interval for WebSocket heartbeat (ms)
 - **Default**: 30000 (30 seconds)
 - **Recommended Range**: 15000-60000
@@ -168,6 +182,7 @@ Least verbose    Most verbose
 - **Purpose**: Detect disconnected clients
 
 #### `WS_HEARTBEAT_TIMEOUT`
+
 - **Description**: Timeout waiting for pong response (ms)
 - **Default**: 5000 (5 seconds)
 - **Recommended Range**: 3000-10000
@@ -177,6 +192,7 @@ Least verbose    Most verbose
 ### Session Configuration
 
 #### `SESSION_MAX_AGE`
+
 - **Description**: Session cookie maximum age (ms)
 - **Default**: 86400000 (24 hours)
 - **Examples**:
@@ -188,12 +204,14 @@ Least verbose    Most verbose
 ### File Upload Limits
 
 #### `MAX_SAVE_SIZE_MB`
+
 - **Description**: Maximum save file size in megabytes
 - **Default**: 10
 - **Recommended Range**: 5-20
 - **Example**: `MAX_SAVE_SIZE_MB=10`
 
 #### `MAX_WORLD_SIZE_MB`
+
 - **Description**: Maximum world file size in megabytes
 - **Default**: 5
 - **Recommended Range**: 3-10
@@ -202,17 +220,20 @@ Least verbose    Most verbose
 ### Database (Optional)
 
 #### `DATABASE_URL`
+
 - **Description**: PostgreSQL connection URL
 - **Format**: `postgresql://user:password@host:port/database`
 - **Example**: `DATABASE_URL=postgresql://somnium:pass123@localhost:5432/somnium`
 - **Note**: Currently not implemented, reserved for future use
 
 #### `DATABASE_POOL_MIN`
+
 - **Description**: Minimum database connection pool size
 - **Default**: 2
 - **Example**: `DATABASE_POOL_MIN=2`
 
 #### `DATABASE_POOL_MAX`
+
 - **Description**: Maximum database connection pool size
 - **Default**: 10
 - **Example**: `DATABASE_POOL_MAX=20`
@@ -221,16 +242,19 @@ Least verbose    Most verbose
 ### Redis (Optional)
 
 #### `REDIS_URL`
+
 - **Description**: Redis connection URL
 - **Format**: `redis://host:port`
 - **Example**: `REDIS_URL=redis://localhost:6379`
 - **Use Case**: Distributed session storage, caching
 
 #### `REDIS_PASSWORD`
+
 - **Description**: Redis authentication password
 - **Example**: `REDIS_PASSWORD=your-redis-password`
 
 #### `REDIS_DB`
+
 - **Description**: Redis database number (0-15)
 - **Default**: 0
 - **Example**: `REDIS_DB=0`
@@ -238,10 +262,12 @@ Least verbose    Most verbose
 ### Email (Optional)
 
 #### `SMTP_HOST`
+
 - **Description**: SMTP server hostname
 - **Example**: `SMTP_HOST=smtp.gmail.com`
 
 #### `SMTP_PORT`
+
 - **Description**: SMTP server port
 - **Common Values**:
   - 25 (standard, often blocked)
@@ -250,21 +276,25 @@ Least verbose    Most verbose
 - **Example**: `SMTP_PORT=587`
 
 #### `SMTP_SECURE`
+
 - **Description**: Use SSL/TLS
 - **Values**: `true` or `false`
 - **Example**: `SMTP_SECURE=false`
 - **Note**: Use `false` for port 587 with STARTTLS
 
 #### `SMTP_USER`
+
 - **Description**: SMTP authentication username
 - **Example**: `SMTP_USER=your-email@gmail.com`
 
 #### `SMTP_PASS`
+
 - **Description**: SMTP authentication password
 - **Example**: `SMTP_PASS=your-app-specific-password`
 - **Security**: Use app-specific passwords, not account password
 
 #### `EMAIL_FROM`
+
 - **Description**: Default "From" address for emails
 - **Example**: `EMAIL_FROM=noreply@somnium.game`
 
@@ -286,6 +316,7 @@ S3_BUCKET=somnium-saves
 ### Environment Mode
 
 #### `NODE_ENV`
+
 - **Description**: Node.js environment mode
 - **Values**: `development`, `production`, `test`
 - **Effects**:
@@ -299,14 +330,17 @@ S3_BUCKET=somnium-saves
 ### SSL/TLS (Optional)
 
 #### `SSL_KEY_PATH`
+
 - **Description**: Path to SSL private key file
 - **Example**: `SSL_KEY_PATH=/etc/letsencrypt/live/domain/privkey.pem`
 
 #### `SSL_CERT_PATH`
+
 - **Description**: Path to SSL certificate file
 - **Example**: `SSL_CERT_PATH=/etc/letsencrypt/live/domain/fullchain.pem`
 
 #### `FORCE_HTTPS`
+
 - **Description**: Redirect HTTP to HTTPS
 - **Values**: `true` or `false`
 - **Example**: `FORCE_HTTPS=true`
@@ -343,6 +377,7 @@ JWT_SECRET=my-app-name
 ```
 
 **Use secret management tools in production:**
+
 - AWS Secrets Manager
 - HashiCorp Vault
 - Azure Key Vault
@@ -358,6 +393,7 @@ JWT_SECRET=my-app-name
 4. Old tokens become invalid (users must re-login)
 
 **Recommended rotation schedule:**
+
 - JWT_SECRET: Every 90 days
 - SESSION_SECRET: Every 90 days
 - Database passwords: Every 180 days
@@ -466,6 +502,7 @@ LOG_FILE=/app/logs/server.log
 **Cause**: Missing or empty `JWT_SECRET` variable
 
 **Solution**:
+
 ```bash
 # Generate secret
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
@@ -479,6 +516,7 @@ echo "JWT_SECRET=<generated-value>" >> .env
 **Cause**: Frontend origin not in `ALLOWED_ORIGINS`
 
 **Solution**:
+
 ```env
 # Add frontend URL (include protocol, no trailing slash)
 ALLOWED_ORIGINS=https://your-domain.com,http://localhost:8000
@@ -489,6 +527,7 @@ ALLOWED_ORIGINS=https://your-domain.com,http://localhost:8000
 **Cause**: Another process using the port
 
 **Solution**:
+
 ```bash
 # Find process
 lsof -i :3000
@@ -505,6 +544,7 @@ echo "PORT=3001" >> .env
 **Cause**: Insufficient permissions
 
 **Solution**:
+
 ```bash
 # Create directory
 mkdir -p storage/users storage/saves storage/shared
@@ -519,6 +559,7 @@ chmod 755 storage/*
 **Cause**: Too many requests from single IP
 
 **Solution**:
+
 ```env
 # Increase limits for development
 RATE_LIMIT_MAX_REQUESTS=1000
@@ -532,6 +573,7 @@ RATE_LIMIT_WINDOW_MS=3600000  # 1 hour
 **Cause**: Heartbeat timing misconfigured or firewall blocking
 
 **Solutions**:
+
 ```env
 # Increase timeouts
 WS_HEARTBEAT_INTERVAL=60000
@@ -546,6 +588,7 @@ sudo ufw allow 8080/tcp
 **Cause**: `SESSION_MAX_AGE` too low or system time incorrect
 
 **Solutions**:
+
 ```env
 # Increase session duration
 SESSION_MAX_AGE=86400000  # 24 hours
@@ -568,7 +611,7 @@ const required = ['JWT_SECRET', 'SESSION_SECRET', 'ALLOWED_ORIGINS'];
 const warnings = [];
 
 // Check required variables
-required.forEach(key => {
+required.forEach((key) => {
   if (!process.env[key]) {
     console.error(`❌ Missing required: ${key}`);
     process.exit(1);
@@ -593,17 +636,21 @@ if (process.env.ALLOWED_ORIGINS.includes('*')) {
 }
 
 // Check NODE_ENV
-if (process.env.NODE_ENV === 'production' && process.env.LOG_LEVEL === 'debug') {
+if (
+  process.env.NODE_ENV === 'production' &&
+  process.env.LOG_LEVEL === 'debug'
+) {
   warnings.push('⚠️  Production mode with debug logging');
 }
 
 // Print warnings
-warnings.forEach(w => console.warn(w));
+warnings.forEach((w) => console.warn(w));
 
 console.log('✅ Environment configuration valid');
 ```
 
 **Run validation:**
+
 ```bash
 node validate-env.js
 ```

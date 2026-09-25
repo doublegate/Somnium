@@ -51,28 +51,100 @@ export class EnhancedWorldGenerator {
   initializeTemplates() {
     return {
       fantasy: {
-        rooms: ['castle hall', 'dungeon', 'tower', 'throne room', 'armory', 'library', 'courtyard'],
-        npcs: ['wizard', 'knight', 'merchant', 'guard', 'princess', 'blacksmith'],
+        rooms: [
+          'castle hall',
+          'dungeon',
+          'tower',
+          'throne room',
+          'armory',
+          'library',
+          'courtyard',
+        ],
+        npcs: [
+          'wizard',
+          'knight',
+          'merchant',
+          'guard',
+          'princess',
+          'blacksmith',
+        ],
         items: ['sword', 'potion', 'scroll', 'key', 'gem', 'shield', 'armor'],
         puzzles: ['locked door', 'riddle', 'magic barrier', 'hidden passage'],
       },
       scifi: {
-        rooms: ['bridge', 'engine room', 'cargo bay', 'medical bay', 'lab', 'airlock'],
-        npcs: ['captain', 'engineer', 'scientist', 'security', 'android', 'pilot'],
-        items: ['data pad', 'laser', 'med kit', 'keycard', 'tool kit', 'scanner'],
-        puzzles: ['control panel', 'code sequence', 'airlock puzzle', 'reactor control'],
+        rooms: [
+          'bridge',
+          'engine room',
+          'cargo bay',
+          'medical bay',
+          'lab',
+          'airlock',
+        ],
+        npcs: [
+          'captain',
+          'engineer',
+          'scientist',
+          'security',
+          'android',
+          'pilot',
+        ],
+        items: [
+          'data pad',
+          'laser',
+          'med kit',
+          'keycard',
+          'tool kit',
+          'scanner',
+        ],
+        puzzles: [
+          'control panel',
+          'code sequence',
+          'airlock puzzle',
+          'reactor control',
+        ],
       },
       mystery: {
-        rooms: ['crime scene', 'office', 'bedroom', 'study', 'basement', 'attic'],
+        rooms: [
+          'crime scene',
+          'office',
+          'bedroom',
+          'study',
+          'basement',
+          'attic',
+        ],
         npcs: ['detective', 'suspect', 'witness', 'victim', 'butler', 'maid'],
         items: ['evidence', 'note', 'weapon', 'clue', 'photograph', 'diary'],
-        puzzles: ['combination lock', 'hidden compartment', 'cipher', 'timeline puzzle'],
+        puzzles: [
+          'combination lock',
+          'hidden compartment',
+          'cipher',
+          'timeline puzzle',
+        ],
       },
       horror: {
-        rooms: ['abandoned house', 'cellar', 'graveyard', 'ritual chamber', 'attic', 'crypt'],
-        npcs: ['survivor', 'ghost', 'cultist', 'possessed', 'child', 'caretaker'],
+        rooms: [
+          'abandoned house',
+          'cellar',
+          'graveyard',
+          'ritual chamber',
+          'attic',
+          'crypt',
+        ],
+        npcs: [
+          'survivor',
+          'ghost',
+          'cultist',
+          'possessed',
+          'child',
+          'caretaker',
+        ],
         items: ['flashlight', 'weapon', 'amulet', 'book', 'candle', 'medicine'],
-        puzzles: ['ritual puzzle', 'escape sequence', 'symbol matching', 'sound puzzle'],
+        puzzles: [
+          'ritual puzzle',
+          'escape sequence',
+          'symbol matching',
+          'sound puzzle',
+        ],
       },
     };
   }
@@ -135,7 +207,10 @@ export class EnhancedWorldGenerator {
             validationErrors = validation.errors;
             attempts++;
 
-            logger.warn(`Validation failed (attempt ${attempts}):`, validation.errors);
+            logger.warn(
+              `Validation failed (attempt ${attempts}):`,
+              validation.errors
+            );
 
             // Try to fix common issues
             world = await this.fixValidationIssues(world, validation.errors);
@@ -171,14 +246,17 @@ export class EnhancedWorldGenerator {
     this.stats.worldsGenerated++;
     this.stats.retries += attempts;
     this.stats.averageGenerationTime =
-      (this.stats.averageGenerationTime * (this.stats.worldsGenerated - 1) + generationTime) /
+      (this.stats.averageGenerationTime * (this.stats.worldsGenerated - 1) +
+        generationTime) /
       this.stats.worldsGenerated;
 
     if (validationErrors.length > 0) {
       this.stats.validationsFailed++;
     }
 
-    logger.info(`World generated successfully in ${generationTime}ms (${attempts} retries)`);
+    logger.info(
+      `World generated successfully in ${generationTime}ms (${attempts} retries)`
+    );
 
     return world;
   }

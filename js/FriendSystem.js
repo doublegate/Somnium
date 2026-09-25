@@ -100,10 +100,13 @@ export class FriendSystem {
 
         // Attempt reconnect
         if (this.wsReconnectAttempts < 5) {
-          setTimeout(() => {
-            this.wsReconnectAttempts++;
-            this.connectWebSocket();
-          }, 2000 * Math.pow(2, this.wsReconnectAttempts));
+          setTimeout(
+            () => {
+              this.wsReconnectAttempts++;
+              this.connectWebSocket();
+            },
+            2000 * Math.pow(2, this.wsReconnectAttempts)
+          );
         }
       };
 
@@ -294,7 +297,10 @@ export class FriendSystem {
       logger.error('Failed to persist message:', error);
     }
 
-    this.eventManager.triggerEvent('messageSent', { friendId, message: messageData });
+    this.eventManager.triggerEvent('messageSent', {
+      friendId,
+      message: messageData,
+    });
 
     return { success: true, messageId: messageData.id };
   }
@@ -477,7 +483,9 @@ export class FriendSystem {
       if (response.success) {
         this.friends.set(friendId, response.user);
 
-        this.eventManager.triggerEvent('friendAdded', { friend: response.user });
+        this.eventManager.triggerEvent('friendAdded', {
+          friend: response.user,
+        });
 
         logger.info(`Friend added: ${response.user.username}`);
       }

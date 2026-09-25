@@ -66,8 +66,12 @@ class MultiplayerLobby {
 
     // Lobby
     this.disconnectBtn.addEventListener('click', () => this.disconnect());
-    this.createSessionBtn.addEventListener('click', () => this.showCreateSessionModal());
-    this.refreshSessionsBtn.addEventListener('click', () => this.refreshSessions());
+    this.createSessionBtn.addEventListener('click', () =>
+      this.showCreateSessionModal()
+    );
+    this.refreshSessionsBtn.addEventListener('click', () =>
+      this.refreshSessions()
+    );
     this.leaveSessionBtn.addEventListener('click', () => this.leaveSession());
     this.startGameBtn.addEventListener('click', () => this.startGame());
 
@@ -78,15 +82,28 @@ class MultiplayerLobby {
     });
 
     // Create session modal
-    document.getElementById('confirm-create-btn').addEventListener('click', () => this.createSession());
-    document.getElementById('cancel-create-btn').addEventListener('click', () => this.hideCreateSessionModal());
-    document.getElementById('private-session-input').addEventListener('change', (e) => {
-      document.getElementById('password-group').style.display = e.target.checked ? 'block' : 'none';
-    });
+    document
+      .getElementById('confirm-create-btn')
+      .addEventListener('click', () => this.createSession());
+    document
+      .getElementById('cancel-create-btn')
+      .addEventListener('click', () => this.hideCreateSessionModal());
+    document
+      .getElementById('private-session-input')
+      .addEventListener('change', (e) => {
+        document.getElementById('password-group').style.display = e.target
+          .checked
+          ? 'block'
+          : 'none';
+      });
 
     // Join session modal
-    document.getElementById('confirm-join-btn').addEventListener('click', () => this.joinSession());
-    document.getElementById('cancel-join-btn').addEventListener('click', () => this.hideJoinSessionModal());
+    document
+      .getElementById('confirm-join-btn')
+      .addEventListener('click', () => this.joinSession());
+    document
+      .getElementById('cancel-join-btn')
+      .addEventListener('click', () => this.hideJoinSessionModal());
   }
 
   async connect() {
@@ -181,11 +198,15 @@ class MultiplayerLobby {
   }
 
   async createSession() {
-    const maxPlayers = parseInt(document.getElementById('max-players-input').value);
+    const maxPlayers = parseInt(
+      document.getElementById('max-players-input').value
+    );
     const mode = document.getElementById('mode-input').value;
     const worldId = document.getElementById('world-input').value;
     const isPrivate = document.getElementById('private-session-input').checked;
-    const password = isPrivate ? document.getElementById('password-input').value : null;
+    const password = isPrivate
+      ? document.getElementById('password-input').value
+      : null;
 
     try {
       await this.multiplayerManager.createSession({
@@ -205,7 +226,9 @@ class MultiplayerLobby {
 
   showJoinSessionModal(sessionId, hasPassword) {
     document.getElementById('join-session-id').value = sessionId;
-    document.getElementById('join-password-group').style.display = hasPassword ? 'block' : 'none';
+    document.getElementById('join-password-group').style.display = hasPassword
+      ? 'block'
+      : 'none';
     this.joinSessionModal.classList.remove('hidden');
   }
 
@@ -215,7 +238,8 @@ class MultiplayerLobby {
 
   async joinSession() {
     const sessionId = document.getElementById('join-session-id').value;
-    const password = document.getElementById('join-password-input').value || null;
+    const password =
+      document.getElementById('join-password-input').value || null;
 
     try {
       await this.multiplayerManager.joinSession(sessionId, password);
@@ -289,7 +313,8 @@ class MultiplayerLobby {
   refreshSessions() {
     // In a real implementation, fetch active sessions from server
     // For now, show placeholder
-    this.sessionsList.innerHTML = '<p class="no-sessions">No active sessions. Create one to get started!</p>';
+    this.sessionsList.innerHTML =
+      '<p class="no-sessions">No active sessions. Create one to get started!</p>';
   }
 
   startGame() {

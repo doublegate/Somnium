@@ -36,11 +36,13 @@ The deployment is handled by `.github/workflows/deploy.yml`, which:
 ### Configuration
 
 The deployed site runs in **offline mode by default** using the configuration from `config.template.js`. This ensures:
+
 - No API key is required to play
 - The game works immediately without setup
 - Users play with static test worlds (small, medium, large)
 
 To use AI-generated worlds, users need to:
+
 1. Clone the repository
 2. Create their own `config.js` with an API key
 3. Run locally
@@ -70,11 +72,13 @@ If you're setting up a fork or new instance, follow these steps:
 You can trigger the first deployment in two ways:
 
 **Option A: Push to main**
+
 ```bash
 git push origin main
 ```
 
 **Option B: Manual dispatch**
+
 1. Go to **Actions** tab
 2. Click **Deploy to GitHub Pages** workflow
 3. Click **Run workflow** → **Run workflow**
@@ -99,21 +103,25 @@ You can check deployment status in several places:
 ### Deployment Failing
 
 **Issue**: Workflow fails at build step
+
 - **Solution**: Check the test results. All tests must pass before deployment.
 - Run `npm test` locally to identify failing tests
 
 **Issue**: Workflow fails at deploy step
+
 - **Solution**: Verify GitHub Pages is enabled in repository settings
 - Check workflow permissions (Settings → Actions → General)
 
 ### Site Not Loading
 
 **Issue**: 404 error when accessing the site
+
 - **Solution**: Ensure GitHub Pages source is set to "GitHub Actions"
 - Check that the workflow completed successfully
 - Wait 5-10 minutes for DNS propagation
 
 **Issue**: JavaScript errors in console
+
 - **Solution**: Check browser console for specific errors
 - Ensure `config.js` exists in the deployed `js/` directory
 - Verify all file paths are relative (not absolute)
@@ -121,6 +129,7 @@ You can check deployment status in several places:
 ### Config File Issues
 
 **Issue**: Game asking for API key
+
 - **Solution**: The workflow should copy `config.template.js` to `config.js`
 - Check the "Prepare deployment files" step in the workflow logs
 - Ensure `config.template.js` has `apiKey: 'your-api-key-here'` (triggers offline mode)
@@ -142,6 +151,7 @@ Wait 2-3 minutes for the workflow to complete, then refresh the live demo.
 To use a custom domain:
 
 1. Add a `CNAME` file to the root of the repository:
+
    ```
    your-domain.com
    ```
@@ -175,7 +185,7 @@ permissions:
 
 # Concurrency (prevents conflicts)
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 ```
 
@@ -197,6 +207,7 @@ concurrency:
 **IMPORTANT**: Never commit API keys to the repository!
 
 The workflow uses `config.template.js` (which has a placeholder API key) as the deployed `config.js`. This ensures:
+
 - No real API keys are exposed in the public deployment
 - The site works in offline mode for all users
 - Users who want AI features must set up their own local instance

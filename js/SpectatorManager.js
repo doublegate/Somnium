@@ -124,9 +124,7 @@ export default class SpectatorManager {
     this.multiplayerManager.on('spectator_joined', (data) => {
       this.spectatorId = data.spectatorId;
       this.gameState = data.initialState;
-      this.players = new Map(
-        Object.entries(data.players || {})
-      );
+      this.players = new Map(Object.entries(data.players || {}));
       this.spectatorCount = data.spectatorCount || 0;
 
       logger.info('Spectator mode confirmed', {
@@ -362,9 +360,7 @@ export default class SpectatorManager {
    * @returns {Object} Stats
    */
   getStats() {
-    const duration = this.stats.joinTime
-      ? Date.now() - this.stats.joinTime
-      : 0;
+    const duration = this.stats.joinTime ? Date.now() - this.stats.joinTime : 0;
 
     return {
       ...this.stats,

@@ -302,8 +302,18 @@ export class UIManager {
 
         // Add ARIA attributes
         slotDiv.setAttribute('role', 'listitem');
-        slotDiv.setAttribute('aria-label', slot.empty ? `Slot ${slot.slot + 1} - Empty` : `${slot.saveName} - ${new Date(slot.timestamp).toLocaleString()}`);
-        saveBtn.setAttribute('aria-label', slot.empty ? `Save to slot ${slot.slot + 1}` : `Overwrite save in slot ${slot.slot + 1}`);
+        slotDiv.setAttribute(
+          'aria-label',
+          slot.empty
+            ? `Slot ${slot.slot + 1} - Empty`
+            : `${slot.saveName} - ${new Date(slot.timestamp).toLocaleString()}`
+        );
+        saveBtn.setAttribute(
+          'aria-label',
+          slot.empty
+            ? `Save to slot ${slot.slot + 1}`
+            : `Overwrite save in slot ${slot.slot + 1}`
+        );
 
         container.appendChild(slotDiv);
       });
@@ -722,18 +732,16 @@ export class UIManager {
     // Get achievements data
     const achievements = gameProgression.getAllAchievements();
     const unlockedAchievements = gameProgression.getUnlockedAchievements();
-    const achievementProgress = gameProgression.achievementProgress || new Map();
+    const achievementProgress =
+      gameProgression.achievementProgress || new Map();
 
     // Calculate statistics
     const totalAchievements = achievements.length;
     const unlockedCount = unlockedAchievements.size;
-    const totalPoints = Array.from(unlockedAchievements).reduce(
-      (sum, id) => {
-        const achievement = achievements.find((a) => a.id === id);
-        return sum + (achievement?.points || 0);
-      },
-      0
-    );
+    const totalPoints = Array.from(unlockedAchievements).reduce((sum, id) => {
+      const achievement = achievements.find((a) => a.id === id);
+      return sum + (achievement?.points || 0);
+    }, 0);
 
     // Update stats display
     countSpan.textContent = `${unlockedCount}/${totalAchievements} Unlocked`;
