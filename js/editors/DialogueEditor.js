@@ -280,7 +280,7 @@ export class DialogueEditor {
   /**
    * Handle canvas mouse up
    */
-  handleCanvasMouseUp(e) {
+  handleCanvasMouseUp(_e) {
     this.isDragging = false;
   }
 

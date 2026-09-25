@@ -87,5 +87,6 @@ class Logger {
 // Create singleton instance
 const logger = new Logger();
 
-// Export both the logger instance and the Logger class
-export { logger as default, Logger };
+// Export the logger instance (as both the default and a named export, since
+// modules import it both ways) and the Logger class
+export { logger, logger as default, Logger };

@@ -262,7 +262,7 @@ export class PuzzleBuilder {
   /**
    * Handle canvas mouse up
    */
-  handleCanvasMouseUp(e) {
+  handleCanvasMouseUp(_e) {
     this.isDragging = false;
   }
 

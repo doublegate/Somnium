@@ -201,7 +201,7 @@ export function generateSpaceStationWorld() {
         id: 'medical_bay',
         name: 'Medical Bay',
         description:
-          'The medical bay is a disaster. Surgical tools are scattered across the floor. An operating table has restraints - one is broken. Blood spatters lead to the ventilation shaft. A medical scanner chirps - detecting multiple life signs, but they're not human.',
+          'The medical bay is a disaster. Surgical tools are scattered across the floor. An operating table has restraints - one is broken. Blood spatters lead to the ventilation shaft. A medical scanner chirps - detecting multiple life signs, but they\'re not human.',
         graphics: {
           backgroundColor: '#FFFFFF',
           primitives: [
