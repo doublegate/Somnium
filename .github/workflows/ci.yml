@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     
     - name: Use Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version-file: '.nvmrc'
         cache: 'npm'
@@ -38,13 +38,13 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [22.x, 24.x]
     
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -57,13 +57,13 @@ jobs:
     
     - name: Generate coverage report
       run: npm run test:coverage
-      if: matrix.node-version == '18.x'
+      if: matrix.node-version == '24.x'
     
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
-      if: matrix.node-version == '18.x'
+      uses: codecov/codecov-action@v7
+      if: matrix.node-version == '24.x'
       with:
-        file: ./coverage/lcov.info
+        files: ./coverage/lcov.info
         flags: unittests
         name: codecov-umbrella
 
@@ -72,10 +72,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     
     - name: Use Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version-file: '.nvmrc'
         cache: 'npm'
@@ -103,10 +103,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     
     - name: Use Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version-file: '.nvmrc'
         cache: 'npm'
