@@ -202,11 +202,7 @@ export default class LeaderboardManager {
    * @returns {Promise<Array>} World leaderboard
    */
   async getWorldLeaderboard(worldId, options = {}) {
-    const {
-      timeframe = 'all-time',
-      category = 'score',
-      limit = 50,
-    } = options;
+    const { timeframe = 'all-time', category = 'score', limit = 50 } = options;
 
     const cacheKey = `world-${worldId}-${timeframe}-${category}`;
 

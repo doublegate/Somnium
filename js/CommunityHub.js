@@ -158,10 +158,7 @@ export class CommunityHub {
   async getFeaturedWorlds(limit = 10) {
     try {
       // Check cache
-      if (
-        this.cache.featured.length > 0 &&
-        this.isCacheValid()
-      ) {
+      if (this.cache.featured.length > 0 && this.isCacheValid()) {
         return { success: true, worlds: this.cache.featured.slice(0, limit) };
       }
 
@@ -192,10 +189,7 @@ export class CommunityHub {
   async getTrendingWorlds(timeframe = 'week', limit = 20) {
     try {
       // Check cache
-      if (
-        this.cache.trending.length > 0 &&
-        this.isCacheValid()
-      ) {
+      if (this.cache.trending.length > 0 && this.isCacheValid()) {
         return { success: true, worlds: this.cache.trending.slice(0, limit) };
       }
 

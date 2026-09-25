@@ -280,7 +280,7 @@ body {
   cursor: pointer;
 }
 
-.fill-checkbox input[type="checkbox"] {
+.fill-checkbox input[type='checkbox'] {
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -346,8 +346,8 @@ body {
   letter-spacing: 0.5px;
 }
 
-.property-group input[type="text"],
-.property-group input[type="number"],
+.property-group input[type='text'],
+.property-group input[type='number'],
 .property-group textarea,
 .property-group select {
   width: 100%;
@@ -441,7 +441,7 @@ body {
   color: var(--editor-text-dim);
 }
 
-.form-group input[type="text"],
+.form-group input[type='text'],
 .form-group textarea,
 .form-group select {
   width: 100%;
@@ -452,7 +452,7 @@ body {
   font-size: 13px;
 }
 
-.form-group input[type="checkbox"] {
+.form-group input[type='checkbox'] {
   width: 18px;
   height: 18px;
   margin-right: 8px;

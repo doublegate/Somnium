@@ -438,7 +438,7 @@ Tips:
       'audio-capture': 'Microphone not available. Check permissions.',
       'not-allowed': 'Microphone access denied. Enable in browser settings.',
       network: 'Network error. Check your connection.',
-      'aborted': 'Recognition aborted.',
+      aborted: 'Recognition aborted.',
       'bad-grammar': 'Grammar error in recognition.',
       'language-not-supported': 'Language not supported.',
     };

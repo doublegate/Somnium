@@ -271,6 +271,7 @@ This master TODO tracks all development phases for the Somnium AI-driven adventu
 ## Next Steps
 
 v2.1.0 complete! Future enhancements for v2.2+:
+
 1. Mobile optimization for editors (touch controls)
 2. Collaborative editing (real-time co-editing)
 3. Advanced editor features (terrain brushes, visual scripting)

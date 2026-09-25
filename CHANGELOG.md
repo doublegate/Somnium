@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Jest no longer collects `tests/e2e/`, which holds Playwright specs; the
   Playwright config and spec are now ES modules so `npx playwright test` loads.
 
+- The repository is formatted with Prettier 3.9; `npm run format:check`
+  passes and the Lint & Format CI job is green again.
+
 ### Fixed
 
 - `logger` is now also a named export. Fifteen modules import it by name, which
@@ -46,6 +49,7 @@ Somnium v2.1.0 introduces comprehensive visual content creation tools, enhanced 
 Professional drag-and-drop world designer with real-time validation:
 
 **Interactive Canvas**
+
 - Zoom controls (25% to 200%) with mouse wheel support
 - Pan navigation with drag-to-move
 - Grid overlay with snap-to-grid option
@@ -54,6 +58,7 @@ Professional drag-and-drop world designer with real-time validation:
 - Real-time connection visualization
 
 **Room Management**
+
 - Add/remove rooms with visual feedback
 - Edit room properties (name, description, graphics)
 - Visual exit connections with arrow indicators
@@ -61,6 +66,7 @@ Professional drag-and-drop world designer with real-time validation:
 - Bulk room operations
 
 **Export & Integration**
+
 - Export to game-ready JSON format
 - Import existing worlds for editing
 - Validation before export
@@ -71,6 +77,7 @@ Professional drag-and-drop world designer with real-time validation:
 Flowchart-style puzzle designer with dependency management:
 
 **Node Types**
+
 - **Item Nodes**: Required inventory items
 - **Action Nodes**: Player actions to perform
 - **Sequence Nodes**: Multi-step sequences
@@ -79,6 +86,7 @@ Flowchart-style puzzle designer with dependency management:
 - **Trigger Nodes**: Event-based triggers
 
 **Visual Features**
+
 - Hierarchical auto-layout using Dagre algorithm
 - Drag-and-drop node positioning
 - Visual dependency connections
@@ -86,6 +94,7 @@ Flowchart-style puzzle designer with dependency management:
 - Solution path calculation
 
 **Testing & Validation**
+
 - Interactive testing mode
 - Step-by-step simulation
 - Solution path verification
@@ -97,6 +106,7 @@ Flowchart-style puzzle designer with dependency management:
 NPC conversation designer with branching dialogue:
 
 **Dialogue Nodes**
+
 - **Greeting**: Initial NPC greetings
 - **Question**: NPC questions to player
 - **Response**: NPC responses to player choices
@@ -105,6 +115,7 @@ NPC conversation designer with branching dialogue:
 - **End**: Conversation endings
 
 **Features**
+
 - Visual tree representation with zoom/pan
 - Emotion system (neutral, happy, sad, angry, surprised, fearful)
 - Player response options with branching
@@ -113,6 +124,7 @@ NPC conversation designer with branching dialogue:
 - Interactive playthrough mode
 
 **Validation**
+
 - Orphaned node detection
 - Incomplete path warnings
 - Missing response validation
@@ -127,6 +139,7 @@ NPC conversation designer with branching dialogue:
 Comprehensive asset management with search, tagging, and usage tracking:
 
 **Core Features**
+
 - Multi-category organization (graphics, audio, dialogue, worlds, puzzles)
 - Advanced keyword search with real-time filtering
 - Tag-based categorization with auto-tagging
@@ -135,6 +148,7 @@ Comprehensive asset management with search, tagging, and usage tracking:
 - Recent items quick access (last 10 used)
 
 **Asset Metadata**
+
 - Size tracking and storage statistics
 - Creation and modification timestamps
 - Usage count across projects
@@ -143,6 +157,7 @@ Comprehensive asset management with search, tagging, and usage tracking:
 - Asset relationships
 
 **Integration**
+
 - Import from World Editor, Puzzle Builder, Dialogue Editor
 - Export to game-ready formats
 - Asset sharing between projects
@@ -157,6 +172,7 @@ Comprehensive asset management with search, tagging, and usage tracking:
 Multi-phase AI world generation with quality controls:
 
 **5-Phase Generation Pipeline**
+
 1. **Structure Phase**: Generate world layout and connections
 2. **Rooms Phase**: Create detailed room descriptions and graphics
 3. **NPCs Phase**: Generate characters with personalities
@@ -164,6 +180,7 @@ Multi-phase AI world generation with quality controls:
 5. **Puzzles Phase**: Design puzzles with balanced difficulty
 
 **Quality Control**
+
 - Retry logic (up to 3 attempts per phase)
 - Auto-fix common issues (missing IDs, broken references)
 - Validation between phases
@@ -171,6 +188,7 @@ Multi-phase AI world generation with quality controls:
 - Fallback to simplified generation
 
 **Features**
+
 - Enhanced room generation with rich descriptions
 - NPC personality integration
 - Puzzle difficulty balancing
@@ -182,6 +200,7 @@ Multi-phase AI world generation with quality controls:
 Comprehensive validation for world data:
 
 **Validation Categories**
+
 1. **Structure**: World metadata, room count, ID uniqueness
 2. **Rooms**: Descriptions, graphics, exit validity
 3. **NPCs**: Dialogue trees, personality, item references
@@ -190,12 +209,14 @@ Comprehensive validation for world data:
 6. **Events**: Triggers, conditions, actions
 
 **Graph Algorithms**
+
 - Depth-First Search (DFS) for room reachability
 - Cycle detection in puzzle dependencies
 - Path finding for item accessibility
 - Dead-end detection
 
 **Error Reporting**
+
 - Error severity levels (error, warning, info)
 - Detailed error messages with locations
 - Fix suggestions for common issues
@@ -210,6 +231,7 @@ Comprehensive validation for world data:
 50+ achievements across 8 categories with rarity tiers:
 
 **Achievement Categories**
+
 - **Exploration** (8 achievements): Discover locations, secrets, hidden areas
 - **Combat** (7 achievements): Battle victories, combat mastery
 - **Social** (7 achievements): NPC interactions, relationship milestones
@@ -220,12 +242,14 @@ Comprehensive validation for world data:
 - **Meta** (4 achievements): Game completion, special milestones
 
 **Rarity System**
+
 - **Common** (10 XP): Basic gameplay achievements
 - **Rare** (25 XP): Moderate challenge achievements
 - **Epic** (50 XP): Difficult achievements
 - **Legendary** (100 XP): Extremely rare achievements
 
 **Features**
+
 - Incremental progress tracking
 - Event-driven automatic checking
 - Achievement notifications
@@ -237,18 +261,21 @@ Comprehensive validation for world data:
 Real-time friend management and messaging:
 
 **Friend Management**
+
 - Add/remove friends with username search
 - Friend request system
 - Block/unblock functionality
 - Friend list with online status
 
 **Online Status Tracking**
+
 - Real-time status updates (online, offline, away, busy)
 - Last seen timestamps
 - Automatic status detection
 - Manual status setting
 
 **Messaging System**
+
 - Real-time message delivery via WebSocket
 - Typing indicators
 - Read receipts
@@ -257,6 +284,7 @@ Real-time friend management and messaging:
 - Message notifications
 
 **Integration**
+
 - WebSocket client for real-time communication
 - Fallback to polling if WebSocket unavailable
 - Persistent message storage
@@ -271,11 +299,13 @@ Real-time friend management and messaging:
 Real production-quality icons using Sharp library:
 
 **Icon Generation** (`scripts/create-source-icon.js`)
+
 - SVG source icon with EGA-styled retro aesthetic
 - "Somnium" branding with moon/castle imagery
 - Professional design suitable for app stores
 
 **Icon Processing** (`scripts/generate-icons.js`)
+
 - Sharp library for high-quality PNG generation
 - 12 icon sizes generated:
   - Web: 16x16, 32x32, 192x192, 512x512
@@ -289,6 +319,7 @@ Real production-quality icons using Sharp library:
 ## Technical Improvements
 
 ### Code Quality
+
 - 11,000+ lines of new code
 - ES6 module architecture throughout
 - Comprehensive JSDoc comments
@@ -296,12 +327,14 @@ Real production-quality icons using Sharp library:
 - Zero ESLint warnings
 
 ### Integration
+
 - Full backward compatibility with v2.0 saves
 - Seamless editor integration with game engine
 - Asset Library integration across all tools
 - Real-time validation feedback
 
 ### Documentation
+
 - Complete v2.1 features documentation
 - Editor usage guides
 - API reference for new modules
@@ -334,6 +367,7 @@ Somnium v2.0.0 introduces comprehensive multiplayer, cloud infrastructure, world
 ### Backend Infrastructure
 
 **Node.js Multiplayer Server** (`server/multiplayer-server.js` - 450+ lines)
+
 - WebSocket-based real-time communication using `ws` library
 - Session management system (create, join, leave, list)
 - Player synchronization with automatic state broadcasting
@@ -345,6 +379,7 @@ Somnium v2.0.0 introduces comprehensive multiplayer, cloud infrastructure, world
 - Automatic disconnection handling and cleanup
 
 **Express REST API Server** (`server/api-server.js` - 550+ lines)
+
 - Authentication system with JWT token-based auth
   - `POST /api/auth/register` - User registration with SHA-256 password hashing
   - `POST /api/auth/login` - Secure login with token generation
@@ -365,6 +400,7 @@ Somnium v2.0.0 introduces comprehensive multiplayer, cloud infrastructure, world
 - Bearer token authentication middleware
 
 **Server Configuration** (`server/package.json`)
+
 - Dependencies: express ^4.18.2, cors ^2.8.5, ws ^8.14.2, dotenv ^16.3.1
 - Scripts:
   - `npm start` - Run API server (port 3000)
@@ -375,6 +411,7 @@ Somnium v2.0.0 introduces comprehensive multiplayer, cloud infrastructure, world
 ### Automated Deployment
 
 **GitHub Actions Workflow** (`.github/workflows/deploy-pages.yml`)
+
 - Automatic deployment to GitHub Pages on push to main
 - Manual workflow dispatch support
 - Permissions configured for pages deployment
@@ -387,6 +424,7 @@ Somnium v2.0.0 introduces comprehensive multiplayer, cloud infrastructure, world
 ### Testing Infrastructure
 
 **Playwright E2E Testing** (`playwright.config.js`, `tests/e2e/game.spec.js`)
+
 - Cross-browser testing across 5 environments:
   - Desktop Chrome
   - Desktop Firefox
@@ -407,6 +445,7 @@ Somnium v2.0.0 introduces comprehensive multiplayer, cloud infrastructure, world
 - Test timeout: 30 seconds per test
 
 **PWA Icon Generation** (`scripts/generate-icons.js`)
+
 - ES6 module-compatible icon generator
 - Generates 8 sizes: 72, 96, 128, 144, 152, 192, 384, 512
 - SVG placeholder generation with "Somnium" branding
@@ -451,6 +490,7 @@ Four professional world templates with complete content:
    - Features: Sci-fi setting, technical equipment, futuristic theme
 
 Each template includes:
+
 - Complete room graphics (vector primitives, EGA colors)
 - Fully-defined objects and items
 - NPC characters with dialogue trees
@@ -491,6 +531,7 @@ Each template includes:
    - Victory celebration
 
 Tutorial Features:
+
 - Progressive difficulty
 - Helpful NPC guidance
 - Clear objectives
@@ -528,6 +569,7 @@ Complete multiplayer experience with three main screens:
    - Ready/Unready toggle
 
 **Session Creation Modal**:
+
 - Session name input
 - Max players selector (2-8)
 - Game mode selection:
@@ -539,6 +581,7 @@ Complete multiplayer experience with three main screens:
 - Password protection option
 
 **Join Session Modal**:
+
 - Session ID input
 - Password field (for private sessions)
 - Join button
@@ -551,7 +594,8 @@ Complete multiplayer experience with three main screens:
 Professional UI with retro-modern aesthetic:
 
 Color Palette:
-```css
+
+```text
 --mp-bg: #1a1a2e (dark blue background)
 --mp-panel: #16213e (panel background)
 --mp-border: #0f3460 (borders and dividers)
@@ -561,6 +605,7 @@ Color Palette:
 ```
 
 Features:
+
 - Session cards with hover effects
 - Grid layout for session browser
 - Player avatars with status badges
@@ -577,17 +622,20 @@ Features:
 Manages all lobby UI interactions:
 
 Connection Management:
+
 - `connect()` - Establish WebSocket connection
 - `disconnect()` - Clean disconnection with state cleanup
 - `setupMultiplayerListeners()` - Wire event handlers
 
 Session Operations:
+
 - `createSession(settings)` - Create new multiplayer session
 - `joinSession(sessionId, password)` - Join existing session
 - `leaveSession()` - Exit current session
 - `sendChatMessage(message)` - Send chat to all players
 
 UI Updates:
+
 - `showConnectionScreen()` - Initial connection interface
 - `showLobbyScreen()` - Main lobby with sessions
 - `showCurrentSession()` - Active session view
@@ -596,6 +644,7 @@ UI Updates:
 - `addChatMessage(player, message)` - Append chat messages
 
 Event Handling:
+
 - session_created - Navigate to session view
 - session_joined - Update UI, show session
 - player_joined - Add to player list, show chat notification
@@ -612,6 +661,7 @@ Event Handling:
 ### Documentation Updates
 
 **README.md** - Comprehensive v2.0 documentation:
+
 - Updated version badge to 2.0.0
 - Added three new feature sections:
   - "v2.0 Multiplayer & Cloud Features" with all backend features
@@ -624,6 +674,7 @@ Event Handling:
 - "What's New in v2.0.0" status section
 
 **package.json**:
+
 - Version bumped from 0.0.1 → 2.0.0
 
 ### Code Quality
@@ -638,12 +689,14 @@ Event Handling:
 ### File Structure
 
 New directories:
+
 - `server/` - Backend Node.js services
 - `tests/e2e/` - End-to-end test suites
 - `scripts/` - Utility scripts (icon generation, etc.)
 - `assets/icons/` - PWA icons (SVG placeholders)
 
 New files:
+
 - 13 new files created
 - 2 files modified
 - 3,333 lines of production code added
@@ -655,6 +708,7 @@ New files:
 ### E2E Test Coverage
 
 Tests verify:
+
 - ✅ Game page loads correctly
 - ✅ Menu bar and canvas rendered
 - ✅ Modal interactions (about, volume, save, load)
@@ -668,6 +722,7 @@ Tests verify:
 - ✅ World editor and template loading
 
 Browser coverage:
+
 - ✅ Chrome (Desktop)
 - ✅ Firefox (Desktop)
 - ✅ Safari/WebKit (Desktop)
@@ -687,6 +742,7 @@ Browser coverage:
 ### GitHub Actions
 
 Automated workflow:
+
 - Triggers: Push to main, manual dispatch
 - Permissions: Read contents, write pages, id-token write
 - Deployment: Automatic GitHub Pages publishing
@@ -695,17 +751,20 @@ Automated workflow:
 ### Server Deployment
 
 Prerequisites:
+
 - Node.js 18.x or 20.x
 - npm package manager
 - Open ports: 3000 (API), 8080 (WebSocket)
 
 Installation:
+
 ```bash
 cd server
 npm install
 ```
 
 Configuration:
+
 ```env
 PORT=3000
 MULTIPLAYER_PORT=8080
@@ -713,6 +772,7 @@ JWT_SECRET=your-secret-key-here
 ```
 
 Running:
+
 ```bash
 npm run start:all  # Both servers
 npm run dev        # Development mode with auto-reload
@@ -725,6 +785,7 @@ npm run dev        # Development mode with auto-reload
 ### v2.0 Complete Feature Set
 
 **Multiplayer**:
+
 - WebSocket server with session management
 - Real-time player synchronization
 - Three game modes (Co-op, Competitive, Shared)
@@ -733,6 +794,7 @@ npm run dev        # Development mode with auto-reload
 - Password-protected private sessions
 
 **Cloud Features**:
+
 - User authentication (register/login)
 - Cloud save storage (unlimited slots)
 - Cross-device save synchronization
@@ -741,12 +803,14 @@ npm run dev        # Development mode with auto-reload
 - Browse community-created worlds
 
 **Content Creation**:
+
 - 4 professional world templates
 - Interactive tutorial world
 - Visual world editor (from v1.0)
 - Template-based quick start
 
 **Infrastructure**:
+
 - Automated GitHub Pages deployment
 - Cross-browser E2E testing (5 browsers)
 - PWA icon generation
@@ -756,6 +820,7 @@ npm run dev        # Development mode with auto-reload
 ### v1.0 Base Features
 
 All v1.0.0 features included:
+
 - ✅ Complete SCI0-inspired game engine
 - ✅ AI-generated adventures
 - ✅ Natural language parser (30+ verbs)
@@ -779,6 +844,7 @@ None - v2.0 is fully backward compatible with v1.0 save files and worlds.
 ### New Optional Features
 
 All v2.0 features are opt-in:
+
 - Multiplayer requires running backend servers
 - Cloud saves require authentication
 - World sharing requires API server
@@ -821,6 +887,7 @@ Somnium v1.0.0 is a complete, production-ready AI-driven graphical text-adventur
 ### ✨ Phase 4 - AI Integration (Complete)
 
 **World Generation System**
+
 - **WorldGenerator.js**: AI-powered and static world generation
   - Three test world sizes (small 3-5 rooms, medium 6-10 rooms, large 15+ rooms)
   - Comprehensive 351-line world generation prompt template
@@ -829,6 +896,7 @@ Somnium v1.0.0 is a complete, production-ready AI-driven graphical text-adventur
   - Complete offline mode fallback with static test worlds
 
 **8-Step World Validation System**:
+
 1. Room validation (exits, graphics descriptions, ambience settings)
 2. Exit consistency checking (bidirectional verification)
 3. Item validation (takeable items, descriptions, unique IDs)
@@ -839,6 +907,7 @@ Somnium v1.0.0 is a complete, production-ready AI-driven graphical text-adventur
 8. Automatic fixing utilities for common JSON structure issues
 
 **Dynamic Interaction Handler**
+
 - **DynamicInteractionHandler.js**: AI-powered responses for unscripted player actions
   - Context building from current game state (room, inventory, recent events, NPCs)
   - Response sanitization and validation to prevent game-breaking content
@@ -847,6 +916,7 @@ Somnium v1.0.0 is a complete, production-ready AI-driven graphical text-adventur
   - Dynamic NPC dialogue generation for natural conversations
 
 **Enhanced AI Manager**
+
 - Real LLM API integration using fetch() with proper error handling
 - Exponential backoff retry logic (3 retries with 1s, 2s, 4s delays)
 - Automatic offline mode fallback when API unavailable
@@ -856,6 +926,7 @@ Somnium v1.0.0 is a complete, production-ready AI-driven graphical text-adventur
 - Temperature and token controls for generation quality
 
 **API Integration Details**:
+
 ```javascript
 // Retry logic with exponential backoff
 for (let attempt = 0; attempt <= retries; attempt++) {
@@ -874,6 +945,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ### 🎨 Phase 5 - Polish and Sierra-Inspired Enhancements (Complete)
 
 **Save/Load System**
+
 - **SaveGameManager.js**: Professional multi-slot save system
   - 10 manual save slots + dedicated auto-save slot (-1)
   - Browser localStorage persistence (5-10MB per save)
@@ -887,6 +959,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Save slot corruption detection and recovery
 
 **Priority-Based Audio System**
+
 - **PrioritySoundManager.js**: Sierra-style audio channel management
   - 10-level priority system (speech=10, UI=9, combat=8, ambient=2, music=1)
   - Automatic interrupt handling (higher priority sounds interrupt lower)
@@ -896,6 +969,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Category-based volume controls
 
 **Synchronized Sound System**
+
 - **SynchronizedSound.js**: Cue-based audio timing for cutscenes
   - 7 cue types: animation, state, effect, script, sound, event, callback
   - Frame-accurate timing synchronized with game loop
@@ -905,6 +979,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Integration with PrioritySoundManager
 
 **Ambient Soundscape System**
+
 - **AmbientSoundscape.js**: Layered environmental audio
   - 7 predefined soundscapes: ocean, underwater, space_station, space, forest, indoor, dungeon
   - Base loop layer for continuous ambience
@@ -914,6 +989,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Dynamic volume mixing based on layers
 
 **Priority-Based Rendering**
+
 - **PriorityRenderer.js**: Depth-based rendering system like Sierra games
   - Three-buffer system: priority buffer, visual buffer, control buffer
   - Y-position priority gradient (sky=1 at y=0, foreground=14 at y=200)
@@ -922,6 +998,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Primitive rendering with priority support (rect, polygon, circle, line)
 
 **Enhanced Parser System**
+
 - **SaidPattern.js**: Sierra Said() pattern matching
   - JavaScript regex compilation from Sierra syntax
   - Word classes: `<object>`, `<verb>`, `<noun>`, `<adjective>`
@@ -939,6 +1016,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Pattern matching as first-pass parser with fallback to original
 
 **State-Based Animation System**
+
 - **StateAnimator.js**: Complex character animation state machine
   - 8-directional walking states (N, NE, E, SE, S, SW, W, NW)
   - Action states: idle, pickup, talk, use, climb, swim, combat, death
@@ -952,6 +1030,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ### 🎮 Main Game UI and Player Experience (Complete)
 
 **UIManager - Centralized UI State Management**
+
 - Command history with arrow key navigation (max 50 commands, scrollable)
 - Text output categorization with color coding:
   - **command**: Light cyan, bold (player input echo)
@@ -967,6 +1046,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Automatic focus management for seamless keyboard interaction
 
 **Visual Save/Load System**
+
 - **Save UI**: 10-slot selector with rich metadata display
   - Shows save name, timestamp, location, score for each slot
   - "Empty" slots clearly marked and styled
@@ -983,6 +1063,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Automatic modal close after successful load
 
 **Volume Control System**
+
 - Real-time sliders for 4 audio categories with live feedback:
   - **Master Volume**: Global audio control (0-100%)
   - **Music Volume**: Background music and themes
@@ -994,6 +1075,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Accessible from main menu and in-game
 
 **Game Control Features**
+
 - **Restart Game**: Full game restart with theme preservation
   - Proper state cleanup (stop game loop, disable auto-save)
   - Loading screen during restart transition
@@ -1002,6 +1084,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - Auto-save management (creates new auto-save for new game)
 
 **Configuration System**
+
 - **config.template.js**: Comprehensive configuration template with docs
   - API settings (key, endpoint, model, temperature, max tokens)
   - Feature toggles (Sierra parser, priority renderer, state animator)
@@ -1020,6 +1103,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ### 🔧 Technical Improvements
 
 **Code Quality**
+
 - Fixed logger import case sensitivity across 6 new modules
   - Changed from `import { logger } from './Logger.js'`
   - To `import logger from './logger.js'`
@@ -1029,20 +1113,27 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Consistent code style across 400+ files
 
 **Testing**
+
 - All 444 tests passing (100% pass rate)
 - No test failures or skipped tests
 - Maintained test coverage above 60%
 - Mock implementations updated for new systems
 
 **Integration**
+
 - GameManager enhanced with all Phase 4 & 5 systems:
   ```javascript
   this.worldGenerator = new WorldGenerator(this.aiManager);
   this.prioritySoundManager = new PrioritySoundManager(this.soundManager);
-  this.synchronizedSound = new SynchronizedSound(this.prioritySoundManager, this);
+  this.synchronizedSound = new SynchronizedSound(
+    this.prioritySoundManager,
+    this
+  );
   this.ambientSoundscape = new AmbientSoundscape(this.prioritySoundManager);
   this.dynamicInteractionHandler = new DynamicInteractionHandler(
-    this.aiManager, this.gameState, this.commandExecutor
+    this.aiManager,
+    this.gameState,
+    this.commandExecutor
   );
   this.saveGameManager = new SaveGameManager(this);
   ```
@@ -1055,6 +1146,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ## Complete Feature List
 
 ### Phase 1 - Core Architecture ✅
+
 - GameManager with fixed timestep (60 FPS) and interpolation
 - AIManager with LLM interface and mock mode
 - GameState with event-driven architecture and validation
@@ -1068,6 +1160,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ### Phase 2 - Graphics and Sound ✅
 
 **Vector Graphics Engine**
+
 - 16-color EGA palette with strict adherence
 - Vector primitives: rectangles, polygons, ellipses, lines, bezier curves, paths
 - 9 dithering patterns for fills and gradients
@@ -1076,6 +1169,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - 320×200 native resolution (scaled to 640×400)
 
 **Sprite and Animation System**
+
 - VIEW resource structure (Sierra SCI compatible)
 - Smooth animation with interpolation and speed control
 - Character movement with 8-directional walking
@@ -1085,6 +1179,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Sprite pooling (50 sprite pool) for performance
 
 **Sound Synthesis System**
+
 - Complete Tone.js integration (v15.1.22)
 - ADSR envelopes with configurable curves
 - Waveforms: sine, square, triangle, sawtooth, PWM
@@ -1097,6 +1192,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Spatial audio with left/right panning
 
 **Music Generation System**
+
 - 128-voice polyphony for rich compositions
 - Complete General MIDI instrument set (128 instruments)
 - Procedural composition with music theory foundation
@@ -1109,6 +1205,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ### Phase 3 - Parser and Game Logic ✅
 
 **Natural Language Parser**
+
 - Tokenization with punctuation handling
 - 100+ verb synonyms (look/examine, get/take, etc.)
 - Abbreviations: x→examine, i→inventory, l→look, n/s/e/w→directions
@@ -1117,6 +1214,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Word class detection (verbs, nouns, adjectives, prepositions)
 
 **Command Execution Engine**
+
 - 30+ adventure game verbs fully implemented:
   - Movement: go, north, south, east, west, enter, exit
   - Observation: look, examine, read, search
@@ -1136,32 +1234,37 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 
 **Game Mechanics**
 
-*Inventory System*:
+_Inventory System_:
+
 - Weight and size constraints (configurable limits)
 - Container support with nested items (bags, chests, etc.)
 - Worn items system with equipment slots (head, body, hands, feet, accessory)
 - Comprehensive inventory management (add, remove, transfer, find, wear, remove)
 
-*Interaction System*:
+_Interaction System_:
+
 - Object interaction matrix for "use X on Y" mechanics
 - Item combination system (combine lockpick + door → unlocked door)
 - Locked/unlocked object states
 - State change triggers and callbacks
 
-*Movement System*:
+_Movement System_:
+
 - Enhanced room navigation with exit validation
 - NPC movement patterns and schedules
 - Movement animations with smooth transitions
 - Blocked exit handling with contextual messages
 
-*Puzzle System*:
+_Puzzle System_:
+
 - Multi-step puzzle support with individual step tracking
 - Hint system with 30-second cooldowns
 - Puzzle rewards (items, score points) and consequences
 - Reset mechanisms for retryable puzzles
 - Statistics tracking (attempts, hints used, completions, time)
 
-*NPC System*:
+_NPC System_:
+
 - Dialogue tree system with branching conversations
 - Relationship tracking (-100 to 100 scale)
 - NPC trading with value balance and item requirements
@@ -1169,7 +1272,8 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Dialogue history and state persistence
 - Multiple conversation topics per NPC
 
-*Game Progression*:
+_Game Progression_:
+
 - Point-based scoring system
 - Achievement system with condition checking
 - Multiple ending support based on game state
@@ -1177,9 +1281,11 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Auto-save functionality (5-minute intervals)
 
 ### Phase 4 - AI Integration ✅
+
 (See Major Features section above)
 
 ### Phase 5 - Polish and Sierra Enhancements ✅
+
 (See Major Features section above)
 
 ---
@@ -1187,6 +1293,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ## 🎮 Gameplay Features
 
 ### Command System
+
 - 30+ adventure game verbs with natural language parsing
 - Directional shortcuts: n, s, e, w, ne, nw, se, sw
 - Common abbreviations: x (examine), i (inventory), l (look)
@@ -1195,6 +1302,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - Pronoun resolution: "examine it", "take them"
 
 ### World Interaction
+
 - Interactive objects with multiple states
 - Combinable items (use X on Y)
 - Locked containers and doors requiring keys
@@ -1203,6 +1311,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - NPC dialogue and trading systems
 
 ### Progression System
+
 - Point-based scoring
 - Achievement tracking
 - Multiple endings based on player choices
@@ -1215,6 +1324,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ## 🎨 Technical Specifications
 
 ### Graphics
+
 - **Resolution**: 320×200 native (scaled to 640×400)
 - **Color Palette**: 16-color EGA (strict adherence)
 - **Rendering**: Vector primitives only (no raster images)
@@ -1222,6 +1332,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - **Priority System**: Depth-based rendering with Y-gradient
 
 ### Audio
+
 - **Engine**: Tone.js v15.1.22
 - **Synthesis**: Procedural generation (no audio files)
 - **Polyphony**: 128 voices music, 16 channels SFX
@@ -1229,6 +1340,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - **Effects**: Reverb, delay, distortion, chorus, phaser, LFO
 
 ### AI Integration
+
 - **API**: OpenAI-compatible endpoints (OpenAI, Anthropic, Ollama, LM Studio)
 - **Models**: GPT-3.5-turbo, GPT-4, Claude, local LLMs
 - **Fallback**: Offline mode with 3 static test worlds
@@ -1236,6 +1348,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 - **Validation**: 8-step comprehensive JSON validation
 
 ### Save System
+
 - **Format**: Complete game state + original AI-generated JSON
 - **Storage**: Browser localStorage (5-10MB per save)
 - **Slots**: 10 manual + 1 auto-save
@@ -1248,6 +1361,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ## 🧪 Testing
 
 ### Test Coverage
+
 - **Total Tests**: 444 (100% pass rate)
 - **Test Suites**: 20
 - **Overall Coverage**: 61.64%
@@ -1258,6 +1372,7 @@ for (let attempt = 0; attempt <= retries; attempt++) {
   - PuzzleSystem: 71.42%
 
 ### CI/CD
+
 - **Framework**: Jest v30.0.0
 - **Environment**: jsdom for DOM testing
 - **Node Versions**: 18.x, 20.x
@@ -1268,7 +1383,9 @@ for (let attempt = 0; attempt <= retries; attempt++) {
 ## 📦 Demo Content
 
 ### Interactive Demos
+
 All demos located in `demos/` subdirectory:
+
 - **demo-graphics.html**: Vector primitives, dithering, EGA palette showcase
 - **sprite-demo.html**: Character movement with keyboard controls
 - **sound-demo.html**: Sound effect library and synthesis parameters
@@ -1278,7 +1395,9 @@ All demos located in `demos/` subdirectory:
 - **demo-adventure.html**: Complete playable adventure "The Enchanted Manor"
 
 ### Test Worlds
+
 Static worlds for offline play:
+
 - **Small World** (3-5 rooms): "Test Manor" haunted mansion
 - **Medium World** (6-10 rooms): Multi-level adventure with NPCs
 - **Large World** (15+ rooms): Expansive world with complex puzzles
@@ -1288,12 +1407,14 @@ Static worlds for offline play:
 ## 🔧 Configuration
 
 ### Quick Start
+
 1. Copy `js/config.template.js` to `js/config.js`
 2. (Optional) Add OpenAI API key for AI-generated worlds
 3. Adjust volumes and feature toggles as desired
 4. Open `index.html` in browser or run `npm start`
 
 ### Configuration Options
+
 ```javascript
 export const API_CONFIG = {
   // API Settings (leave default for offline mode)
@@ -1325,12 +1446,14 @@ export const API_CONFIG = {
 ## 🐛 Bug Fixes
 
 ### Logger Import Case Sensitivity (Phase 4/5)
+
 - **Issue**: 6 new modules failed tests due to incorrect logger import path
 - **Files**: PrioritySoundManager.js, SynchronizedSound.js, AmbientSoundscape.js, WorldGenerator.js, DynamicInteractionHandler.js, SaveGameManager.js
 - **Fix**: Changed `import { logger } from './Logger.js'` to `import logger from './logger.js'`
 - **Result**: All 444 tests passing
 
 ### Earlier Bug Fixes (Phase 3)
+
 - Fixed command parameter order in handleAsk (NPC in directObject, topic in indirectObject)
 - Fixed type check case sensitivity ('NPC' vs 'npc')
 - Fixed health updates to properly modify gameState
@@ -1345,6 +1468,7 @@ export const API_CONFIG = {
 ## 📚 Documentation
 
 ### Comprehensive Guides
+
 - **README.md**: Project overview and features
 - **SETUP.md**: 5-minute quick start guide
 - **CLAUDE.md**: Development guide for AI assistants
@@ -1353,6 +1477,7 @@ export const API_CONFIG = {
 - **to-dos/**: Development phase tracking
 
 ### API Documentation
+
 - Module interfaces documented via JSDoc
 - Comprehensive inline comments
 - Test files serve as usage examples
@@ -1363,6 +1488,7 @@ export const API_CONFIG = {
 ## 🚀 Deployment
 
 ### Local Development
+
 ```bash
 npm install
 npm start  # http-server on port 8080
@@ -1370,6 +1496,7 @@ npm run dev  # http-server on port 8000
 ```
 
 ### Testing
+
 ```bash
 npm test  # Run all tests
 npm run test:watch  # Watch mode
@@ -1377,6 +1504,7 @@ npm run test:coverage  # Coverage report
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint  # ESLint
 npm run lint:fix  # Auto-fix
@@ -1386,6 +1514,7 @@ npm run validate  # All checks
 ```
 
 ### Production
+
 - No build step required (vanilla ES6 modules)
 - Serve static files via any HTTP server
 - Works completely offline with static test worlds
@@ -1398,6 +1527,7 @@ npm run validate  # All checks
 While v1.0.0 is feature-complete and production-ready, potential future enhancements include:
 
 ### Planned for Future Releases
+
 - **Mobile/Responsive Support**: Touch-friendly UI, responsive CSS
 - **Accessibility Enhancements**: ARIA labels, keyboard navigation, high contrast mode
 - **Performance Optimizations**: Rendering loop improvements, lazy audio loading
@@ -1407,6 +1537,7 @@ While v1.0.0 is feature-complete and production-ready, potential future enhancem
 - **Community Features**: World sharing, custom world editor
 
 ### Under Consideration
+
 - Multiplayer support
 - Cloud save synchronization
 - Steam/itch.io distribution
@@ -1425,6 +1556,7 @@ See LICENSE file for details.
 ## 🙏 Acknowledgments
 
 **Inspired by Sierra On-Line's legendary SCI0 engine and games**:
+
 - King's Quest IV (1988)
 - Space Quest III (1989)
 - Quest for Glory I (1989)
@@ -1433,12 +1565,14 @@ See LICENSE file for details.
 - Codename: ICEMAN (1989)
 
 **Built with modern web technologies**:
+
 - Tone.js v15.1.22 for audio synthesis
 - Jest v30.0.0 for testing
 - ESLint v9 + Prettier for code quality
 - GitHub Actions for CI/CD
 
 **Special thanks**:
+
 - Retro gaming community for preservation efforts
 - SCI decompilation projects for technical insights
 - Sierra On-Line for creating timeless classics
@@ -1448,6 +1582,7 @@ See LICENSE file for details.
 ## 📞 Support
 
 For issues, questions, or contributions:
+
 - **GitHub**: https://github.com/doublegate/Somnium
 - **Issues**: Report bugs and request features
 - **Discussions**: Share worlds and experiences
@@ -1462,11 +1597,12 @@ For issues, questions, or contributions:
 
 ### [Unreleased] - Development History
 
-*(See above for complete v1.0.0 release notes)*
+_(See above for complete v1.0.0 release notes)_
 
 ### [0.0.1] - 2025-01-13
 
 **Initial Release**
+
 - Repository creation
 - Design documentation
 - Technical specifications

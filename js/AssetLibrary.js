@@ -22,7 +22,7 @@ export class AssetLibrary {
   constructor(options = {}) {
     // Asset storage
     this.assets = new Map(); // assetId -> asset data
-    
+
     // Configure categories (use custom or defaults)
     const defaultCategories = [
       'graphics',
@@ -36,7 +36,9 @@ export class AssetLibrary {
       'puzzles',
       'dialogues',
     ];
-    const categoryNames = Array.isArray(options.categories) ? options.categories : defaultCategories;
+    const categoryNames = Array.isArray(options.categories)
+      ? options.categories
+      : defaultCategories;
     this.categories = {};
     for (const name of categoryNames) {
       this.categories[name] = new Set();
@@ -291,7 +293,9 @@ export class AssetLibrary {
     const assetIds = this.categories[category];
     if (!assetIds) return [];
 
-    return Array.from(assetIds).map((id) => this.assets.get(id)).filter(Boolean);
+    return Array.from(assetIds)
+      .map((id) => this.assets.get(id))
+      .filter(Boolean);
   }
 
   /**
@@ -303,7 +307,9 @@ export class AssetLibrary {
     const assetIds = this.tags.get(tag);
     if (!assetIds) return [];
 
-    return Array.from(assetIds).map((id) => this.assets.get(id)).filter(Boolean);
+    return Array.from(assetIds)
+      .map((id) => this.assets.get(id))
+      .filter(Boolean);
   }
 
   /**

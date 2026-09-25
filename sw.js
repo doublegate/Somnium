@@ -98,9 +98,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((cacheName) => {
-            return (
-              cacheName !== CACHE_VERSION && cacheName !== RUNTIME_CACHE
-            );
+            return cacheName !== CACHE_VERSION && cacheName !== RUNTIME_CACHE;
           })
           .map((cacheName) => {
             console.log('[Service Worker] Deleting old cache:', cacheName);

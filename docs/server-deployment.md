@@ -63,6 +63,7 @@ npm install
 ```
 
 This installs:
+
 - `express` (^5.2.1) - Web framework
 - `cors` (^2.8.6) - Cross-origin resource sharing
 - `ws` (^8.21.3) - WebSocket library
@@ -114,11 +115,13 @@ npm run dev
 ### 5. Verify Setup
 
 **API Server** - Test endpoint:
+
 ```bash
 curl http://localhost:3000/api/health
 ```
 
 **Multiplayer Server** - Check WebSocket:
+
 ```bash
 # Using wscat (install with: npm install -g wscat)
 wscat -c ws://localhost:8080
@@ -152,27 +155,27 @@ module.exports = {
       exec_mode: 'cluster',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000
+        PORT: 3000,
       },
       error_file: './logs/api-error.log',
       out_file: './logs/api-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      merge_logs: true
+      merge_logs: true,
     },
     {
       name: 'somnium-multiplayer',
       script: './multiplayer-server.js',
-      instances: 1,  // WebSocket requires sticky sessions
+      instances: 1, // WebSocket requires sticky sessions
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
-        MULTIPLAYER_PORT: 8080
+        MULTIPLAYER_PORT: 8080,
       },
       error_file: './logs/multiplayer-error.log',
       out_file: './logs/multiplayer-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss'
-    }
-  ]
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
+    },
+  ],
 };
 ```
 
@@ -319,8 +322,8 @@ services:
   somnium-servers:
     build: ./server
     ports:
-      - "3000:3000"
-      - "8080:8080"
+      - '3000:3000'
+      - '8080:8080'
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -653,6 +656,7 @@ sudo ufw enable
 ### 4. Rate Limiting
 
 Already implemented in `api-server.js`:
+
 - 100 requests per 15 minutes per IP
 - Protects against brute force and DoS attacks
 
@@ -800,8 +804,10 @@ ALLOWED_ORIGINS=https://your-domain.com,https://www.your-domain.com
 Increase Node.js heap size:
 
 ```javascript
-// In ecosystem.config.js
-node_args: '--max-old-space-size=2048'
+// In ecosystem.config.js, add node_args to the app entry:
+module.exports = {
+  apps: [{ name: 'somnium-api', node_args: '--max-old-space-size=2048' }],
+};
 ```
 
 #### 6. PM2 Not Starting on Boot
@@ -863,6 +869,7 @@ Update `multiplayer-server.js` to use Redis for pub/sub between instances.
 ## Support
 
 For issues or questions:
+
 - **GitHub Issues**: https://github.com/doublegate/Somnium/issues
 - **Documentation**: https://github.com/doublegate/Somnium/tree/main/docs
 

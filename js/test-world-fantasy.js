@@ -771,7 +771,7 @@ export const FANTASY_WORLD = {
       id: 'dark_dungeon',
       name: 'Dark Dungeon',
       description:
-        'A dank underground chamber lit by flickering torches. Water drips from the ceiling into murky pools. Ancient cells line the walls, their doors long rusted open. Skeletal remains hint at the dungeon\'s grim history. A treasure chest sits in the corner, protected by a magical barrier.',
+        "A dank underground chamber lit by flickering torches. Water drips from the ceiling into murky pools. Ancient cells line the walls, their doors long rusted open. Skeletal remains hint at the dungeon's grim history. A treasure chest sits in the corner, protected by a magical barrier.",
       graphics: {
         backgroundColor: '#000000', // Black
         primitives: [
@@ -934,7 +934,7 @@ export const FANTASY_WORLD = {
       id: 'mountain_pass',
       name: 'Treacherous Mountain Pass',
       description:
-        'A narrow rocky trail winds up the mountainside. Snow-capped peaks tower above. The path is treacherous - loose stones and a sheer drop to one side. To the north, you see a dark cave entrance: the Dragon\'s Lair. Cold wind howls, carrying the scent of sulfur and smoke.',
+        "A narrow rocky trail winds up the mountainside. Snow-capped peaks tower above. The path is treacherous - loose stones and a sheer drop to one side. To the north, you see a dark cave entrance: the Dragon's Lair. Cold wind howls, carrying the scent of sulfur and smoke.",
       graphics: {
         backgroundColor: '#5555FF', // Sky blue
         primitives: [
@@ -1068,7 +1068,7 @@ export const FANTASY_WORLD = {
       id: 'dragon_lair',
       name: "Dragon's Lair",
       description:
-        'A massive cavern filled with the dragon\'s hoard. Mountains of gold coins, jeweled artifacts, and ancient treasures gleam in the dim light. At the center, coiled upon the largest pile, is Malakor the Red - a magnificent dragon with scales like burnished copper. His eyes glow with ancient intelligence. The Dragon\'s Crown sits atop his hoard, radiating magical energy.',
+        "A massive cavern filled with the dragon's hoard. Mountains of gold coins, jeweled artifacts, and ancient treasures gleam in the dim light. At the center, coiled upon the largest pile, is Malakor the Red - a magnificent dragon with scales like burnished copper. His eyes glow with ancient intelligence. The Dragon's Crown sits atop his hoard, radiating magical energy.",
       graphics: {
         backgroundColor: '#000000', // Black (cave)
         primitives: [
@@ -1639,7 +1639,7 @@ export const FANTASY_WORLD = {
       id: 'runes',
       name: 'glowing runes',
       description:
-        'Ancient magical symbols carved into the stone walls. They pulse with soft light, maintaining the tower\'s protective enchantments.',
+        "Ancient magical symbols carved into the stone walls. They pulse with soft light, maintaining the tower's protective enchantments.",
       canTake: false,
       canOpen: false,
       canLookAt: true,
@@ -1827,7 +1827,7 @@ export const FANTASY_WORLD = {
       id: 'crown_on_hoard',
       name: "Dragon's Crown",
       description:
-        'The legendary Dragon\'s Crown rests atop the hoard, radiating golden light. Three magical gems adorn it: ruby, sapphire, and emerald. This is what you came for - but the dragon guards it jealously.',
+        "The legendary Dragon's Crown rests atop the hoard, radiating golden light. Three magical gems adorn it: ruby, sapphire, and emerald. This is what you came for - but the dragon guards it jealously.",
       canTake: true,
       canOpen: false,
       canLookAt: true,
@@ -2035,16 +2035,15 @@ export const FANTASY_WORLD = {
       location: 'castle_throne',
       dialogue: {
         greeting:
-          'Welcome, brave adventurer. Our kingdom is in grave peril. The dragon Malakor has stolen the Dragon\'s Crown - without it, our magical protections fail. Will you help us?',
+          "Welcome, brave adventurer. Our kingdom is in grave peril. The dragon Malakor has stolen the Dragon's Crown - without it, our magical protections fail. Will you help us?",
         topics: {
           crown:
-            'The Dragon\'s Crown has protected our kingdom for generations. It was forged in ancient times through a pact with the good dragons. Now Malakor, corrupted by greed, has taken it for his hoard.',
+            "The Dragon's Crown has protected our kingdom for generations. It was forged in ancient times through a pact with the good dragons. Now Malakor, corrupted by greed, has taken it for his hoard.",
           dragon:
             'Malakor was once a noble dragon, guardian of our realm. But something changed him - perhaps centuries of isolation, perhaps the allure of treasure. Now he threatens everything we hold dear.',
           quest:
             'If you retrieve the crown, I will reward you with 1000 gold pieces and a place of honor in the kingdom. But be warned - Malakor is powerful and cunning. You will need preparation.',
-          gems:
-            'I can give you this ruby gemstone - it was part of my coronation regalia. I have heard the wizard Aldric may know of other gems. You will need three gems to access the ancient dungeons.',
+          gems: 'I can give you this ruby gemstone - it was part of my coronation regalia. I have heard the wizard Aldric may know of other gems. You will need three gems to access the ancient dungeons.',
         },
       },
       relationship: 50,
@@ -2070,9 +2069,8 @@ export const FANTASY_WORLD = {
           'Ah, a visitor! Welcome to my tower. I sense you are on an important quest. How may my knowledge serve you?',
         topics: {
           magic:
-            'Magic flows through all things in this realm. The Dragon\'s Crown is one of the most powerful magical artifacts ever created. Its loss weakens the very fabric of our reality.',
-          gems:
-            'You seek the three gems? I have a sapphire from my travels in the northern seas. Take it - you will need it to access the temple dungeons. The emerald... search carefully in the Whispering Woods.',
+            "Magic flows through all things in this realm. The Dragon's Crown is one of the most powerful magical artifacts ever created. Its loss weakens the very fabric of our reality.",
+          gems: 'You seek the three gems? I have a sapphire from my travels in the northern seas. Take it - you will need it to access the temple dungeons. The emerald... search carefully in the Whispering Woods.',
           dragon:
             'To face Malakor, you need more than courage. You need the Dragonbane Sword - forged long ago for such a purpose. It is hidden in the dungeons beneath the temple. And remember: dragons are intelligent - combat is not your only option.',
           potions:
@@ -2103,13 +2101,12 @@ export const FANTASY_WORLD = {
           'Welcome to the Golden Griffin! What can I get you? Ale? Mead? Or perhaps you want to hear the latest rumors?',
         topics: {
           rumors:
-            'Folk say there\'s treasure in the old temple ruins - but also danger. And I heard tell of a secret passage to ancient dungeons. Course, you\'d need the right keys to get in.',
+            "Folk say there's treasure in the old temple ruins - but also danger. And I heard tell of a secret passage to ancient dungeons. Course, you'd need the right keys to get in.",
           village:
             'Thornhaven was once a prosperous place. But since Malakor took the crown, dark times have fallen. Crops fail, livestock sicken. We need a hero.',
           dragon:
-            'My grandfather told stories of when Malakor was good - can you believe it? He actually helped the kingdom once. What turned him evil, I couldn\'t say.',
-          food:
-            'Business is slow these days, but I still make the best stew this side of the mountains. Here, have some on the house - you look like you could use it.',
+            "My grandfather told stories of when Malakor was good - can you believe it? He actually helped the kingdom once. What turned him evil, I couldn't say.",
+          food: 'Business is slow these days, but I still make the best stew this side of the mountains. Here, have some on the house - you look like you could use it.',
         },
       },
       relationship: 40,
@@ -2130,9 +2127,9 @@ export const FANTASY_WORLD = {
           crown:
             'The crown? It is MINE now! The humans used its magic for centuries, never thinking to share the power. I merely took what should have been mine from the beginning!',
           treasure:
-            'Every piece of gold, every jewel - earned through centuries of existence. This is my life\'s work, my legacy. And you dare suggest I simply give it up?',
+            "Every piece of gold, every jewel - earned through centuries of existence. This is my life's work, my legacy. And you dare suggest I simply give it up?",
           negotiation:
-            'You wish to... talk? How unusual. Very well. Perhaps there is a way we both get what we want. The kingdom needs protection, yes? I could provide that - for a price. A share of the kingdom\'s wealth, fair tribute, and RESPECT.',
+            "You wish to... talk? How unusual. Very well. Perhaps there is a way we both get what we want. The kingdom needs protection, yes? I could provide that - for a price. A share of the kingdom's wealth, fair tribute, and RESPECT.",
           combat:
             'You choose to fight? Bold, but foolish. I have lived a thousand years and defeated countless warriors. But if you have the legendary Dragonbane Sword... perhaps you have a chance. EN GARDE!',
         },
@@ -2198,9 +2195,9 @@ export const FANTASY_WORLD = {
 
     {
       id: 'dragon_confrontation',
-      name: 'Retrieve the Dragon\'s Crown',
+      name: "Retrieve the Dragon's Crown",
       description:
-        'Recover the Dragon\'s Crown from Malakor. This can be accomplished through combat or negotiation.',
+        "Recover the Dragon's Crown from Malakor. This can be accomplished through combat or negotiation.",
       requiredItems: [], // Optional: magic_sword for combat path
       solved: false,
       multiPath: true,
@@ -2212,12 +2209,11 @@ export const FANTASY_WORLD = {
           requiredItems: ['magic_sword'],
         },
         {
-          description:
-            'Confront Malakor in his lair (combat or negotiation)',
+          description: 'Confront Malakor in his lair (combat or negotiation)',
           completed: false,
         },
         {
-          description: 'Obtain the Dragon\'s Crown',
+          description: "Obtain the Dragon's Crown",
           completed: false,
           requiredItems: ['dragons_crown'],
         },
@@ -2226,11 +2222,11 @@ export const FANTASY_WORLD = {
           completed: false,
         },
       ],
-      hint: 'Dragons are not mindless beasts. Sometimes words are mightier than swords. But having a legendary dragon-slaying blade doesn\'t hurt.',
+      hint: "Dragons are not mindless beasts. Sometimes words are mightier than swords. But having a legendary dragon-slaying blade doesn't hurt.",
       reward: {
         points: 100,
         endings: ['heroic_victory', 'peaceful_resolution'],
-        text: 'You have recovered the Dragon\'s Crown! The kingdom is saved!',
+        text: "You have recovered the Dragon's Crown! The kingdom is saved!",
       },
     },
 
@@ -2243,8 +2239,7 @@ export const FANTASY_WORLD = {
       solved: false,
       steps: [
         {
-          description:
-            'Find a scroll of protection in the wizard\'s tower',
+          description: "Find a scroll of protection in the wizard's tower",
           completed: false,
           requiredItems: ['magic_scroll_shield'],
         },
@@ -2280,7 +2275,11 @@ export const FANTASY_WORLD = {
       name: 'Silver Tongue',
       description: 'Negotiate a peaceful resolution with Malakor',
       points: 75,
-      condition: { type: 'dialogue', target: 'dragon_malakor', topic: 'negotiation' },
+      condition: {
+        type: 'dialogue',
+        target: 'dragon_malakor',
+        topic: 'negotiation',
+      },
       hidden: false,
     },
     {
@@ -2316,7 +2315,8 @@ export const FANTASY_WORLD = {
     {
       id: 'dungeon_delver',
       name: 'Dungeon Delver',
-      description: 'Successfully navigate the dark dungeon and claim its treasures',
+      description:
+        'Successfully navigate the dark dungeon and claim its treasures',
       points: 25,
       condition: { type: 'puzzle', puzzle: 'treasure_chest_puzzle' },
       hidden: false,
@@ -2325,7 +2325,7 @@ export const FANTASY_WORLD = {
       id: 'loremaster',
       name: 'Loremaster',
       description:
-        'Discover all the lore about the Dragon\'s Crown and the ancient pact',
+        "Discover all the lore about the Dragon's Crown and the ancient pact",
       points: 20,
       condition: {
         type: 'dialogue',
@@ -2341,7 +2341,7 @@ export const FANTASY_WORLD = {
       id: 'heroic_victory',
       name: 'Heroic Victory',
       description:
-        'You defeated Malakor in honorable combat and returned the Dragon\'s Crown to King Edmund. The kingdom celebrates you as its greatest hero. Songs will be sung of your valor for generations to come.',
+        "You defeated Malakor in honorable combat and returned the Dragon's Crown to King Edmund. The kingdom celebrates you as its greatest hero. Songs will be sung of your valor for generations to come.",
       condition: {
         type: 'combat',
         target: 'dragon_malakor',
@@ -2355,7 +2355,7 @@ export const FANTASY_WORLD = {
       id: 'peaceful_resolution',
       name: 'The New Pact',
       description:
-        'Through wisdom and diplomacy, you negotiated a new pact between Malakor and the kingdom. The dragon returns the crown and agrees to protect Thornhaven in exchange for fair tribute and respect. Peace reigns, and you are hailed as the realm\'s greatest diplomat.',
+        "Through wisdom and diplomacy, you negotiated a new pact between Malakor and the kingdom. The dragon returns the crown and agrees to protect Thornhaven in exchange for fair tribute and respect. Peace reigns, and you are hailed as the realm's greatest diplomat.",
       condition: {
         type: 'dialogue',
         target: 'dragon_malakor',
@@ -2370,7 +2370,7 @@ export const FANTASY_WORLD = {
       id: 'tragic_sacrifice',
       name: 'Tragic Sacrifice',
       description:
-        'You fought bravely against Malakor but fell in battle. However, your sacrifice was not in vain - you weakened the dragon enough that the kingdom\'s knights were able to finish what you started. The crown was recovered, and you are remembered as a fallen hero.',
+        "You fought bravely against Malakor but fell in battle. However, your sacrifice was not in vain - you weakened the dragon enough that the kingdom's knights were able to finish what you started. The crown was recovered, and you are remembered as a fallen hero.",
       condition: {
         type: 'death',
         location: 'dragon_lair',
@@ -2383,7 +2383,7 @@ export const FANTASY_WORLD = {
       id: 'dark_path',
       name: 'The Dark Path',
       description:
-        'You chose to side with Malakor, betraying the kingdom for a share of the dragon\'s vast hoard. The kingdom falls into darkness, but you live in luxury... haunted by what you\'ve done. Power always comes with a price.',
+        "You chose to side with Malakor, betraying the kingdom for a share of the dragon's vast hoard. The kingdom falls into darkness, but you live in luxury... haunted by what you've done. Power always comes with a price.",
       condition: {
         type: 'betrayal',
         target: 'king_edmund',
@@ -2396,7 +2396,7 @@ export const FANTASY_WORLD = {
       id: 'failure',
       name: 'Kingdom Falls',
       description:
-        'Without the Dragon\'s Crown, the kingdom\'s magical protections failed completely. Malakor\'s power grew unchecked, and darkness spread across the land. Your adventure ended in failure, but perhaps another hero will succeed where you fell short.',
+        "Without the Dragon's Crown, the kingdom's magical protections failed completely. Malakor's power grew unchecked, and darkness spread across the land. Your adventure ended in failure, but perhaps another hero will succeed where you fell short.",
       condition: {
         type: 'timeout',
         daysElapsed: 30,
