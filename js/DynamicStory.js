@@ -264,8 +264,9 @@ Suggest the next development in this plot thread that:
    * @returns {Promise<string>} Adapted dialogue
    */
   async adaptDialogue(npcId, question) {
+    let npc;
     try {
-      const npc = this.npcSystem.getNPC(npcId);
+      npc = this.npcSystem.getNPC(npcId);
       const relationship = this.npcSystem.getRelationship(npcId);
       const recentInteractions = this.getRecentNPCInteractions(npcId);
 
@@ -285,7 +286,7 @@ Suggest the next development in this plot thread that:
       return response.text;
     } catch (error) {
       logger.error('Dialogue adaptation failed:', error);
-      return `${npc.name} looks at you thoughtfully.`;
+      return `${npc?.name ?? 'The character'} looks at you thoughtfully.`;
     }
   }
 
@@ -337,7 +338,10 @@ Suggest the next development in this plot thread that:
       const prompt = this.prompts.developPlot
         .replace('{plotThread}', threadId)
         .replace('{status}', thread.status)
-        .replace('{playerActions}', JSON.stringify(this.playerChoices.slice(-3)))
+        .replace(
+          '{playerActions}',
+          JSON.stringify(this.playerChoices.slice(-3))
+        )
         .replace('{worldState}', this.getStoryContext());
 
       const response = await this.aiManager.generateJSON(prompt);
@@ -470,9 +474,7 @@ Suggest the next development in this plot thread that:
    */
   isQuestComplete(quest) {
     // Simple completion check - all objectives met
-    return quest.objectives.every(
-      (objective) => quest.progress[objective.id]
-    );
+    return quest.objectives.every((objective) => quest.progress[objective.id]);
   }
 
   /**

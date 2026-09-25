@@ -225,10 +225,10 @@ npm run validate  # run all checks
 
 The project uses GitHub Actions for continuous integration:
 
-- **Node.js versions**: 18.x and 20.x (Jest 30 requires Node.js 18+)
+- **Node.js versions**: 22.x and 24.x (Babel 8 requires Node.js ^22.18 or >=24.11; `.nvmrc` pins 24)
 - **Jobs**: Lint, Test (with coverage), Security Audit, Browser Compatibility
-- **ESLint**: v9 with flat config format (eslint.config.js)
-- **Coverage**: Reports uploaded to Codecov for the 18.x test run
+- **ESLint**: v10 with flat config format (eslint.config.js)
+- **Coverage**: Reports uploaded to Codecov for the 24.x test run
 - **All checks must pass** before merging pull requests
 
 ## Current Status
@@ -252,9 +252,9 @@ The project uses GitHub Actions for continuous integration:
 
 ### Test Coverage
 
-- **Tests**: 444 tests passing ✅ (100% pass rate!)
-- **Test Suites**: 20 suites, all passing
-- **Coverage**: 61.64% overall
+- **Tests**: 452 tests passing (100% pass rate)
+- **Test Suites**: 22 suites, all passing
+- **Coverage**: 25.7% of lines across all of `js/` (measured 2026-09-24)
   - Parser: 87.37%
   - NPCSystem: 81.19%
   - InteractionSystem: 79.87%

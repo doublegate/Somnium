@@ -54,7 +54,9 @@ export class SaveGameManager {
       return saveData;
     } catch (error) {
       this.logger.error('Failed to save game:', error);
-      throw new Error('Failed to save game to browser storage');
+      throw new Error('Failed to save game to browser storage', {
+        cause: error,
+      });
     }
   }
 

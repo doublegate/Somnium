@@ -771,9 +771,9 @@ export class UIManager {
     const icon = achievement.icon || '🏆';
     const iconHtml = unlocked ? icon : '🔒';
 
-    let statusHtml = '';
+    let statusHtml;
     let progressBarHtml = '';
-    let ariaLabel = '';
+    let ariaLabel;
 
     if (progress && !unlocked) {
       const progressPercent = Math.round(

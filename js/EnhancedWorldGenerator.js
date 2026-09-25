@@ -157,7 +157,9 @@ export class EnhancedWorldGenerator {
         attempts++;
 
         if (attempts >= config.maxRetries) {
-          throw new Error('Failed to generate valid world after max retries');
+          throw new Error('Failed to generate valid world after max retries', {
+            cause: error,
+          });
         }
       }
     }
