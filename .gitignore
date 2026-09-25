@@ -118,3 +118,7 @@ docs/.doctrees/
 
 # GitHub workflows (must be added manually due to permissions)
 .github/
+
+# Playwright outputs
+playwright-report/
+test-results/

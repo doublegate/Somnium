@@ -2,7 +2,7 @@
  * E2E Tests for Somnium Game
  */
 
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe('Game Loading', () => {
   test('should load the main page', async ({ page }) => {
