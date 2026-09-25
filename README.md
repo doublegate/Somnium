@@ -494,7 +494,7 @@ See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical 
 - **444 tests passing** (100% pass rate across 20 test suites)
 - **61.64% overall code coverage** with high coverage in critical modules
 - **Zero ESLint/Prettier errors**
-- **Full CI/CD pipeline** (Node.js 18.x and 20.x tested)
+- **Full CI/CD pipeline** (Node.js 22.x and 24.x tested)
 
 ### Release Information
 

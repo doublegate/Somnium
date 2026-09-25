@@ -225,10 +225,10 @@ npm run validate  # run all checks
 
 The project uses GitHub Actions for continuous integration:
 
-- **Node.js versions**: 18.x and 20.x (Jest 30 requires Node.js 18+)
+- **Node.js versions**: 22.x and 24.x (Babel 8 requires Node.js ^22.18 or >=24.11; `.nvmrc` pins 24)
 - **Jobs**: Lint, Test (with coverage), Security Audit, Browser Compatibility
-- **ESLint**: v9 with flat config format (eslint.config.js)
-- **Coverage**: Reports uploaded to Codecov for the 18.x test run
+- **ESLint**: v10 with flat config format (eslint.config.js)
+- **Coverage**: Reports uploaded to Codecov for the 24.x test run
 - **All checks must pass** before merging pull requests
 
 ## Current Status

@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Dependencies consolidated to their latest compatible versions, superseding
+  the open Dependabot PRs: ESLint 10 (with `@eslint/js` 10 and `globals` 17),
+  Babel 8, Jest 30.5, Prettier 3.9, Playwright 1.63, sharp 0.35, Tone 15.5;
+  in `server/`, Express 5, dotenv 18 and concurrently 10.
+- GitHub Actions: `actions/checkout` v7, `actions/setup-node` v7,
+  `codecov/codecov-action` v7.
+- Node.js: Babel 8 requires `^22.18 || >=24.11`, so CI now tests 22.x and 24.x
+  (18.x and 20.x are end-of-life), `.nvmrc` is 24, and `engines.node` is
+  `>=22.18.0` (`>=22.0.0` for `server/`).
+- Jest no longer collects `tests/e2e/`, which holds Playwright specs; the
+  Playwright config and spec are now ES modules so `npx playwright test` loads.
+
+### Fixed
+
+- `logger` is now also a named export. Fifteen modules import it by name, which
+  is a module link error in the browser.
+- `DynamicStory.adaptDialogue` no longer throws a `ReferenceError` from its own
+  fallback path.
+- `js/test-world-space-station.js` parses (unescaped apostrophe).
+- Rethrown errors in `AIManager`, `EnhancedWorldGenerator` and
+  `SaveGameManager` keep the original error as `cause`.
+
 ## [2.1.0] - 2025-11-19
 
 ### 🎨 MAJOR RELEASE - CONTENT CREATION SUITE

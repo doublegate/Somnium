@@ -38,8 +38,8 @@ Both servers can run independently or together on the same machine.
 
 ### System Requirements
 
-- **Node.js**: v18.x or v20.x (required)
-- **npm**: v8.x or higher
+- **Node.js**: v22.x or v24.x (required; Express 5 and concurrently 10)
+- **npm**: v10.x or higher
 - **RAM**: Minimum 512MB (1GB+ recommended)
 - **Disk**: 100MB for code + storage for user data
 - **Network**: Open ports 3000 and 8080 (or configured ports)
@@ -63,10 +63,10 @@ npm install
 ```
 
 This installs:
-- `express` (^4.18.2) - Web framework
-- `cors` (^2.8.5) - Cross-origin resource sharing
-- `ws` (^8.14.2) - WebSocket library
-- `dotenv` (^16.3.1) - Environment variable management
+- `express` (^5.2.1) - Web framework
+- `cors` (^2.8.6) - Cross-origin resource sharing
+- `ws` (^8.21.3) - WebSocket library
+- `dotenv` (^18.0.3) - Environment variable management
 
 ### 2. Configure Environment
 
@@ -422,8 +422,8 @@ ssh -i your-key.pem ubuntu@your-ec2-ip
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# Install Node.js 24
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Install Nginx
