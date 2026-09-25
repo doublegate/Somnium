@@ -1,8 +1,8 @@
 # Somnium
 
 [![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/doublegate/Somnium/releases/tag/v2.1.0)
-[![Tests](https://img.shields.io/badge/tests-444%20passing-brightgreen.svg)](https://github.com/doublegate/Somnium/actions)
-[![Coverage](https://img.shields.io/badge/coverage-61.64%25-yellow.svg)](https://github.com/doublegate/Somnium)
+[![Tests](https://img.shields.io/badge/tests-452%20passing-brightgreen.svg)](https://github.com/doublegate/Somnium/actions)
+[![Coverage](https://img.shields.io/badge/coverage-25.7%25-orange.svg)](https://github.com/doublegate/Somnium)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 An AI-driven graphical text-adventure game inspired by Sierra On-Line's SCI0-era games (1988-1989). Every time you play, the AI generates a completely unique adventure with its own story, puzzles, and world.
@@ -274,9 +274,9 @@ See [Running Demos](docs/run-demos.md) for the complete list and instructions.
 
 ### Testing
 
-Somnium includes a comprehensive test suite with 444+ tests covering all major systems:
+Somnium includes a comprehensive test suite with 452 tests covering all major systems:
 
-- **Unit Tests**: Individual module functionality (444 tests)
+- **Unit Tests**: Individual module functionality (452 tests)
 - **Integration Tests**: System interactions
 - **Parser Tests**: Natural language processing
 - **Game Logic Tests**: Puzzles, NPCs, progression
@@ -491,9 +491,8 @@ See [v2.1 Features Documentation](docs/v2.1-features.md) for complete technical 
 
 ### Quality Metrics
 
-- **444 tests passing** (100% pass rate across 20 test suites)
-- **61.64% overall code coverage** with high coverage in critical modules
-- **Zero ESLint/Prettier errors**
+- **452 tests passing** (100% pass rate across 22 test suites)
+- **25.7% line coverage across all of `js/`**, higher in the core modules
 - **Full CI/CD pipeline** (Node.js 22.x and 24.x tested)
 
 ### Release Information

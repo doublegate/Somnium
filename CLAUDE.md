@@ -252,9 +252,9 @@ The project uses GitHub Actions for continuous integration:
 
 ### Test Coverage
 
-- **Tests**: 444 tests passing ✅ (100% pass rate!)
-- **Test Suites**: 20 suites, all passing
-- **Coverage**: 61.64% overall
+- **Tests**: 452 tests passing (100% pass rate)
+- **Test Suites**: 22 suites, all passing
+- **Coverage**: 25.7% of lines across all of `js/` (measured 2026-09-24)
   - Parser: 87.37%
   - NPCSystem: 81.19%
   - InteractionSystem: 79.87%
