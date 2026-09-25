@@ -60,7 +60,9 @@ export class AIManager {
       return gameJSON;
     } catch (error) {
       logger.error('World generation failed:', error);
-      throw new Error(`Failed to generate world: ${error.message}`);
+      throw new Error(`Failed to generate world: ${error.message}`, {
+        cause: error,
+      });
     }
   }
 
@@ -235,7 +237,8 @@ export class AIManager {
             return JSON.parse(content);
           } catch (parseError) {
             throw new Error(
-              `Failed to parse JSON response: ${parseError.message}`
+              `Failed to parse JSON response: ${parseError.message}`,
+              { cause: parseError }
             );
           }
         }
@@ -471,7 +474,9 @@ Generate a complete, playable adventure game world. Return ONLY valid JSON, no m
       try {
         data = JSON.parse(response);
       } catch (error) {
-        throw new Error(`Invalid JSON response from AI: ${error.message}`);
+        throw new Error(`Invalid JSON response from AI: ${error.message}`, {
+          cause: error,
+        });
       }
     } else {
       data = response;
