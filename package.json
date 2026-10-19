@@ -45,7 +45,7 @@
     "@babel/core": "^8.0.6",
     "@babel/preset-env": "^8.0.6",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.63.0",
+    "@playwright/test": "^1.64.1",
     "babel-jest": "^30.5.2",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
